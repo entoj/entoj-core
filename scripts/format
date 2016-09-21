@@ -1,0 +1,13 @@
+#!/bin/bash
+
+# Prepare pathes
+SELF=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+ESFORMATTER=$SELF/../node_modules/.bin/esformatter
+CONFIG=$SELF/../.esformatter.json
+SOURCE=$SELF/../source
+SANDBOX=$SELF/../sandbox
+
+# Doit
+$ESFORMATTER --config $CONFIG $SANDBOX/format/Test.js > $SANDBOX/format/Test_FORMATTED.js
+#DEBUG=* $ESFORMATTER --config $CONFIG $SOURCE/configuration/Format.js > $SOURCE/configuration/FormatFormatted.js
+#$ESFORMATTER --config $CONFIG $SOURCE/configuration/PathesConfiguration.js

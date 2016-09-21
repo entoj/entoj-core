@@ -1,0 +1,36 @@
+{# Requirements #}
+
+{##
+	# e005-button
+
+	Variables:
+		- text
+			button or linktext
+		- type: m, l, xl
+			size of icon and circle
+		- color: false, default, inverted
+			base brand color or inverted color
+		- icon: arrow-right, plus, loupe
+
+		- align: left, right
+
+	Renders a button of the given type, size and/or icon
+#}
+{% macro e005_button(
+		text=false,
+		type=false,
+		kind=false,
+		size=false,
+		icon=false,
+		image=false,
+		iconPosition=false,
+		href=false,
+		target=false,
+		class=false,
+		data=false,
+		title=false,
+		dataText=false,
+		separated=false,
+		tracking=false) %}
+e005-button
+{% endmacro %}

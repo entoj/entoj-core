@@ -1,0 +1,130 @@
+{% extends "/base/pages/p00-empty" %}
+
+	{% include "/base/elements/e005-button" %}
+
+	{% block content %}
+
+	<style>
+		body
+		{
+			background-color: #555;
+		}
+	</style>
+
+	{% call r01_default_row(type='1', class='example') %}
+		{% call r01_default_column() %}
+			{{ e005_button(text='Default Button', type='default', icon='arrow-right') }}
+			<br><br>
+		{% endcall %}
+	{% endcall %}
+
+	{% call r01_default_row(type='1', class='example') %}
+		{% call r01_default_column() %}
+			{{ e005_button(text='Default Button Blue', type='link', icon=false) }}
+			<br><br>
+		{% endcall %}
+	{% endcall %}
+
+	{% call r01_default_row(type='1', class='example') %}
+		{% call r01_default_column() %}
+			{{ e005_button(text='Call to Action Button', type='cta', kind='primary') }}
+			<br><br>
+		{% endcall %}
+	{% endcall %}
+
+	{% call r01_default_row(type='1', class='example') %}
+		{% call r01_default_column() %}
+			{{ e005_button(text='Call to Action Button mit ganz viel langem Text zum anzeigen', type='cta', kind='primary', icon='arrow-right') }}
+			<br><br>
+		{% endcall %}
+	{% endcall %}
+
+	{% call r01_default_row(type='1', class='example') %}
+		{% call r01_default_column() %}
+			{{ e005_button(text='Icon Button Medium', type='icon', kind='secondary', icon='close', size='m') }}
+			<br><br>
+		{% endcall %}
+	{% endcall %}
+
+	{% call r01_default_row(type='1', class='example') %}
+		{% call r01_default_column() %}
+			{{ e005_button(text='Icon Button Medium Right', type='icon', kind='secondary', icon='loupe', iconPosition='right', size='m') }}
+			<br><br>
+		{% endcall %}
+	{% endcall %}
+
+	{% call r01_default_row(type='1', class='example') %}
+		{% call r01_default_column() %}
+			{{ e005_button(text='Icon Button Large', type='icon', kind='primary', icon='loupe', size='l', iconPosition='left') }}
+			<br><br>
+		{% endcall %}
+	{% endcall %}
+
+	{% call r01_default_row(type='1', class='example') %}
+		{% call r01_default_column() %}
+			{{ e005_button(text='Icon Button Large<br>der auch mal zweizeilig werden kann', type='icon', kind='primary', icon='plus', size='l', iconPosition='left') }}
+			<br><br>
+		{% endcall %}
+	{% endcall %}
+
+	{% call r01_default_row(type='1', class='example') %}
+		{% call r01_default_column() %}
+			{{ e005_button(text='Icon Button XLarge', type='icon', kind='secondary', icon='loupe', size='xl', iconPosition='left') }}
+			<br><br>
+		{% endcall %}
+	{% endcall %}
+
+
+	{% call r01_default_row(type='1', class='example') %}
+		{% call r01_default_column() %}
+			{{ e005_button(text='Icon Button XLarge', type='icon', kind='secondary', icon='loupe', size='xl', iconPosition='right') }}
+			<br><br>
+		{% endcall %}
+	{% endcall %}
+
+	{% call r01_default_row(type='1', class='example') %}
+		{% call r01_default_column() %}
+			{{ e005_button(text='Icon Button XLarge der auch<br>zweizeilig werden kann', type='icon', kind='secondary', icon='loupe', size='xl', iconPosition='right') }}
+			<br><br>
+		{% endcall %}
+	{% endcall %}
+
+	{% call r01_default_row(type='1', class='example') %}
+		{% call r01_default_column() %}
+			{{ e005_button(text='Download with dynamic text icon', type='icon', kind='secondary', icon='text', dataText='PDF') }}
+			<br><br>
+		{% endcall %}
+	{% endcall %}
+
+	{% call r01_default_row(type='1', class='example') %}
+		{% call r01_default_column() %}
+			{{ e005_button(text='New line', type='cta', kind='secondary', href=downloadLink, title='A', separated=true) }}
+			{{ e005_button(text='for every', type='cta', kind='secondary', href=downloadLink, title='A', separated=true) }}
+			{{ e005_button(text='separated=true button', type='cta', kind='secondary', href=downloadLink, title='A', separated=true) }}
+		{% endcall %}
+	{% endcall %}
+	{#
+
+		{% call r01_default_column() %}
+			{{ e005_button(text='Icon Button Medium<br />kalsöjdfklöjsalökfjlöas', type='iconlink', color='default', icon='loupe', size='m', align='right') }}
+		{% endcall %}
+
+
+		{% call r01_default_column() %}
+			{{ e005_button(text='Icon Button Large', type='iconlink', color='inverted', icon='loupe', size='l', align='left') }}
+		{% endcall %}
+
+		{% call r01_default_column() %}
+			{{ e005_button(text='Icon Button Large', type='iconlink', color='inverted', icon='loupe', size='xl', align='left') }}
+		{% endcall %}
+
+		{% call r01_default_column() %}
+			{{ e005_button(value='Icon Button Large<br />kann auch zweizeilig sein', type='iconlink', color='inverted', icon='loupe', size='xl', align='right') }}
+		{% endcall %}
+	#}
+
+	{% call r01_default_column() %}
+		{{ e005_button(text='Icon Button Large<br />kann auch zweizeilig sein und rot', type='iconlink', color='default', icon='loupe', size='xl', align='right') }}
+	{% endcall %}
+
+	{% endblock %}

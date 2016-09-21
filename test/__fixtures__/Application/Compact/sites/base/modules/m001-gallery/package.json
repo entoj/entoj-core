@@ -1,0 +1,8 @@
+{
+    "groups":
+    {
+        "css": "core",
+        "js": "core"
+    },
+    "tags": ["common", "gallery"]
+}

@@ -1,0 +1,22 @@
+{
+    "groups":
+    {
+        "js": "core",
+        "css": "core"
+    },
+    "tags": ["common", "gallery"],
+    "release":
+    [
+        {
+            "type": "html",
+            "name": "e005-button-cta",
+            "arguments":
+            {
+                "type": "cta",
+                "kind": "primary",
+                "icon": "arrow-right",
+                "text": "Lorem Ipsum"
+            }
+        }
+    ]
+}

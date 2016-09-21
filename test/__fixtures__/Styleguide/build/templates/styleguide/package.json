@@ -1,0 +1,22 @@
+{
+    "structure":
+    [
+        {
+            "label": "Design Elements",
+            "path": "design-elements",
+            "template": "default.j2",
+            "children":
+            [
+                {
+                    "label": "Colors",
+                    "template": "scss.j2",
+                    "intro": "design-elements/colors.md"
+                },
+                {
+                    "label": "Typography",
+                    "template": "scss.j2"
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,8 @@
+#!/bin/bash
+
+# Prepare pathes
+SELF=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+
+# Doit
+echo "Restoring unfrozen dependencies"
+cp $SELF/../package-unfrozen.json $SELF/../package.json

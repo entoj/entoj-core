@@ -1,0 +1,2 @@
+# Abstract
+<$ entityId.asString('id') $>

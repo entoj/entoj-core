@@ -1,0 +1,27 @@
+{% extends "/base/pages/p00-empty" %}
+
+    {% include "/base/modules/m001-gallery" %}
+
+    {% block content %}
+
+        {% call r01_default_row(type='1') %}
+            {% call r01_default_column() %}
+                <div style="padding-top:10px"></div>
+            {% endcall %}
+        {% endcall %}
+
+        {% call r01_default_row(type='1') %}
+            {% call r01_default_column() %}
+                {% call m001_gallery(type='hero') %}
+                    {{ m002_teaser(size='xxl')}}
+                    {{ m002_teaser(size='xxl')}}
+                    {{ m002_teaser(size='xxl')}}
+                    {{ m002_teaser(size='xxl')}}
+                    {{ m002_teaser(size='xxl')}}
+                    {{ m002_teaser(size='xxl')}}
+                    {{ m002_teaser(size='xxl')}}
+                {% endcall %}
+            {% endcall %}
+        {% endcall %}
+
+    {% endblock %}

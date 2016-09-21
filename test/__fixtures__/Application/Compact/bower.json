@@ -1,0 +1,34 @@
+{
+    "name": "Entoj ",
+    "version": "0.0.1",
+    "authors":
+    [
+        "Christian Auth <c.auth@syzygy.de>"
+    ],
+    "moduleType":
+    [
+        "amd",
+        "es6",
+        "globals",
+        "node",
+        "yui"
+    ],
+    "license": "MIT",
+    "directory": "sites/base/common/sass/vendor",
+    "ignore":
+    [
+        "**/.*",
+        "node_modules",
+        "bower_components",
+        "test",
+        "tests"
+    ],
+    "dependencies":
+    {
+        "susy": "~2.2.2",
+        "sassy-maps": "~0.4.0",
+        "breakpoint-sass": "~2.5.0",
+        "normalize-scss": "~3.0.2",
+        "bourbon": "~4.2.2"
+    }
+}

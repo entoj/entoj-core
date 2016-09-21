@@ -1,0 +1,22 @@
+{##
+	@description
+	Renders a gallery and bootstraps the corresponding JavaScript API.
+
+	@param {Enumeration} type
+		default
+		xxl
+		hero
+	@param {Enumeration} paginationMode
+		graphical - displays a simple graphical page indicator
+		none - displays no page indicator
+	@param {String} class - Adds a custom class to the gallery root element
+#}
+
+{% macro m001_gallery(
+		type=false,
+		paginationMode='graphical',
+		class=false) %}
+	<div class="m001-gallery {{class}}">
+	</div>
+{%  endmacro %}
+

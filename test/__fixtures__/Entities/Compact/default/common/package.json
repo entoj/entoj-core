@@ -1,0 +1,11 @@
+{
+    "properties":
+    {
+        "groups":
+        {
+            "js": "common",
+            "css": "core"
+        },
+        "tags": ["common"]
+    }
+}

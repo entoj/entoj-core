@@ -1,0 +1,55 @@
+#!/usr/bin/env node
+
+'use strict';
+
+const fs = require('fs');
+const child_process = require('child_process');
+
+const packages = JSON.parse(fs.readFileSync(__dirname + '/../package-unfrozen.json'));
+const versions = JSON.parse(child_process.execSync('npm ls --json', { encoding: 'utf8' }));
+
+function sort(obj)
+{
+    const result = {};
+    const keys = [];
+    let key;
+
+    for (key in obj)
+    {
+        if (obj.hasOwnProperty(key))
+        {
+            keys.push(key);
+        }
+    }
+
+    keys.sort();
+
+    for (key of keys)
+    {
+        result[key] = obj[key];
+    }
+    return result;
+}
+packages.dependencies = sort(packages.dependencies);
+packages.devDependencies = sort(packages.devDependencies);
+
+
+for (var name in versions.dependencies)
+{
+    if (packages.dependencies[name])
+    {
+        var versionString = versions.dependencies[name].version;
+        var version = versionString;
+        if (versionString.match(/\^d+\.d+\.d+$/))
+        {
+            var versionParts = versionString.split('.');
+            versionParts.pop();
+            versionParts.push('*');
+            version = versionParts.join('.');
+        }
+        console.log('Freezing ' + name + ' at version ' + version);
+        packages.dependencies[name] = version;
+    }
+}
+
+fs.writeFileSync(__dirname + '/../package.json', JSON.stringify(packages, null, 4));

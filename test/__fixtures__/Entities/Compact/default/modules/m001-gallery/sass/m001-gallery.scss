@@ -1,0 +1,346 @@
+
+/**
+ * Helpers -----------------------------------------------------
+ */
+
+/**
+ * @function
+ */
+@mixin m001_gallery-button-size($size: 40px, $side: left)
+{
+	@if $side == left
+	{
+		@include border-right-radius(pixelToRem($size * 1.5));
+		@include border-left-radius(0);
+	}
+	@else
+	{
+		@include border-left-radius(pixelToRem($size * 1.5));
+		@include border-right-radius(0);
+	}
+	background-color: rgba($colorInteractionPrimary, 0.7);
+	font-size: pixelToRem($size);
+	line-height: pixelToRem($size * 1.25 * 2);
+	min-width: pixelToRem($size * 1.25);
+	max-width: pixelToRem($size * 1.25);
+	min-height: pixelToRem($size * 2.5);
+	max-height: pixelToRem($size * 2.5);
+}
+
+/**
+ * Base styles -------------------------------------------------
+ */
+
+.m001-gallery
+{
+	position: relative;
+
+	@include breakpoint($breakpointMiniTabletAndBelow)
+	{
+		margin-bottom: pixelToRem(20px);
+	}
+
+	&-stage
+	{
+		position: relative;
+		overflow: hidden;
+		height: 100%;
+		width: 100%;
+	}
+
+	&-slides
+	{
+		@include display(flex);
+		@include flex-direction(row);
+		@include flex-wrap(nowrap);
+        @include user-select(none);
+
+		& > *
+		{
+			width: 100%;
+			min-width: 100%;
+
+			/* Disable content box styling in galleries */
+			&.is-content-box
+			{
+				box-shadow: none;
+				margin-bottom: 0;
+			}
+		}
+	}
+
+	&-controls
+	{
+		display: none;
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+	}
+
+	&.is-active &-controls
+	{
+		display: block;
+	}
+
+	&-paginationcontainer
+	{
+		position: absolute;
+		z-index: $zIndexControls;
+		bottom: 0;
+		left: 0;
+		right: 0;
+		text-align: center;
+	}
+
+	&-pagination
+	{
+		display: inline-block;
+		margin: 0;
+		background-color: rgba(255, 255, 255, 0.6);
+		padding: pixelToRem(10px) pixelToRem(16px);
+		line-height: pixelToRem(10px);
+		text-align: center;
+		list-style: none;
+		@include border-top-radius(pixelToRem(5px));
+
+		@include breakpoint($breakpointMiniTabletAndBelow)
+		{
+			padding: pixelToRem(7px) pixelToRem(9px);
+			line-height: pixelToRem(7px);
+		}
+	}
+
+	&-page
+	{
+		display: inline-block;
+		width: pixelToRem(12px);
+		height: pixelToRem(12px);
+		margin: pixelToRem(1px);
+		margin-right: pixelToRem(8px);
+		text-indent: pixelToRem(-999px);
+		cursor: pointer;
+		background-color: #fff;
+		border-radius: 100%;
+		box-shadow: rgba(#000, 0.2) pixelToRem(-1px) pixelToRem(1px) pixelToRem(1px) pixelToRem(0px) inset;
+
+
+		&:last-child
+		{
+			margin-right: pixelToRem(1px);
+		}
+
+		@include breakpoint($breakpointMiniTablet)
+		{
+			width: pixelToRem(8px);
+			height: pixelToRem(8px);
+			margin-right: pixelToRem(4px);
+		}
+
+		&.is-active
+		{
+			background-color: $colorInteractionSecondary;
+			box-shadow: none;
+		}
+	}
+
+	&-next,
+	&-prev
+	{
+		width: pixelToRem(50px);
+		height: pixelToRem(100px);
+		position: absolute;
+		top: 50%;
+		margin-top: pixelToRem(-60px);
+		z-index: $zIndexControls;
+		text-align: center;
+		box-shadow: rgba(#000, 0.2) 0 0 pixelToRem(5px);
+
+		&:hover
+		{
+			cursor: pointer;
+		}
+
+		&.is-visible
+		{
+			display: block;
+		}
+
+		&.is-hidden
+		{
+			display: none;
+		}
+
+		@include breakpoint($breakpointMiniTablet)
+		{
+			top: 72%;
+		}
+
+		@include breakpoint($breakpointMobile)
+		{
+			top: 68%;
+		}
+	}
+
+	&-next
+	{
+		right: 0;
+
+		@include icon-button('arrow-right', 40px, 'secondary', 50px, 100px, 0.7)
+		{
+			@include border-left-radius(pixelToRem(60px));
+			@include border-right-radius(0);
+
+			@include breakpoint($breakpointMiniTabletAndBelow)
+			{
+				font-size: pixelToRem(25px);
+				line-height: pixelToRem(25px * 1.25 * 2);
+				min-width: pixelToRem(30px);
+				max-width: pixelToRem(30px);
+				min-height: pixelToRem(60px);
+				max-height: pixelToRem(60px);
+			}
+		}
+
+		&:before
+		{
+			@include display(flex);
+			@include flex-direction(column);
+			@include justify-content(center);
+
+			height: pixelToRem(25px);
+			line-height: pixelToRem(32px);
+			height: 100%;
+		}
+	}
+
+	&-prev
+	{
+		left: 0;
+		@include icon-button('arrow-left', 40px, 'secondary', 50px, 100px, 0.7)
+		{
+			@include border-right-radius(pixelToRem(60px));
+			@include border-left-radius(0);
+
+			@include breakpoint($breakpointMiniTabletAndBelow)
+			{
+				font-size: pixelToRem(25px);
+				line-height: pixelToRem(25px * 1.25 * 2);
+				min-width: pixelToRem(30px);
+				max-width: pixelToRem(30px);
+				min-height: pixelToRem(60px);
+				max-height: pixelToRem(60px);
+			}
+		}
+
+		&:before
+		{
+			@include display(flex);
+			@include flex-direction(column);
+			@include justify-content(center);
+
+			height: pixelToRem(25px);
+			line-height: pixelToRem(32px);
+			height: 100%;
+		}
+	}
+
+	/**
+	 * Default -----------------------------------------------------
+	 */
+
+	&--default &-controls,
+	&--xxl &-controls,
+	&--hero &-controls
+	{
+		&:after
+		{
+			padding-top: (9px / 16px) * 100%;
+			display: block;
+			content: '';
+		}
+	}
+
+
+	/**
+	 * Hero -----------------------------------------------------
+	 */
+
+	&--hero &-next,
+	&--hero &--prev
+	{
+		@include breakpoint($breakpointMiniTablet)
+		{
+			top: 61%;
+		}
+	}
+
+	&--hero &-controls
+	{
+		bottom: auto;
+
+		&:after
+		{
+			@include breakpoint($breakpointTabletAndAbove)
+			{
+				padding-top: (364px / 964px) * 100%;
+				display: block;
+				content: '';
+			}
+			@include breakpoint($breakpointMiniTablet)
+			{
+				padding-top: (364px / 598px) * 100%;
+				display: block;
+				content: '';
+			}
+			@include breakpoint($breakpointMobile)
+			{
+				padding-top: (260px / 461px) * 100%;
+				display: block;
+				content: '';
+			}
+		}
+	}
+
+	/**
+	 * XXL -----------------------------------------------------
+	 */
+
+	&--xxl &-next,
+	&--xxl &--prev
+	{
+		@include breakpoint($breakpointMiniTablet)
+		{
+			top: 61%;
+		}
+	}
+
+	&--xxl &-controls
+	{
+		bottom: auto;
+
+		&:after
+		{
+			@include breakpoint($breakpointTabletAndAbove)
+			{
+				padding-top: (312px / 964px) * 100%;
+				display: block;
+				content: '';
+			}
+			@include breakpoint($breakpointMiniTablet)
+			{
+				padding-top: (362px / 598px) * 100%;
+				display: block;
+				content: '';
+			}
+			@include breakpoint($breakpointMobile)
+			{
+				padding-top: (277px / 461px) * 100%;
+				display: block;
+				content: '';
+			}
+		}
+	}
+}
+

@@ -1,0 +1,11 @@
+#!/bin/bash
+
+# Prepare pathes
+SELF=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+JSDOC=$SELF/../node_modules/.bin/jsdoc
+DOCS=$SELF/../docs/api
+SOURCE=$SELF/../source
+TEMPLATE=$SELF/../node_modules/ink-docstrap/template
+
+# Doit
+echo "$JSDOC --destination $DOCS --recurse $SOURCE --template $TEMPLATE"

@@ -1,0 +1,32 @@
+#!/bin/bash
+
+# Prepare pathes
+SELF=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+MOCHA=$SELF/../node_modules/mocha/bin/mocha
+_MOCHA=$SELF/../node_modules/mocha/bin/_mocha
+ISTANBUL=$SELF/../node_modules/istanbul/lib/cli.js
+CODE_COVERAGE="false"
+
+# Prepare options
+for key in "$@"
+do
+    case $key in
+        --coverage)
+        CODE_COVERAGE="true"
+        shift
+        ;;
+    esac
+done
+
+# Prepare runner
+if [ "$CODE_COVERAGE" == "true" ]
+    then
+        echo "Running tests with code coverage"
+        RUNNER="node --harmony_proxies --es_staging $ISTANBUL cover $_MOCHA --harmony_proxies --es_staging --use_strict"
+    else
+        echo "Running tests"
+        RUNNER="$MOCHA --harmony_proxies --es_staging"
+fi
+
+# Doit
+$RUNNER $(find test -name '*Spec.js') "$@"

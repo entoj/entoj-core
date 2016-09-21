@@ -1,0 +1,8 @@
+{
+    "groups":
+    {
+        "js": "common",
+        "css": "common"
+    },
+    "tags": ["common"]
+}
