@@ -16,7 +16,6 @@ const ModelSynchronizer = require('../../watch/ModelSynchronizer.js').ModelSynch
 const gulp = require('gulp');
 const sourcemaps = require('gulp-sourcemaps');
 const postcss = require('gulp-postcss');
-const flexibility = require('postcss-flexibility');
 const mqpacker = require('css-mqpacker');
 const cssnano = require('cssnano');
 const cssnext = require('postcss-cssnext');
@@ -230,7 +229,6 @@ function compile(query, streamFiles)
                 }));
         }
         postcssProcessors.push(cssnext({ browsers: browsers }));
-        postcssProcessors.push(flexibility);
         if (optimize === true)
         {
             postcssProcessors.push(mqpacker());
