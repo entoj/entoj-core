@@ -1,6 +1,6 @@
 {
-  "name": "entoj.core",
-  "version": "0.2",
+  "name": "entoj-core",
+  "version": "0.1.0",
   "private": true,
   "engines": {
     "node": "4.x"
