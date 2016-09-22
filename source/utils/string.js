@@ -94,9 +94,22 @@ function shortenLeft(content, length)
 
 
 /**
+ * Uppercases the frist character of a string
+ *
+ * @memberOf utils
+ * @param {String} content
+ */
+function uppercaseFirst (content)
+{
+    return content.charAt(0).toUpperCase() + content.substr(1);
+}
+
+
+/**
  * Exports
  * @ignore
  */
 module.exports.trimMultiline = trimMultiline;
 module.exports.shortenMiddle = shortenMiddle;
 module.exports.shortenLeft = shortenLeft;
+module.exports.uppercaseFirst = uppercaseFirst;

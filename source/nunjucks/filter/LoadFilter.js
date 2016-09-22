@@ -9,11 +9,13 @@ const PathesConfiguration = require('../../model/configuration/PathesConfigurati
 const EntitiesRepository = require('../../model/entity/EntitiesRepository.js').EntitiesRepository;
 const assertParameter = require('../../utils/assert.js').assertParameter;
 const synchronize = require('../../utils/synchronize.js');
+const uppercaseFirst = require('../../utils/string.js').uppercaseFirst;
 const isObject = require('lodash.isobject');
 const isString = require('lodash.isstring');
 const path = require('path');
 const fs = require('fs');
 const lorem = require('lorem-ipsum');
+
 
 
 /**
@@ -124,12 +126,12 @@ class LoadFilter extends Filter
                         }
                         const count = min + ((max - min) * Math.random());
 
-                        data[key] = lorem(
+                        data[key] = uppercaseFirst(lorem(
                             {
                                 count: count,
                                 units: units,
                                 random: this._randomGenerator
-                            });
+                            }));
                     }
                 }
             }
