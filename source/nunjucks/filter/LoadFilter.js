@@ -139,7 +139,6 @@ class LoadFilter extends Filter
     }
 
 
-
     /**
      * @param {*} scope
      * @param {*} value
