@@ -3,10 +3,11 @@
 /**
  * Requirements
  */
-let ExamplesArgumentBuilder = require(SOURCE_ROOT + '/server/routes/ExamplesArgumentBuilder.js').ExamplesArgumentBuilder;
-let CliLogger = require(SOURCE_ROOT + '/cli/CliLogger.js').CliLogger;
-let request = require('supertest');
-let compact = require(FIXTURES_ROOT + '/Application/Compact.js');
+const ExamplesArgumentBuilder = require(SOURCE_ROOT + '/server/routes/ExamplesArgumentBuilder.js').ExamplesArgumentBuilder;
+const EntitiesRepository = require(SOURCE_ROOT + '/model/entity/EntitiesRepository.js').EntitiesRepository;
+const CliLogger = require(SOURCE_ROOT + '/cli/CliLogger.js').CliLogger;
+const co = require('co');
+const compact = require(FIXTURES_ROOT + '/Application/Compact.js');
 
 /**
  * Spec
@@ -21,15 +22,17 @@ describe(ExamplesArgumentBuilder.className, function()
 
     describe('#build', function()
     {
-        it('should ...', function(cb)
+        it('should ...', function()
         {
-            const testee = new ExamplesArgumentBuilder(fixtures.cliLogger);
-            const promise = testee.build()
-                .then(function(result)
-                {
-                    console.log(result);
-                    cb();
-                });
+            const promise = co(function *()
+            {
+                const entitiesRepository = fixtures.context.di.create(EntitiesRepository);
+                const entity = yield entitiesRepository.getById('/base/elements/e005-button');
+                const testee = new ExamplesArgumentBuilder(fixtures.cliLogger);
+                const result = yield testee.build(entity);
+                return;
+            });
+            return promise;
         });
     });
 });

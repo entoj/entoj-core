@@ -1,0 +1,20 @@
+{
+    "examples":
+    {
+        "order": ["type", "dark", "model", "size"],
+        "parameters":
+        {
+            "model":
+            [
+                {
+                    "value": "m005-button/icon",
+                    "label": "With Icon"
+                },
+                {
+                    "value": "m005-button/no-icon",
+                    "label": "Without Icon"
+                }
+            ]
+        }
+    }
+}
