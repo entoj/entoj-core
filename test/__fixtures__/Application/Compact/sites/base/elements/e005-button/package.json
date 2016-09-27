@@ -1,18 +1,41 @@
 {
     "examples":
     {
-        "order": ["type", "dark", "model", "size"],
+        "order": ["type", "dark", "model", "size", "classes"],
         "parameters":
         {
             "model":
             [
                 {
-                    "value": "m005-button/icon",
+                    "value": "e-cta/icon",
                     "label": "With Icon"
                 },
                 {
-                    "value": "m005-button/no-icon",
+                    "value": "e-cta/no-icon",
                     "label": "Without Icon"
+                },
+                {
+                    "value": "e-cta/no-text",
+                    "label": "Only Icon"
+                }
+            ],
+            "classes":
+            [
+                {
+                    "value": "",
+                    "label": "Default"
+                },
+                {
+                    "value": "is-hovered",
+                    "label": "Hovered"
+                },
+                {
+                    "value": "is-focused",
+                    "label": "Focused"
+                },
+                {
+                    "value": "is-disabled",
+                    "label": "Disabled"
                 }
             ]
         }

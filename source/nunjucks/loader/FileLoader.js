@@ -7,6 +7,12 @@
 const fs = require('fs');
 const path = require('path');
 const Loader = require('nunjucks').Loader;
+const CallParser = require('../../parser/jinja/CallParser.js').CallParser;
+const ContentType = require('../../model/ContentType.js');
+const DocumentationCallable = require('../../model/documentation/DocumentationCallable.js').DocumentationCallable;
+const urls = require('../../utils/urls.js');
+const synchronize = require('../../utils/synchronize.js');
+const unique = require('lodash.uniq');
 const pathes = require('../../utils/pathes.js');
 const PATH_SEPERATOR = require('path').sep;
 
@@ -22,9 +28,11 @@ const FileLoader = Loader.extend(
         /**
          * @inheritDocs
          */
-        init: function(searchPaths, noWatch)
+        init: function(searchPaths, entitiesRepository, noWatch)
         {
             //console.info('Initializing searchPaths =', searchPaths);
+            this.entitiesRepository = entitiesRepository;
+            this.jinjaParser = new CallParser();
             this.noCache = true;
             this.pathsToNames = {};
             if (searchPaths)
@@ -78,9 +86,6 @@ const FileLoader = Loader.extend(
         resolve: function(filename)
         {
             const file = pathes.normalizePathSeperators(filename);
-            //console.log('resolve(' + file + ')');
-
-            //Direct file?
             let result = this.checkAllPathes(file);
 
             //Check for simple shortcut to entity
@@ -92,9 +97,58 @@ const FileLoader = Loader.extend(
                 result = this.checkAllPathes(aliased);
             }
 
-            if (!result)
+            return result;
+        },
+
+
+        /**
+         * @returns {Promise}
+         */
+        getMacroInclude(name)
+        {
+            const items = synchronize.execute(this.entitiesRepository, 'getItems');
+            for (const item of items)
             {
-                //console.log('FileLoader => could not find ' + file);
+                const macros = item.documentation.filter(doc => doc.contentType == ContentType.JINJA && doc instanceof DocumentationCallable);
+                for (const macro of macros)
+                {
+                    if (macro.name === name)
+                    {
+                        return '{% include "' + urls.normalize(macro.file.filename.replace(this.searchPaths[0], '')) + '" %}';
+                    }
+                }
+            }
+
+            return false;
+        },
+
+
+        /**
+         * Prepares a template for rendering
+         */
+        prepareTemplate(template, exclude)
+        {
+            // Get macros
+            const macros = synchronize.execute(this.jinjaParser, 'parse', [template]);
+
+            // Build includes
+            let includes = [];
+            for (const macro of macros)
+            {
+                console.log(macro);
+                const include = this.getMacroInclude(macro);
+                if (include)
+                {
+                    includes.push(include);
+                }
+            }
+            includes = unique(includes);
+
+            // Update template
+            let result = template;
+            for (const include of includes)
+            {
+                result = include + '\n' + result;
             }
 
             return result;
@@ -106,15 +160,23 @@ const FileLoader = Loader.extend(
          */
         getSource: function(name)
         {
+            console.log('getSource', name);
+
+            // Get filepath
             const fullPath = this.resolve(name);
             if (!fullPath)
             {
                 //console.log('Could not resolve ' + name + '@' + fullPath);
                 return null;
             }
-            this.pathsToNames[fullPath] = name;
-            const result = { src: fs.readFileSync(fullPath, { encoding: 'utf-8' }), path: fullPath, noCache: this.noCache };
-            return result;
+
+            // Fetch template
+            let template = { src: fs.readFileSync(fullPath, { encoding: 'utf-8' }), path: fullPath, noCache: this.noCache };
+
+            // Prepare it
+            //template.src = this.prepareTemplate(template.src, [fullPath]);
+
+            return template;
         }
     });
 

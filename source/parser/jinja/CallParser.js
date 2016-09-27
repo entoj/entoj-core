@@ -9,6 +9,7 @@ const Parser = require('../Parser.js').Parser;
 const co = require('co');
 const nunjucks = require('nunjucks');
 const unique = require('lodash.uniq');
+require('../../utils/prototypes.js');
 
 
 /**

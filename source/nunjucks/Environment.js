@@ -34,7 +34,7 @@ class Environment extends nunjucks.Environment
     {
         const opts = options || {};
         const rootPath = opts.rootPath || '';
-        super(new FileLoader(rootPath), options);
+        super(new FileLoader(rootPath, entitiesRepository), options);
 
         // Check params
         assertParameter(this, 'globalConfiguration', globalConfiguration, true, GlobalConfiguration);
