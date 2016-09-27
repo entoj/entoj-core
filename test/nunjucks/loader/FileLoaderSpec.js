@@ -25,23 +25,23 @@ describe('nunjucks.loader/FileLoader', function()
 
     describe('#getSource', function()
     {
-        xit('should return contents for full pathes', function()
+        it('should return contents for full pathes', function()
         {
-            const testee = new FileLoader(fixtures.pathes.sites);
+            const testee = new FileLoader(fixtures.pathes.sites, fixtures.entitiesRepository);
             expect(testee.getSource('/base/modules/m001-gallery/m001-gallery.j2').src).to.contain('m001_gallery');
             expect(testee.getSource('/base/modules/m001-gallery/m001-gallery.j')).to.be.not.ok;
         });
 
-        xit('should return contents for simple aliases (.../m001-gallery => .../m001-gallery/m001-gallery.j2)', function()
+        it('should return contents for simple aliases (.../m001-gallery => .../m001-gallery/m001-gallery.j2)', function()
         {
-            const testee = new FileLoader(fixtures.pathes.sites);
+            const testee = new FileLoader(fixtures.pathes.sites, fixtures.entitiesRepository);
             expect(testee.getSource('/base/modules/m001-gallery').path).to.contain(PATH_SEPERATOR + 'm001-gallery' + PATH_SEPERATOR + 'm001-gallery.j2');
             expect(testee.getSource('/base/modules/m001-galler')).to.be.not.ok;
         });
 
-        xit('should return contents for pathes with missing slashes', function()
+        it('should return contents for pathes with missing slashes', function()
         {
-            const testee = new FileLoader(fixtures.pathes.sites);
+            const testee = new FileLoader(fixtures.pathes.sites, fixtures.entitiesRepository);
             expect(testee.getSource('base/modules/m001-gallery/m001-gallery.j2').src).to.contain('m001_gallery');
         });
 

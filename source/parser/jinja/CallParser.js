@@ -39,6 +39,8 @@ class CallParser extends Parser
         };
         while(token)
         {
+            console.log(token);
+
             switch(token.type)
             {
                 case nunjucks.lexer.TOKEN_SYMBOL:
@@ -65,24 +67,114 @@ class CallParser extends Parser
 
 
     /**
+     * @inheritDoc
+     */
+    parseYieldCall(ast)
+    {
+        let token = ast.nextToken();
+        let result = false;
+        let name = false;
+        let callmacro = false;
+        while(token)
+        {
+            //console.log('parseYieldCall', token);
+            switch(token.type)
+            {
+                case nunjucks.lexer.TOKEN_SYMBOL:
+                    if (token.value === 'callmacro')
+                    {
+                        callmacro = true;
+                    }
+                    else
+                    {
+                        name = token.value;
+                    }
+                    break;
+
+                case nunjucks.lexer.TOKEN_LEFT_PAREN:
+                    if (callmacro && !result)
+                    {
+                        result = name;
+                    }
+                    break;
+
+                case nunjucks.lexer.TOKEN_BLOCK_END:
+                    token = false;
+                    break;
+            }
+
+            if (token !== false)
+            {
+                token = ast.nextToken();
+            }
+        }
+        return result;
+    }
+
+
+    /**
+     * @inheritDoc
+     */
+    parseSimpleCall(ast)
+    {
+        let token = ast.nextToken();
+        let result = false;
+        let name = false;
+        while(token)
+        {
+            //console.log('parseSimpleCall', token);
+            switch(token.type)
+            {
+                case nunjucks.lexer.TOKEN_SYMBOL:
+                    name = token.value;
+                    break;
+
+                case nunjucks.lexer.TOKEN_LEFT_PAREN:
+                    result = name;
+                    break;
+
+                case nunjucks.lexer.TOKEN_VARIABLE_END:
+                    token = false;
+                    break;
+            }
+
+            if (token !== false)
+            {
+                token = ast.nextToken();
+            }
+        }
+        return result;
+    }
+
+
+    /**
      * @param {string} content
      * @returns {Promise<Array>}
      */
-    tokenize(content)
+    find(content)
     {
         const ast = nunjucks.lexer.lex(content);
         const result = [];
         let token;
         while ((token = ast.nextToken()))
         {
+            //console.log('tokenize', token);
             switch (token.type)
             {
                 case 'block-start':
-                    result.push(this.tokenizeMacro(ast));
+                    const yieldCall = this.parseYieldCall(ast);
+                    if (yieldCall)
+                    {
+                        result.push(yieldCall);
+                    }
                     break;
 
                 case 'variable-start':
-                    result.push(this.tokenizeMacro(ast));
+                    const simpleCall = this.parseSimpleCall(ast);
+                    if (simpleCall)
+                    {
+                        result.push(simpleCall);
+                    }
                     break;
 
                 default:
@@ -109,24 +201,8 @@ class CallParser extends Parser
         const scope = this;
         const promise = co(function*()
         {
-            // Prepare
-            let result = [];
-            const tokens = yield scope.tokenize(content);
-
-            // Parse
-            for (const token of tokens)
-            {
-                switch (token.type)
-                {
-                    case 'macro':
-                        result.push(token.name);
-                        break;
-                }
-            }
-
-            // Make unique
+            let result = yield scope.find(content);
             result = unique(result);
-
             return result;
         })
         .catch(function(error)

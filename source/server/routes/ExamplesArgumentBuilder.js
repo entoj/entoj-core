@@ -57,12 +57,16 @@ class ExamplesArgumentBuilder extends Base
     }
 
 
-
     /**
      * @param {Entity} entity
      */
     buildCombinations(entity)
     {
+        if (!entity)
+        {
+            return Promise.reject();
+        }
+
         // Get macro
         const macroName = entity.id.asString().lodasherize();
         const callable = entity.documentation.find(item =>
@@ -161,6 +165,11 @@ class ExamplesArgumentBuilder extends Base
      */
     buildTree(entity)
     {
+        if (!entity)
+        {
+            return Promise.reject();
+        }
+
         const scope = this;
         const promise = co(function *()
         {
@@ -257,6 +266,11 @@ class ExamplesArgumentBuilder extends Base
      */
     buildTemplate(entity)
     {
+        if (!entity)
+        {
+            return Promise.reject();
+        }
+
         const scope = this;
         const promise = co(function *()
         {

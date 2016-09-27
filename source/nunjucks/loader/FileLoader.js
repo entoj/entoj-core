@@ -10,6 +10,8 @@ const Loader = require('nunjucks').Loader;
 const CallParser = require('../../parser/jinja/CallParser.js').CallParser;
 const ContentType = require('../../model/ContentType.js');
 const DocumentationCallable = require('../../model/documentation/DocumentationCallable.js').DocumentationCallable;
+const EntitiesRepository = require('../../model/entity/EntitiesRepository.js').EntitiesRepository;
+const assertParameter = require('../../utils/assert.js').assertParameter;
 const urls = require('../../utils/urls.js');
 const synchronize = require('../../utils/synchronize.js');
 const unique = require('lodash.uniq');
@@ -30,7 +32,10 @@ const FileLoader = Loader.extend(
          */
         init: function(searchPaths, entitiesRepository, noWatch)
         {
-            //console.info('Initializing searchPaths =', searchPaths);
+            // Check params
+            assertParameter(this, 'entitiesRepository', entitiesRepository, true, EntitiesRepository);
+
+            // Assign
             this.entitiesRepository = entitiesRepository;
             this.jinjaParser = new CallParser();
             this.noCache = true;
@@ -135,7 +140,6 @@ const FileLoader = Loader.extend(
             let includes = [];
             for (const macro of macros)
             {
-                console.log(macro);
                 const include = this.getMacroInclude(macro);
                 if (include)
                 {
@@ -160,8 +164,6 @@ const FileLoader = Loader.extend(
          */
         getSource: function(name)
         {
-            console.log('getSource', name);
-
             // Get filepath
             const fullPath = this.resolve(name);
             if (!fullPath)
@@ -174,7 +176,7 @@ const FileLoader = Loader.extend(
             let template = { src: fs.readFileSync(fullPath, { encoding: 'utf-8' }), path: fullPath, noCache: this.noCache };
 
             // Prepare it
-            //template.src = this.prepareTemplate(template.src, [fullPath]);
+            template.src = this.prepareTemplate(template.src, [fullPath]);
 
             return template;
         }

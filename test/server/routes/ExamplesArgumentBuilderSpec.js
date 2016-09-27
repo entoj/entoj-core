@@ -20,7 +20,7 @@ describe(ExamplesArgumentBuilder.className, function()
         fixtures.cliLogger = new CliLogger('', { muted: true });
     });
 
-    xdescribe('#buildCombinations', function()
+    describe('#buildCombinations', function()
     {
         it('should return a list of all combinations of relevant parameters (Enumerations)', function()
         {
@@ -526,7 +526,6 @@ describe(ExamplesArgumentBuilder.className, function()
                 const entity = yield entitiesRepository.getById(entityId);
                 const testee = new ExamplesArgumentBuilder(fixtures.cliLogger);
                 const source = yield testee.buildTemplate(entity);
-                //console.log(source);
                 expect(source).to.be.equal(expected);
                 return;
             });

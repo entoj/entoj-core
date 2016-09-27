@@ -96,71 +96,6 @@ class SitesRoute extends BaseRoute
 
 
     /**
-     * @returns {Promise}
-     */
-    getMacroInclude(name)
-    {
-        const items = synchronize.execute(this._entitiesRepository, 'getItems');
-        for (const item of items)
-        {
-            const macros = item.documentation.filter(doc => doc.contentType == ContentType.JINJA && doc instanceof DocumentationCallable);
-            for (const macro of macros)
-            {
-                if (macro.name === name)
-                {
-                    return '{% include "' + urls.normalize(macro.file.filename.replace(this._pathesConfiguration.sites, '')) + '" %}';
-                }
-            }
-        }
-
-        return false;
-    }
-
-
-    /**
-     * @inheritDocs
-     */
-    prepareTemplate(template)
-    {
-        //const workParse = this._cliLogger.work('Parsing Template');
-        const scope = this;
-        const promise = this._jinjaParser.parse(template)
-            .then(function(macros)
-            {
-                //scope._cliLogger.end(workParse);
-
-                // Get includes
-                //const workIncludes = scope._cliLogger.work('Preparing Template includes');
-                let includes = [];
-                for (const macro of macros)
-                {
-                    const include = scope.getMacroInclude(macro);
-                    if (include)
-                    {
-                        includes.push(include);
-                    }
-                }
-                includes = unique(includes);
-
-                // Update template
-                let result = template;
-                for (const include of includes)
-                {
-                    result = include + '\n' + result;
-                }
-                //scope._cliLogger.end(workIncludes);
-
-                return result;
-            })
-            .catch(function(e)
-            {
-                scope._cliLogger.error('prepareTemplate failed', e);
-            });
-        return promise;
-    }
-
-
-    /**
      * @inheritDocs
      */
     handle404(request, response, next)
@@ -205,7 +140,6 @@ class SitesRoute extends BaseRoute
             response.setHeader("Expires", new Date(Date.now() + 2592000000).toUTCString());
             */
             work = scope._cliLogger.work('Serving static <' + filenameShort + '> as <' + request.url + '>');
-            //console.log('Serving static <' + filenameShort + '> as <' + request.url + '>');
         }
         response.sendFile(filename);
         if (work)
@@ -254,36 +188,35 @@ class SitesRoute extends BaseRoute
             const data = yield scope._urlsConfiguration.matchEntity(request.path, true);
             const filenameShort = shortenLeft(synchronize.execute(scope._pathesConfiguration, 'shorten', [filename]), 60);
             const work = scope._cliLogger.work('Serving ' + (scope._nunjucks.isStatic ? '<static>' : '') + ' template <' + filenameShort + '> as <' + request.url + '>');
-            const template = fs.readFileSync(filename, { encoding: 'utf8' });
-            scope.prepareTemplate(template)
-                .then(function(template)
-                {
-                    //scope._cliLogger.debug('handleTemplate: prepared template', "\n" + template);
-                    const html = scope._nunjucks.renderString(template, data);
-                    if (scope._formatHtml)
-                    {
-                        scope._htmlFormatter.format(html)
-                            .then(function(formatted)
-                            {
-                                response.send(formatted);
-                                scope._cliLogger.end(work);
-                            });
-                    }
-                    else
-                    {
-                        response.send(html);
-                        scope._cliLogger.end(work);
-                    }
-                })
-                .catch(function(e)
-                {
-                    scope._cliLogger.error('handleTemplate: Parsing failed', e, e.stack);
-                });
+            let html;
+            try
+            {
+                html = scope._nunjucks.render(request.path, data);
+            }
+            catch (e)
+            {
+                scope._cliLogger.error(scope.className + '::handleTemplate', e);
+                next();
+                return;
+            }
+
+            // Format
+            if (scope._formatHtml)
+            {
+                const formatted = yield scope._htmlFormatter.format(html);
+                response.send(formatted);
+                scope._cliLogger.end(work);
+            }
+            else
+            {
+                response.send(html);
+                scope._cliLogger.end(work);
+            }
             return true;
         })
         .catch(function(error)
         {
-            scope.logger.error(scope.className + '::handleTemplate', error.stack);
+            scope._cliLogger.error(scope.className + '::handleTemplate', error.stack);
         });
         return promise;
     }
