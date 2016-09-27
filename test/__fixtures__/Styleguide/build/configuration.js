@@ -5,11 +5,50 @@
  */
 let path = require('path');
 
+/**
+ * Configure pathes
+ */
+global.SOURCE_ROOT = path.resolve(__dirname + '/../../../../source');
+global.FIXTURES_ROOT = path.resolve(__dirname + '/../../../__fixtures__');
+
 
 /**
  * Configure
  */
 let configuration = {};
+
+
+// Global settings
+configuration.settings =
+{
+    breakpoints:
+    {
+        mobile:
+        {
+            maxWidth: '320px'
+        },
+        phablet:
+        {
+            minWidth: '321px',
+            maxWidth: '767px'
+        },
+        miniTablet:
+        {
+            minWidth: '768px',
+            maxWidth: '1023px'
+        },
+        tablet:
+        {
+            minWidth: '1024px',
+            maxWidth: '1199px'
+        },
+        desktop:
+        {
+            minWidth: '1200px'
+        }
+    }
+};
+
 
 // Logger
 configuration.logger =
@@ -20,9 +59,9 @@ configuration.logger =
 
 
 // Some helpers
-let siteTemplate = '${site.name.toLowerCase()}';
+let siteTemplate = '${site.name.urlify()}';
 let entityCategoryTemplate = siteTemplate + '/${entityCategory.pluralName.urlify()}';
-let entityIdTemplate = entityCategoryTemplate + '/${entityCategory.shortName.urlify()}${entityId.number}-${entityId.name.urlify()}';
+let entityIdTemplate = entityCategoryTemplate + '/${entityCategory.shortName.urlify()}${entityId.number.format(3)}-${entityId.name.urlify()}';
 
 
 // Urls
@@ -40,6 +79,7 @@ configuration.urls =
 configuration.pathes =
 {
     root: path.resolve(__dirname + '/..'),
+    cacheTemplate: '${root}/entoj/cache',
     sitesTemplate: '${root}/sites',
     siteTemplate: '${sites}/' + siteTemplate,
     entityCategoryTemplate: '${sites}/' + entityCategoryTemplate,
@@ -50,62 +90,50 @@ configuration.pathes =
 // Commands
 configuration.commands =
 [
-    require(SOURCE_ROOT + '/command/ServerCommand.js').ServerCommand
 ];
-
-
-// Server
-configuration.server =
-{
-    port: 3100,
-    routes:
-    [
-        {
-            type: require(SOURCE_ROOT + '/server/routes/PagesRoute.js').PagesRoute,
-            routes:
-            [
-                {
-                    url: '/',
-                    template: 'index.j2'
-                },
-                {
-                    url: '/:template(base)',
-                    template: 'index.j2'
-                }
-            ],
-            options:
-            {
-                templateRoot: path.resolve(__dirname + '/templates/pages')
-            }
-        }
-    ]
-};
 
 
 // Sites
 configuration.sites = {};
-configuration.sites.loader = require(SOURCE_ROOT + '/model/site').SitesLoader;
-configuration.sites.plugins =
-[
-    require(SOURCE_ROOT + '/model/loader/documentation').PackagePlugin,
-    require(SOURCE_ROOT + '/model/loader/documentation').MarkdownPlugin
-]
+configuration.sites.loader =
+{
+    type: require(SOURCE_ROOT + '/model/site').SitesLoader,
+    plugins:
+    [
+        require(SOURCE_ROOT + '/model/loader/documentation').PackagePlugin,
+        require(SOURCE_ROOT + '/model/loader/documentation').MarkdownPlugin
+    ]
+}
 
 
 // Entities
 configuration.entities = {};
-configuration.entities.idParser = require(SOURCE_ROOT + '/model/entity').EntityIdCompactParser;
+configuration.entities.idParser = require(SOURCE_ROOT + '/parser/entity/CompactIdParser.js').CompactIdParser;
+configuration.entities.loader =
+{
+    type: require(SOURCE_ROOT + '/model/entity').EntitiesLoader,
+    plugins:
+    [
+        require(SOURCE_ROOT + '/model/loader/documentation').PackagePlugin,
+        require(SOURCE_ROOT + '/model/loader/documentation').JsPlugin,
+        require(SOURCE_ROOT + '/model/loader/documentation').MarkdownPlugin,
+        require(SOURCE_ROOT + '/model/loader/documentation').JinjaPlugin,
+        require(SOURCE_ROOT + '/model/loader/documentation').SassPlugin,
+        require(SOURCE_ROOT + '/model/loader/documentation').ExamplePlugin
+    ]
+}
+
 
 // EntityCategories
 configuration.entityCategories = {};
 configuration.entityCategories.loader =
 {
-    type: false,
-    data:
+    type: require(SOURCE_ROOT + '/model/entity').EntityCategoriesLoader,
+    categories:
     [
         {
-            longName: 'Global',
-            pluralName: 'Global',
+            longName: 'Common',
+            pluralName: 'Common',
             isGlobal: true
         },
         {
@@ -130,6 +158,22 @@ configuration.entityCategories.loader =
             longName: 'Page Type'
         }
     ]
+};
+
+
+// Build settings
+configuration.build = {};
+configuration.build.default = 'development';
+configuration.build.environments = {};
+configuration.build.environments.development =
+{
+    sass:
+    {
+        sourceMaps: true,
+        comments: false,
+        optimize: false,
+        minimize: false
+    }
 };
 
 

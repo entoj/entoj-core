@@ -1,0 +1,19 @@
+{
+    "styleguide":
+    {
+        "parameters":
+        {
+            "disabled":
+            [
+                {
+                    "value": false,
+                    "label": "Enabled"
+                },
+                {
+                    "value": true,
+                    "label": "Disabled"
+                }
+            ]
+        }
+    }
+}

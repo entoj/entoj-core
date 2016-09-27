@@ -1,0 +1,13 @@
+{##
+    @param {Enumeration} type
+        internal - Internal link (Default)
+        external - External link
+    @param {Boolean} disabled - Disable button
+    @param {Object} model.text
+    @param {Object} model.url
+    @param {String} classes - Additonal css classes that are added to the root element
+#}
+{% macro e002_button(type='internal', disabled=true, model=false, classes='') %}
+    <div class="e002-button {{classes}}">
+    </div>
+{% endmacro %}

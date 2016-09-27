@@ -1,0 +1,15 @@
+{##
+    @param {Enumeration} type
+        internal - Internal link (Default)
+        external - External link
+    @param {Enumeration} skin
+        dark - Dark (Default)
+        light - Light
+    @param {Object} model.text
+    @param {Object} model.url
+    @param {String} classes - Additonal css classes that are added to the root element
+#}
+{% macro e001_link(type='internal', skin='dark', model=false, classes='') %}
+    <div class="e001-link {{classes}}">
+    </div>
+{% endmacro %}

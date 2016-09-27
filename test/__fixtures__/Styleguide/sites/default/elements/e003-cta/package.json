@@ -1,0 +1,20 @@
+{
+    "styleguide":
+    {
+        "order": ["type", "model", "size"],
+        "parameters":
+        {
+            "model":
+            [
+                {
+                    "value": "e-cta/icon",
+                    "label": "With Icon"
+                },
+                {
+                    "value": "e-cta/no-icon",
+                    "label": "Without Icon"
+                }
+            ]
+        }
+    }
+}

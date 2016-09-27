@@ -1,0 +1,15 @@
+{##
+    @param {Enumeration} size - Controls the button size
+        m - Medium (Default)
+        s - Small
+    @param {Enumeration} type
+        primary - Primary (Default)
+        secondary - Secondary
+    @param {Object} model.text
+    @param {Object} model.icon
+    @param {String} classes - Additonal css classes that are added to the root element
+#}
+{% macro e003_cta(type='primary', size='m', model=false, classes='') %}
+    <div class="e003-cta {{classes}}">
+    </div>
+{% endmacro %}

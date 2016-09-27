@@ -228,6 +228,7 @@ class EntitiesRepository extends BaseRepository
             {
                 return new EntityAspect(entity, id.site, scope._entityIdTemplate);
             }
+
             return entity;
         });
         return promise;

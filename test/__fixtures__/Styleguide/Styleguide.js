@@ -4,6 +4,7 @@
  * Requirements
  */
 const configuration = require('./build/configuration.js');
+const Context = require(SOURCE_ROOT + '/application/Context.js').Context;
 
 
 /**
@@ -14,6 +15,7 @@ function createFixture()
     let fixture = {};
 
     fixture.configuration = configuration;
+    fixture.context = new Context(configuration);
 
     return fixture;
 }
@@ -23,3 +25,4 @@ function createFixture()
  * Exports
  */
 module.exports.createFixture = createFixture;
+
