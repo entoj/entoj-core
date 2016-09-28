@@ -16,6 +16,7 @@ const GlobalConfiguration = require('../model/configuration/GlobalConfiguration.
 const BuildConfiguration = require('../model/configuration/BuildConfiguration.js').BuildConfiguration;
 const PathesConfiguration = require('../model/configuration/PathesConfiguration.js').PathesConfiguration;
 const EntitiesRepository = require('../model/entity/EntitiesRepository.js').EntitiesRepository;
+const Template = require('./Template.js').Template;
 const assertParameter = require('../utils/assert.js').assertParameter;
 
 
@@ -48,6 +49,7 @@ class Environment extends nunjucks.Environment
         this._pathesConfiguration = pathesConfiguration;
         this._buildConfiguration = buildConfiguration;
         this._static = this._buildConfiguration.get('nunjucks.static', false);
+        this._template = new Template(this._entitiesRepository, rootPath);
 
         // Register filters
         new DebugFilter(this);
@@ -115,6 +117,16 @@ class Environment extends nunjucks.Environment
         {
             this._static = value;
         }
+    }
+
+
+    /**
+     * @type {string}
+     */
+    renderString(content, context, callback)
+    {
+        const template = this._template.prepare(content);
+        return super.renderString(template, context, callback);
     }
 }
 

@@ -22,9 +22,8 @@ class ExamplesArgumentBuilder extends Base
     /**
      * @param {CliLogger} cliLogger
      * @param {EntitiesRepository} entitiesRepository
-     * @param {object} [options]
      */
-    constructor(cliLogger, options)
+    constructor(cliLogger)
     {
         super(cliLogger.createPrefixed('routes.examplesargumentbuilder'));
     }
@@ -94,7 +93,7 @@ class ExamplesArgumentBuilder extends Base
         }
 
         // Custom parameters
-        if (entity.properties.styleguide && entity.properties.styleguide.parameters)
+        if (entity.properties && entity.properties.styleguide && entity.properties.styleguide.parameters)
         {
             for (const parameterName in entity.properties.styleguide.parameters)
             {
@@ -113,7 +112,7 @@ class ExamplesArgumentBuilder extends Base
         }
 
         // Reorder
-        if (entity.properties.styleguide && entity.properties.styleguide.order)
+        if (entity.properties && entity.properties.styleguide && entity.properties.styleguide.order)
         {
             const parameterMap = {};
             for (const parameterValue of parameterValues)
@@ -186,7 +185,7 @@ class ExamplesArgumentBuilder extends Base
             for (let level = 0; level < levels; level++)
             {
                 const parameter = combinations[0][level];
-                const node = { label: parameter.value.label + ' [' + parameter.name + ']', type: false, children: [] };
+                const node = { label: parameter.value.label + ' <small>' + parameter.name + '</small>', type: false, children: [] };
                 types[parameter.name] = parameter.value.value;
                 nodes[level] = node;
                 if (level === 0)
@@ -197,7 +196,7 @@ class ExamplesArgumentBuilder extends Base
                 {
                     nodes[level - 1].children.push(node);
                 }
-                if (levels > 2 && level < levels - 1)
+                if (levels > 2 && level < levels - 2)
                 {
                     node.type = 'group';
                 }
@@ -220,7 +219,7 @@ class ExamplesArgumentBuilder extends Base
                     const parameter = combination[level];
                     if (types[parameter.name] != parameter.value.value)
                     {
-                        const node = { label: parameter.value.label + ' [' + parameter.name + ']', type: false, children: [] };
+                        const node = { label: parameter.value.label + ' <small>' + parameter.name + '</small>', type: false, children: [] };
                         types[parameter.name] = parameter.value.value;
                         nodes[level] = node;
                         if (level == 0)
@@ -231,7 +230,8 @@ class ExamplesArgumentBuilder extends Base
                         {
                             nodes[level - 1].children.push(node);
                         }
-                        if (levels > 2 && level < levels - 1)
+
+                        if (levels > 2 && level < levels - 2)
                         {
                             node.type = 'group';
                         }
@@ -254,6 +254,8 @@ class ExamplesArgumentBuilder extends Base
                 }
                 nodes[levels - 1].children.push(parameters);
             }
+
+console.log(JSON.stringify(rootNode, null, 4));
 
             return rootNode;
         });
@@ -280,7 +282,7 @@ class ExamplesArgumentBuilder extends Base
                 const indent = '    '.repeat(level);
                 if (node.type === 'group')
                 {
-                    result+= indent + "{% call example_group(label='" + node.label + "', level=" + level + ") %}" + EOL;
+                    result+= indent + "{% call example_group(label='" + node.label + "', level=" + (level + 1) + ") %}" + EOL;
                     for (const childNode of node.children)
                     {
                         result+= build(childNode, level + 1);
@@ -289,7 +291,7 @@ class ExamplesArgumentBuilder extends Base
                 }
                 else if (node.type === 'examples')
                 {
-                    result+= indent + "{% call examples(label='" + node.label + "', level=" + level + ") %}" + EOL;
+                    result+= indent + "{% call examples(label='" + node.label + "', level=" + (level + 1) + ") %}" + EOL;
                     for (const childNode of node.children)
                     {
                         result+= build(childNode, level + 1);
@@ -298,7 +300,7 @@ class ExamplesArgumentBuilder extends Base
                 }
                 else if (node.type === 'example')
                 {
-                    result+= indent + "{% call example(label='" + node.label + "', level=" + (level + 1) + ") %}" + EOL;
+                    result+= indent + "{% call example(label='" + node.label + "', level=" + (level + 2) + ") %}" + EOL;
                     result+= indent + "    {{ " + entity.id.asString().lodasherize() + "(";
                     for (const param of node.children[0])
                     {
@@ -328,11 +330,13 @@ class ExamplesArgumentBuilder extends Base
             //console.log(JSON.stringify(tree, null, 4));
 
             // Build template
-            let template = '';
+            let template = '{% extends "/base/templates/t-example" %}' + EOL;
+            template+= '{% block content %}' + EOL;
             for (const childNode of tree.children)
             {
                 template+= build(childNode, 0);
             }
+            template+= '{% endblock %}' + EOL;
             return template;
         });
         return promise;

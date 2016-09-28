@@ -129,8 +129,7 @@ class LoadFilter extends Filter
                         data[key] = uppercaseFirst(lorem(
                             {
                                 count: count,
-                                units: units,
-                                random: this._randomGenerator
+                                units: units
                             }));
                     }
                 }

@@ -29,46 +29,6 @@ class CallParser extends Parser
     /**
      * @inheritDoc
      */
-    tokenizeMacro(ast)
-    {
-        let token = ast.nextToken();
-        const result =
-        {
-            type: false,
-            name: false
-        };
-        while(token)
-        {
-            console.log(token);
-
-            switch(token.type)
-            {
-                case nunjucks.lexer.TOKEN_SYMBOL:
-                    result.name = token.value;
-                    break;
-
-                case nunjucks.lexer.TOKEN_LEFT_PAREN:
-                    result.type = 'macro';
-                    token = false;
-                    break;
-
-                case nunjucks.lexer.TOKEN_BLOCK_END:
-                    token = false;
-                    break;
-            }
-
-            if (token !== false)
-            {
-                token = ast.nextToken();
-            }
-        }
-        return result;
-    }
-
-
-    /**
-     * @inheritDoc
-     */
     parseYieldCall(ast)
     {
         let token = ast.nextToken();
@@ -81,7 +41,7 @@ class CallParser extends Parser
             switch(token.type)
             {
                 case nunjucks.lexer.TOKEN_SYMBOL:
-                    if (token.value === 'callmacro')
+                    if (token.value === 'call')
                     {
                         callmacro = true;
                     }

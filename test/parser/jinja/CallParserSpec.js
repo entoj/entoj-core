@@ -44,7 +44,7 @@ describe(CallParser.className, function()
         {
             let testee = new CallParser();
             let source = `
-            {% callmacro one() %}{% endcall) %}`;
+            {% call one() %}{% endcall) %}`;
             let promise = testee.parse(source).then(function(macros)
             {
                 expect(macros).to.have.length(1);
@@ -57,7 +57,7 @@ describe(CallParser.className, function()
         {
             let testee = new CallParser();
             let source = `
-            {% callmacro one() %}{% endcall) %}{{ three() }}{% callmacro two() %}{% endcall) %}{{ four() }}`;
+            {% call one() %}{% endcall) %}{{ three() }}{% call two() %}{% endcall) %}{{ four() }}`;
             let promise = testee.parse(source).then(function(macros)
             {
                 expect(macros).to.have.length(4);

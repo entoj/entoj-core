@@ -10,20 +10,17 @@ const PathesConfiguration = require('../../model/configuration/PathesConfigurati
 const UrlsConfiguration = require('../../model/configuration/UrlsConfiguration.js').UrlsConfiguration;
 const BuildConfiguration = require('../../model/configuration/BuildConfiguration.js').BuildConfiguration;
 const EntitiesRepository = require('../../model/entity/EntitiesRepository.js').EntitiesRepository;
-const ContentType = require('../../model/ContentType.js');
-const DocumentationCallable = require('../../model/documentation/DocumentationCallable.js').DocumentationCallable;
 const Environment = require('../../nunjucks/Environment.js').Environment;
 const HtmlFormatter = require('../../formatter/html/HtmlFormatter.js').HtmlFormatter;
-const CallParser = require('../../parser/jinja/CallParser.js').CallParser;
 const CliLogger = require('../../cli/CliLogger.js').CliLogger;
+const ExamplesArgumentBuilder = require('./ExamplesArgumentBuilder.js').ExamplesArgumentBuilder;
 const assertParameter = require('../../utils/assert.js').assertParameter;
 const fs = require('fs');
+const synchronize = require('../../utils/synchronize.js');
 const pathes = require('../../utils/pathes.js');
 const urls = require('../../utils/urls.js');
-const synchronize = require('../../utils/synchronize.js');
 const path = require('path');
 const shortenLeft = require('../../utils/string.js').shortenLeft;
-const unique = require('lodash.uniq');
 const co = require('co');
 
 
@@ -41,7 +38,7 @@ class ExamplesRoute extends BaseRoute
      */
     constructor(cliLogger, entitiesRepository, globalConfiguration, pathesConfiguration, urlsConfiguration, buildConfiguration, options)
     {
-        super(cliLogger.createPrefixed('routes.sitesroute'));
+        super(cliLogger.createPrefixed('routes.examplesroute'));
 
         // Check params
         assertParameter(this, 'entitiesRepository', entitiesRepository, true, EntitiesRepository);
@@ -52,16 +49,16 @@ class ExamplesRoute extends BaseRoute
 
         // Assign options
         const opts = options || {};
+        this._examplesArgumentBuilder = new ExamplesArgumentBuilder(cliLogger);
         this._entitiesRepository = entitiesRepository;
         this._pathesConfiguration = pathesConfiguration;
         this._urlsConfiguration = urlsConfiguration;
         this._buildConfiguration = buildConfiguration;
         this._rootPath = opts.rootPath || pathesConfiguration.sites;
-        this._rootUrl = opts.rootUrl || '/:site/:entityCategory/*';
+        this._rootUrl = opts.rootUrl || '/:site/:entityCategory/:entityId/styleguide';
         this._formatHtml = opts.formatHtml || false;
         this._nunjucks = new Environment(this._entitiesRepository, globalConfiguration, this._pathesConfiguration, this._buildConfiguration, { rootPath: this._rootPath });
         this._htmlFormatter = new HtmlFormatter();
-        this._jinjaParser = new CallParser();
     }
 
 
@@ -94,71 +91,6 @@ class ExamplesRoute extends BaseRoute
 
 
     /**
-     * @returns {Promise}
-     */
-    getMacroInclude(name)
-    {
-        const items = synchronize.execute(this._entitiesRepository, 'getItems');
-        for (const item of items)
-        {
-            const macros = item.documentation.filter(doc => doc.contentType == ContentType.JINJA && doc instanceof DocumentationCallable);
-            for (const macro of macros)
-            {
-                if (macro.name === name)
-                {
-                    return '{% include "' + urls.normalize(macro.file.filename.replace(this._pathesConfiguration.sites, '')) + '" %}';
-                }
-            }
-        }
-
-        return false;
-    }
-
-
-    /**
-     * @inheritDocs
-     */
-    prepareTemplate(template)
-    {
-        //const workParse = this._cliLogger.work('Parsing Template');
-        const scope = this;
-        const promise = this._jinjaParser.parse(template)
-            .then(function(macros)
-            {
-                //scope._cliLogger.end(workParse);
-
-                // Get includes
-                //const workIncludes = scope._cliLogger.work('Preparing Template includes');
-                let includes = [];
-                for (const macro of macros)
-                {
-                    const include = scope.getMacroInclude(macro);
-                    if (include)
-                    {
-                        includes.push(include);
-                    }
-                }
-                includes = unique(includes);
-
-                // Update template
-                let result = template;
-                for (const include of includes)
-                {
-                    result = include + '\n' + result;
-                }
-                //scope._cliLogger.end(workIncludes);
-
-                return result;
-            })
-            .catch(function(e)
-            {
-                scope._cliLogger.error('prepareTemplate failed', e);
-            });
-        return promise;
-    }
-
-
-    /**
      * @inheritDocs
      */
     handleExample(request, response, next)
@@ -169,13 +101,28 @@ class ExamplesRoute extends BaseRoute
             const match = yield scope._urlsConfiguration.matchEntityId(request.url, true);
             if (!match ||
                 !match.entityId ||
-                match.customPath !== '/examples/overview')
+                match.customPath !== '/styleguide')
             {
                 next();
                 return false;
             }
 
-            next();
+            const work = scope._cliLogger.work('Serving sytleguide for <' + match.entityId.asString() + '> as <' + request.url + '>');
+            const entity = yield scope._entitiesRepository.getById(match.entityId);
+            try
+            {
+                //scope._nunjucks.isStatic = true;
+                const template = yield scope._examplesArgumentBuilder.buildTemplate(entity);
+                const html = scope._nunjucks.renderString(template, match);
+                scope._nunjucks.isStatic = false;
+                response.send(html);
+            }
+            catch(e)
+            {
+                console.log(e, e.stack);
+                next();
+            }
+
             return true;
         })
         .catch(function(error)
