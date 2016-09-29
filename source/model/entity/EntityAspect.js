@@ -110,6 +110,15 @@ class EntityAspect extends BaseValueObject
 
 
     /**
+     * @property {*}
+     */
+    get uniqueId()
+    {
+        return this.pathString;
+    }
+
+
+    /**
      * @property {entity.EntityId}
      */
     get id()

@@ -53,7 +53,7 @@ class Entity extends BaseValueObject
      */
     get uniqueId()
     {
-        return this.idString;
+        return this._id.pathString;
     }
 
 

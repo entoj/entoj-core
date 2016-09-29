@@ -116,10 +116,12 @@ class ExamplesRoute extends BaseRoute
                 const html = scope._nunjucks.renderString(template, match);
                 scope._nunjucks.isStatic = false;
                 response.send(html);
+                scope._cliLogger.end(work);
             }
             catch(e)
             {
                 console.log(e, e.stack);
+                scope._cliLogger.end(work, e);
                 next();
             }
 

@@ -31,7 +31,7 @@ describe(FileWatcher.className, function()
     });
 
 
-    describe('#processEvents', function()
+    xdescribe('#processEvents', function()
     {
         it('should create site changes for pathes like /site or /site/file.ext', function()
         {
@@ -365,7 +365,7 @@ describe(FileWatcher.className, function()
     });
 
 
-    describe('#addEvent', function()
+    xdescribe('#addEvent', function()
     {
         it('should bundle events for #processEvents', function(cb)
         {
@@ -457,13 +457,13 @@ describe(FileWatcher.className, function()
         });
 
 
-        xit('kaboom', function(cb)
+        it('kaboom', function(cb)
         {
             this.timeout(5000);
             let testee = new FileWatcher(fixtures.cliLogger, fixtures.pathes, fixtures.categoriesRepository, fixtures.entityIdParser, { debounce: 50 });
             testee.signals.changed.add(function(watcher, changes)
             {
-                //console.log(changes);
+                console.log(changes);
                 testee.stop();
                 cb();
             });

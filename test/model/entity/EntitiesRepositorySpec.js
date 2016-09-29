@@ -167,5 +167,23 @@ describe(EntitiesRepository.className, function()
             return promise;
         });
     });
+
+
+    describe('#remove', function()
+    {
+        it('should allow to remove a entity', function()
+        {
+            const testee = fixtures.compact.entitiesRepository;
+            const promise = co(function *()
+            {
+                const entity = yield testee.getById('/sites/default/modules/m001-gallery');
+                yield testee.remove(entity);
+                const entityAfter = yield testee.getById('/sites/default/modules/m001-gallery');
+                expect(entity).to.be.instanceof(EntityAspect);
+                expect(entityAfter).to.be.not.ok;
+            });
+            return promise;
+        });
+    });
 });
 
