@@ -14,7 +14,8 @@ const EntitiesRepository = require('../model/entity/EntitiesRepository.js').Enti
 const Environment = require('../nunjucks/Environment.js').Environment;
 const CliLogger = require('../cli/CliLogger.js').CliLogger;
 const co = require('co');
-const glob = require('co-glob');
+const glob = require('../utils/glob.js');
+const pathes = require('../utils/pathes.js');
 const fs = require('co-fs-extra');
 const path = require('path');
 const thunkify = require('thunkify');
@@ -113,11 +114,11 @@ class Scaffolder extends Base
 
             // Get template
             scope._cliLogger.info('Templates from <' + synchronize.execute(pathesConfiguration, 'shorten', [scope._templateRoot]) + '>');
-            let templatePath = scope._templateRoot + '/entity/' + entityId.category.longName.toLowerCase();
+            let templatePath = pathes.concat(scope._templateRoot, 'entity', entityId.category.longName.toLowerCase());
             let templatePathExists = yield fs.exists(templatePath);
             if (!templatePathExists)
             {
-                templatePath = scope._templateRoot + '/entity/default';
+                templatePath =  pathes.concat(scope._templateRoot, 'entity', 'default');
                 templatePathExists = yield fs.exists(templatePath);
             }
             if (!templatePathExists)
@@ -181,7 +182,7 @@ class Scaffolder extends Base
 
             // Get template
             scope._cliLogger.info('Templates from <' + synchronize.execute(pathesConfiguration, 'shorten', [scope._templateRoot]) + '>');
-            const templatePath = scope._templateRoot + '/breakpoint';
+            const templatePath = pathes.concat(scope._templateRoot, 'breakpoint');
             const templatePathExists = yield fs.exists(templatePath);
             if (!templatePathExists)
             {
@@ -190,7 +191,7 @@ class Scaffolder extends Base
             scope._cliLogger.info('Using template <' + synchronize.execute(pathesConfiguration, 'shorten', [templatePath]) + '>');
 
             // Get config
-            const configurationPath = templatePath + '/configuration.json';
+            const configurationPath = pathes.concat(templatePath, 'configuration.json');
             const configurationPathExists = yield fs.exists(configurationPath);
             if (!configurationPathExists)
             {
@@ -204,8 +205,8 @@ class Scaffolder extends Base
             const data = { breakpoints: breakpoints };
             for (const file of configuration.files)
             {
-                const templateFilename = templatePath + '/' + file.template;
-                const targetFilename = pathesConfiguration.root + '/' + file.file;
+                const templateFilename = pathes.concat(templatePath, file.template);
+                const targetFilename = pathes.concat(pathesConfiguration.root, file.file);
 
                 const work = scope._cliLogger.work('Generating <' + synchronize.execute(pathesConfiguration, 'shorten', [targetFilename]) + '>');
 

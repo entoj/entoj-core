@@ -1,7 +1,7 @@
 'use strict';
 
 const tr = require('transliteration').transliterate;
-const pathes = require('./pathes.js');
+
 
 /**
  * Makes a vali ascii only url
@@ -43,7 +43,7 @@ function normalize(path)
     if (result.endsWith('/'))
     {
         result = result.substr(0, result.length - 1);
-    }   
+    }
     return result;
 }
 

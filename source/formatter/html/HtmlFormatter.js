@@ -6,7 +6,7 @@
  */
 const Formatter = require('../Formatter.js').Formatter;
 const htmlparser = require('htmlparser2');
-const EOL = "\n";
+const EOL = '\n';
 
 
 /**

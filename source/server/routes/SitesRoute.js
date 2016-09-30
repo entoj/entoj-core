@@ -10,8 +10,6 @@ const PathesConfiguration = require('../../model/configuration/PathesConfigurati
 const UrlsConfiguration = require('../../model/configuration/UrlsConfiguration.js').UrlsConfiguration;
 const BuildConfiguration = require('../../model/configuration/BuildConfiguration.js').BuildConfiguration;
 const EntitiesRepository = require('../../model/entity/EntitiesRepository.js').EntitiesRepository;
-const ContentType = require('../../model/ContentType.js');
-const DocumentationCallable = require('../../model/documentation/DocumentationCallable.js').DocumentationCallable;
 const Environment = require('../../nunjucks/Environment.js').Environment;
 const HtmlFormatter = require('../../formatter/html/HtmlFormatter.js').HtmlFormatter;
 const CallParser = require('../../parser/jinja/CallParser.js').CallParser;
@@ -19,11 +17,9 @@ const CliLogger = require('../../cli/CliLogger.js').CliLogger;
 const assertParameter = require('../../utils/assert.js').assertParameter;
 const fs = require('fs');
 const pathes = require('../../utils/pathes.js');
-const urls = require('../../utils/urls.js');
 const synchronize = require('../../utils/synchronize.js');
 const path = require('path');
 const shortenLeft = require('../../utils/string.js').shortenLeft;
-const unique = require('lodash.uniq');
 const co = require('co');
 
 

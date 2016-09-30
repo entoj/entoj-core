@@ -9,7 +9,6 @@ const EntitiesLoader = require('./EntitiesLoader.js').EntitiesLoader;
 const IdParser = require('../../parser/entity/IdParser.js').IdParser;
 const EntityCategory = require('./EntityCategory.js').EntityCategory;
 const Entity = require('./Entity.js').Entity;
-const EntityIdTemplate = require('./EntityIdTemplate.js').EntityIdTemplate;
 const EntityAspect = require('./EntityAspect.js').EntityAspect;
 const Site = require('../site/Site.js').Site;
 const assertParameter = require('../../utils/assert.js').assertParameter;

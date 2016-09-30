@@ -19,7 +19,6 @@ const templateString = require('es6-template-strings');
 const co = require('co');
 const routes = require('routes');
 const urlify = require('../../utils/urls.js').urlify;
-const pathes = require('../../utils/pathes.js');
 const urls = require('../../utils/urls.js');
 require('../../utils/prototypes.js');
 

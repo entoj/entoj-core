@@ -6,9 +6,7 @@
  */
 const Base = require('../../Base.js').Base;
 const CliLogger = require('../../cli/CliLogger.js').CliLogger;
-const EntitiesRepository = require('../../model/entity/EntitiesRepository.js').EntitiesRepository;
 const DocumentationCallable = require('../../model/documentation/DocumentationCallable.js').DocumentationCallable;
-const assertParameter = require('../../utils/assert.js').assertParameter;
 const co = require('co');
 require('../../utils/prototypes.js');
 const EOL = '\n';
@@ -138,8 +136,8 @@ class ExamplesArgumentBuilder extends Base
 
                 if (depth == parametersList.length)
                 {
-                   result.push(current);
-                   return;
+                    result.push(current);
+                    return;
                 }
 
                 for (const value of parametersList[depth].values)
@@ -148,10 +146,10 @@ class ExamplesArgumentBuilder extends Base
                     newCurrent.push({ name: parametersList[depth].name, value: value});
                     combinatorWorker(parametersList, depth + 1, newCurrent);
                 }
-            }
+            };
             combinatorWorker(parametersList);
             return result;
-        }
+        };
         const combinations = combinator(parameterValues);
 
         return Promise.resolve(combinations);
@@ -255,8 +253,6 @@ class ExamplesArgumentBuilder extends Base
                 nodes[levels - 1].children.push(parameters);
             }
 
-console.log(JSON.stringify(rootNode, null, 4));
-
             return rootNode;
         });
         return promise;
@@ -282,26 +278,26 @@ console.log(JSON.stringify(rootNode, null, 4));
                 const indent = '    '.repeat(level);
                 if (node.type === 'group')
                 {
-                    result+= indent + "{% call example_group(label='" + node.label + "', level=" + (level + 1) + ") %}" + EOL;
+                    result+= indent + '{% call example_group(label=\'' + node.label + '\', level=' + (level + 1) + ') %}' + EOL;
                     for (const childNode of node.children)
                     {
                         result+= build(childNode, level + 1);
                     }
-                    result+= indent + "{% endcall %}" + EOL;
+                    result+= indent + '{% endcall %}' + EOL;
                 }
                 else if (node.type === 'examples')
                 {
-                    result+= indent + "{% call examples(label='" + node.label + "', level=" + (level + 1) + ") %}" + EOL;
+                    result+= indent + '{% call examples(label=\'' + node.label + '\', level=' + (level + 1) + ') %}' + EOL;
                     for (const childNode of node.children)
                     {
                         result+= build(childNode, level + 1);
                     }
-                    result+= indent + "{% endcall %}" + EOL;
+                    result+= indent + '{% endcall %}' + EOL;
                 }
                 else if (node.type === 'example')
                 {
-                    result+= indent + "{% call example(label='" + node.label + "', level=" + (level + 2) + ") %}" + EOL;
-                    result+= indent + "    {{ " + entity.id.asString().lodasherize() + "(";
+                    result+= indent + '{% call example(label=\'' + node.label + '\', level=' + (level + 2) + ') %}' + EOL;
+                    result+= indent + '    {{ ' + entity.id.asString().lodasherize() + '(';
                     for (const param of node.children[0])
                     {
                         result+= param.name + '=';
@@ -319,11 +315,11 @@ console.log(JSON.stringify(rootNode, null, 4));
                             result+= ', ';
                         }
                     }
-                    result+= ") }}" + EOL;
-                    result+= indent + "{% endcall %}" + EOL;
+                    result+= ') }}' + EOL;
+                    result+= indent + '{% endcall %}' + EOL;
                 }
                 return result;
-            }
+            };
 
             // Get tree
             const tree = yield scope.buildTree(entity);

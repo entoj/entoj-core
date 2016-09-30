@@ -107,7 +107,7 @@ class CompactIdParser extends IdParser
             const id = content.replace(/\\/g, '/');
 
             // Prepare pattern
-            let pattern = '({{site}})? \\/? ({{category}})? \\/? ({{categoryShort}}) ({{number}}) - ({{name}})'
+            let pattern = '({{site}})? \\/? ({{category}})? \\/? ({{categoryShort}}) ({{number}}) - ({{name}})';
             if (!scope._useNumbers)
             {
                 pattern = '({{site}})? \\/? ({{category}})? \\/? ({{categoryShort}}) - ({{name}})';

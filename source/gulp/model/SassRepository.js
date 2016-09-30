@@ -10,12 +10,10 @@ const PathesConfiguration = require('../../model/configuration/PathesConfigurati
 const ContentType = require('../../model/ContentType.js');
 const assertParameter = require('../../utils/assert.js').assertParameter;
 const trimLeadingSlash = require('../../utils/pathes.js').trimLeadingSlash;
-const normalizeFilePathSeperators = require('../../utils/pathes.js').normalizePathSeperators;
 const normalizeUrlPathSeperators = require('../../utils/urls.js').normalizePathSeperators;
 const union = require('lodash.union');
 const co = require('co');
 const VinylFile = require('vinyl');
-const PATH_SEPERATOR = require('path').sep;
 
 
 /**

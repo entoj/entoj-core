@@ -15,12 +15,6 @@ const HtmlFormatter = require('../../formatter/html/HtmlFormatter.js').HtmlForma
 const CliLogger = require('../../cli/CliLogger.js').CliLogger;
 const ExamplesArgumentBuilder = require('./ExamplesArgumentBuilder.js').ExamplesArgumentBuilder;
 const assertParameter = require('../../utils/assert.js').assertParameter;
-const fs = require('fs');
-const synchronize = require('../../utils/synchronize.js');
-const pathes = require('../../utils/pathes.js');
-const urls = require('../../utils/urls.js');
-const path = require('path');
-const shortenLeft = require('../../utils/string.js').shortenLeft;
 const co = require('co');
 
 
@@ -118,10 +112,10 @@ class ExamplesRoute extends BaseRoute
                 response.send(html);
                 scope._cliLogger.end(work);
             }
-            catch(e)
+            catch(error)
             {
-                console.log(e, e.stack);
-                scope._cliLogger.end(work, e);
+                scope.logger.error(scope.className + '::handleExample', error.stack);
+                scope._cliLogger.end(work, error);
                 next();
             }
 

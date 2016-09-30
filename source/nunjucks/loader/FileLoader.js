@@ -110,7 +110,7 @@ const FileLoader = Loader.extend(
             }
 
             // Fetch template
-            let template = { src: fs.readFileSync(fullPath, { encoding: 'utf-8' }), path: fullPath, noCache: this.noCache };
+            const template = { src: fs.readFileSync(fullPath, { encoding: 'utf-8' }), path: fullPath, noCache: this.noCache };
 
             // Prepare it
             template.src = this._template.prepare(template.src);
