@@ -3,12 +3,13 @@
 /**
  * Requirements
  */
-let ImageResizer = require(SOURCE_ROOT + '/image/ImageResizer.js').ImageResizer;
-let PathesConfiguration = require(SOURCE_ROOT + '/model/configuration/PathesConfiguration.js').PathesConfiguration;
-let MissingArgumentError = require(SOURCE_ROOT + '/error/MissingArgumentError.js').MissingArgumentError;
-let baseSpec = require('../BaseShared.js').spec;
-let compact = require(FIXTURES_ROOT + '/Application/Compact.js');
-let co = require('co');
+const ImageResizer = require(SOURCE_ROOT + '/image/ImageResizer.js').ImageResizer;
+const PathesConfiguration = require(SOURCE_ROOT + '/model/configuration/PathesConfiguration.js').PathesConfiguration;
+const MissingArgumentError = require(SOURCE_ROOT + '/error/MissingArgumentError.js').MissingArgumentError;
+const baseSpec = require('../BaseShared.js').spec;
+const compact = require(FIXTURES_ROOT + '/Application/Compact.js');
+const co = require('co');
+const pathes = require(SOURCE_ROOT + '/utils/pathes.js');
 
 
 /**
@@ -44,28 +45,28 @@ describe(ImageResizer.className, function()
     });
 
 
-    describe('#getImageFilename()', function()
+    describe('#resolveImageFilename()', function()
     {
         it('should resolve to a filename when given a existing image name', function()
         {
-            let testee = new ImageResizer(fixtures.pathesConfiguration);
-            let promise = co(function*()
+            const testee = new ImageResizer(fixtures.pathesConfiguration);
+            const promise = co(function*()
             {
-                let filename = yield testee.resolveImageFilename('southpark-01.jpg');
-                expect(filename).to.be.equal(fixtures.pathesConfiguration.data + '/images/southpark-01.jpg');
+                const filename = yield testee.resolveImageFilename('southpark-01.jpg');
+                expect(filename).to.be.equal(pathes.concat(fixtures.pathesConfiguration.data, '/images/southpark-01.jpg'));
             });
             return promise;
         });
 
         it('should resolve to a random filename when given a valid glob pattern', function()
         {
-            let testee = new ImageResizer(fixtures.pathesConfiguration);
-            let expected =
+            const testee = new ImageResizer(fixtures.pathesConfiguration);
+            const expected =
             [
-                fixtures.pathesConfiguration.data + '/images/southpark-01.jpg',
-                fixtures.pathesConfiguration.data + '/images/southpark-02.jpg'
+                pathes.concat(fixtures.pathesConfiguration.data + '/images/southpark-01.jpg'),
+                pathes.concat(fixtures.pathesConfiguration.data + '/images/southpark-02.jpg')
             ];
-            let promise = co(function*()
+            const promise = co(function*()
             {
                 let filename;
                 filename = yield testee.resolveImageFilename('southpark-*.jpg');
@@ -78,27 +79,27 @@ describe(ImageResizer.className, function()
     });
 
 
-    describe('#getCacheFilename()', function()
+    describe('#resolveCacheFilename()', function()
     {
         it('should resolve to a filename based on all given parameters', function()
         {
-            let testee = new ImageResizer(fixtures.pathesConfiguration);
-            let promise = co(function*()
+            const testee = new ImageResizer(fixtures.pathesConfiguration);
+            const promise = co(function*()
             {
-                let cachePath = yield fixtures.pathesConfiguration.resolveCache('/images');
-                let imageFilename = yield testee.resolveImageFilename('southpark-01.jpg');
+                const cachePath = yield fixtures.pathesConfiguration.resolveCache('/images');
+                const imageFilename = yield testee.resolveImageFilename('southpark-01.jpg');
                 let filename;
 
                 filename = yield testee.resolveCacheFilename(imageFilename);
-                expect(filename).to.be.equal(cachePath + '/0x0-false-southpark-01.jpg');
+                expect(filename).to.be.equal(pathes.concat(cachePath, '/0x0-false-southpark-01.jpg'));
                 filename = yield testee.resolveCacheFilename(imageFilename, 100);
-                expect(filename).to.be.equal(cachePath + '/100x0-false-southpark-01.jpg');
+                expect(filename).to.be.equal(pathes.concat(cachePath + '/100x0-false-southpark-01.jpg'));
                 filename = yield testee.resolveCacheFilename(imageFilename, undefined, 100);
-                expect(filename).to.be.equal(cachePath + '/0x100-false-southpark-01.jpg');
+                expect(filename).to.be.equal(pathes.concat(cachePath + '/0x100-false-southpark-01.jpg'));
                 filename = yield testee.resolveCacheFilename(imageFilename, undefined, undefined, true);
-                expect(filename).to.be.equal(cachePath + '/0x0-true-southpark-01.jpg');
+                expect(filename).to.be.equal(pathes.concat(cachePath + '/0x0-true-southpark-01.jpg'));
                 filename = yield testee.resolveCacheFilename(imageFilename, 1000, 2000, true);
-                expect(filename).to.be.equal(cachePath + '/1000x2000-true-southpark-01.jpg');
+                expect(filename).to.be.equal(pathes.concat(cachePath + '/1000x2000-true-southpark-01.jpg'));
             });
             return promise;
         });
@@ -239,6 +240,7 @@ describe(ImageResizer.className, function()
             return promise;
         });
     });
+
 
     describe('#resizeUnforced()', function()
     {

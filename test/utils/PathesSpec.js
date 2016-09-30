@@ -42,8 +42,15 @@ describe('utils/pathes', function()
         }
     });
 
+
     describe('#normalize', function()
     {
+        it('should ignore leading slashes', function()
+        {
+            const prefix = (process.platform == 'win32') ? __dirname.substr(0, 3) : '/';
+            expect(normalize(PATH_SEPERATOR + 'start')).to.be.equal(prefix + 'start');
+        });
+
         it('should return a absolute path', function()
         {
             const prefix = (process.platform == 'win32') ? __dirname.substr(0, 3) : '/';
@@ -53,6 +60,7 @@ describe('utils/pathes', function()
             expect(normalize(PATH_SEPERATOR + 'them' + PATH_SEPERATOR)).to.be.equal(prefix + 'them');
         });
     });
+
 
     describe('#trimLeadingSlash', function()
     {
@@ -64,7 +72,8 @@ describe('utils/pathes', function()
         });
     });
 
-    describe('#shift', function()
+
+    xdescribe('#shift', function()
     {
         it('should return a path minus the first directory', function()
         {

@@ -8,9 +8,10 @@ const Base = require('../Base.js').Base;
 const PathesConfiguration = require('../model/configuration/PathesConfiguration.js').PathesConfiguration;
 const assertParameter = require('../utils/assert.js').assertParameter;
 const co = require('co');
-const glob = require('co-glob');
+const glob = require('../utils/glob.js');
 const fs = require('co-fs-extra');
 const path = require('path');
+const pathes = require('../utils/pathes.js');
 const child_process = require('child_process');
 
 
@@ -34,7 +35,7 @@ class ImageResizer extends Base
         this._pathesConfiguration = pathesConfiguration;
         this._showSize = (typeof opts.showSize !== 'undefined') ? opts.showSize : true;
         this._useCache = (typeof opts.useCache !== 'undefined') ? opts.useCache : false;
-        this._font = __dirname + '/fonts/Dosis-Regular.ttf';
+        this._font = pathes.concat(__dirname, '/fonts/Dosis-Regular.ttf');
         this._cacheName = 'images';
     }
 
@@ -128,7 +129,7 @@ class ImageResizer extends Base
         const promise = co(function*()
         {
             const basePath = yield scope._pathesConfiguration.resolveData('/' + scope._cacheName);
-            const files = yield glob(basePath + '/' + name);
+            const files = yield glob(pathes.concat(basePath, name));
             if (!files || !files.length)
             {
                 return false;
@@ -155,7 +156,7 @@ class ImageResizer extends Base
         const promise = co(function*()
         {
             const basePath = yield scope._pathesConfiguration.resolveCache('/' + scope._cacheName);
-            return basePath + '/' + (width || 0) + 'x' + (height || 0) + '-' + (forced || false) + '-' + path.basename(filename);
+            return pathes.concat(basePath, (width || 0) + 'x' + (height || 0) + '-' + (forced || false) + '-' + path.basename(filename));
         });
         return promise;
     }

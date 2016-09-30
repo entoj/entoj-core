@@ -40,6 +40,10 @@ function normalize(path)
     {
         result = '/' + result;
     }
+    if (result.endsWith('/'))
+    {
+        result = result.substr(0, result.length - 1);
+    }   
     return result;
 }
 

@@ -156,7 +156,7 @@ class UrlsConfiguration extends Base
                 }
                 if (match.splats && match.splats.length > 0 && match.splats[0])
                 {
-                    result.customPath = urls.normalize(pathes.normalize(match.splats[0]));
+                    result.customPath = urls.normalize(match.splats[0]);
                 }
                 //console.log('Match:', result);
                 return result;

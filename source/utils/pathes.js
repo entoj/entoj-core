@@ -87,7 +87,14 @@ function trimTrailingSlash(path)
 function normalize(path)
 {
     // Parse path
-    const parts = parse(path);
+    let preparedPath = normalizePathSeperators(path);
+    if (WIN32)
+    {
+        preparedPath = trimLeadingSlash(preparedPath);
+    }    
+    const parts = parse(preparedPath);
+ 
+    // Check root
     if (!parts.root)
     {
         parts.root = WIN32 ? __dirname.substr(0, 3) : '/';
@@ -100,11 +107,11 @@ function normalize(path)
         {
             parts.root = __dirname.substr(0, 3);
         }
-        parts.path = path.replace(parts.root, '');
+        parts.path = preparedPath.replace(parts.root, '');
     }
     else
     {
-        parts.path = trimLeadingSlash(path);
+        parts.path = trimLeadingSlash(preparedPath);
     }
 
     // Build path

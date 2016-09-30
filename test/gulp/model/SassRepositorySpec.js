@@ -137,12 +137,12 @@ describe(SassRepository.className, function()
             {
                 // Common
                 expect(VinylFile.isVinyl(files.common)).to.be.ok;
-                expect(files.common.contents.toString()).to.contain(PATH_SEPERATOR + 'index.scss');
-                expect(files.common.contents.toString()).to.contain(PATH_SEPERATOR + 'e005-button.scss');
+                expect(files.common.contents.toString()).to.contain('/index.scss');
+                expect(files.common.contents.toString()).to.contain('/e005-button.scss');
 
                 // Core
                 expect(VinylFile.isVinyl(files.core)).to.be.ok;
-                expect(files.core.contents.toString()).to.contain(PATH_SEPERATOR + 'm001-gallery.scss');
+                expect(files.core.contents.toString()).to.contain('/m001-gallery.scss');
             });
             return promise;
         });
@@ -154,7 +154,7 @@ describe(SassRepository.className, function()
             {
                 // Common
                 expect(VinylFile.isVinyl(files.common)).to.be.ok;
-                expect(files.common.contents.toString()).to.contain("@import 'base" + PATH_SEPERATOR + "common" + PATH_SEPERATOR + "sass" + PATH_SEPERATOR + "index.scss';");
+                expect(files.common.contents.toString()).to.contain("@import 'base/common/sass/index.scss';");
             });
             return promise;
         });
@@ -166,14 +166,14 @@ describe(SassRepository.className, function()
             {
                 // Common
                 expect(VinylFile.isVinyl(files.common)).to.be.ok;
-                expect(files.common.contents.toString()).to.contain('base' + PATH_SEPERATOR + 'common' + PATH_SEPERATOR + 'sass' + PATH_SEPERATOR + 'index.scss');
-                expect(files.common.contents.toString()).to.contain('extended' + PATH_SEPERATOR + 'common' + PATH_SEPERATOR + 'sass' + PATH_SEPERATOR + 'index.scss');
-                expect(files.common.contents.toString()).to.contain('base' + PATH_SEPERATOR + 'elements' + PATH_SEPERATOR + 'e005-button' + PATH_SEPERATOR + 'sass' + PATH_SEPERATOR + 'e005-button.scss');
+                expect(files.common.contents.toString()).to.contain('base/common/sass/index.scss');
+                expect(files.common.contents.toString()).to.contain('extended/common/sass/index.scss');
+                expect(files.common.contents.toString()).to.contain('base/elements/e005-button/sass/e005-button.scss');
 
                 // Core
                 expect(VinylFile.isVinyl(files.core)).to.be.ok;
-                expect(files.core.contents.toString()).to.contain('base' + PATH_SEPERATOR + 'modules' + PATH_SEPERATOR + 'm001-gallery' + PATH_SEPERATOR + 'sass' + PATH_SEPERATOR + 'm001-gallery.scss');
-                expect(files.core.contents.toString()).to.contain('extended' + PATH_SEPERATOR + 'modules' + PATH_SEPERATOR + 'm001-gallery' + PATH_SEPERATOR + 'sass' + PATH_SEPERATOR + 'm001-gallery.scss');
+                expect(files.core.contents.toString()).to.contain('base/modules/m001-gallery/sass/m001-gallery.scss');
+                expect(files.core.contents.toString()).to.contain('extended/modules/m001-gallery/sass/m001-gallery.scss');
             });
             return promise;
         });
