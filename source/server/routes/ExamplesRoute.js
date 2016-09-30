@@ -101,7 +101,7 @@ class ExamplesRoute extends BaseRoute
                 return false;
             }
 
-            const work = scope._cliLogger.work('Serving sytleguide for <' + match.entityId.asString() + '> as <' + request.url + '>');
+            const work = scope._cliLogger.work('Serving styleguide for <' + match.entityId.asString() + '> as <' + request.url + '>');
             const entity = yield scope._entitiesRepository.getById(match.entityId);
             try
             {
