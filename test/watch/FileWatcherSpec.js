@@ -31,7 +31,7 @@ describe(FileWatcher.className, function()
     });
 
 
-    xdescribe('#processEvents', function()
+    describe('#processEvents', function()
     {
         it('should create site changes for pathes like /site or /site/file.ext', function()
         {
@@ -365,7 +365,7 @@ describe(FileWatcher.className, function()
     });
 
 
-    xdescribe('#addEvent', function()
+    describe('#addEvent', function()
     {
         it('should bundle events for #processEvents', function(cb)
         {
@@ -385,7 +385,7 @@ describe(FileWatcher.className, function()
 
 
     // This test segfaults?
-    describe('#start', function()
+    xdescribe('#start', function()
     {
         it('should watch files starting at the sites root', function(cb)
         {
