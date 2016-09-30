@@ -158,7 +158,7 @@ class SitesRoute extends BaseRoute
         const scope = this;
         const promise = co(function *()
         {
-            //scope._cliLogger.info('handleTemplate: from <' + scope._rootPath + '> trying <' + request.url + '>');
+            scope._cliLogger.info('handleTemplate: from <' + scope._rootPath + '> trying <' + request.url + '>');
 
             // Check extension
             if (!request.path.endsWith('.j2'))
@@ -173,25 +173,26 @@ class SitesRoute extends BaseRoute
             {
                 //scope._cliLogger.info('handleTemplate: no direct hit at <' + filename + '>');
 
-                // Check extended file
-                const file = yield scope._urlsConfiguration.matchEntityFile(request.path);
-                if (!file.file)
+                // Check entity file
+                const match = yield scope._urlsConfiguration.matchEntityFile(request.path);
+                if (!match.file)
                 {
                     next();
                     return;
                 }
-                filename = file.file.filename;
+                filename = match.file.filename;
             }
 
             // Render template
             scope._nunjucks.isStatic = (typeof request.query.static !== 'undefined');
             const data = yield scope._urlsConfiguration.matchEntity(request.path, true);
             const filenameShort = shortenLeft(synchronize.execute(scope._pathesConfiguration, 'shorten', [filename]), 60);
+            const fileUrl = yield scope._urlsConfiguration.resolveFilename(filename);
             const work = scope._cliLogger.work('Serving ' + (scope._nunjucks.isStatic ? '<static>' : '') + ' template <' + filenameShort + '> as <' + request.url + '>');
             let html;
             try
             {
-                html = scope._nunjucks.render(request.path, data);
+                html = scope._nunjucks.render(fileUrl, data);
             }
             catch (e)
             {

@@ -172,14 +172,16 @@ class UrlsConfiguration extends Base
 
 
     /**
-     * Resolve a file url.
+     * Resolve a filename to a url.
      *
      * @param {string} file
      * @returns {Promise.<string>}
      */
-    resolveFile(file)
+    resolveFilename(filename)
     {
-        Promise.resolve('');
+        const basePath = (this._pathesConfiguration ? this._pathesConfiguration.sites :  '');
+        const filePath = filename.replace(basePath, '');
+        return Promise.resolve(urls.normalize(filePath));
     }
 
 

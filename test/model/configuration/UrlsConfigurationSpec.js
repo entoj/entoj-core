@@ -36,21 +36,20 @@ describe(UrlsConfiguration.className, function()
         });
     });
 
-/*
-    describe('#resolveFile', function()
+
+    describe('#resolveFilename', function()
     {
-        it('should resolve the file if it exists', function()
+        it('should resolve a filename to a url if it exists', function()
         {
-            let urls = {};
-            let testee = new fixtures.createTestee(urls);
-            let promise = testee.resolveFile(fixtures.pathes.root + '/default/modules/m001-gallery/examples/default.j2').then(function(url)
+            const urls = {};
+            const testee = new fixtures.createTestee(urls);
+            const promise = testee.resolveFilename(fixtures.pathes.root + '/default/modules/m001-gallery/examples/default.j2').then(function(url)
                 {
                     expect(url).to.be.equal('/default/modules/m001-gallery/examples/default.j2');
                 });
             return promise;
         });
     });
-*/
 
 
     describe('#resolveSite', function()

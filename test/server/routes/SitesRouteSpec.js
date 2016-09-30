@@ -17,7 +17,7 @@ describe(SitesRoute.className, function()
     beforeEach(function()
     {
         fixtures = compact.createFixture();
-        fixtures.cliLogger = new CliLogger('', { muted: true });
+        fixtures.cliLogger = new CliLogger('', { muted: false });
         fixtures.server = new Server(fixtures.cliLogger);
     });
 
@@ -35,7 +35,7 @@ describe(SitesRoute.className, function()
     });
 
 
-    describe('#className', function()
+    xdescribe('#className', function()
     {
         it('should return the namespaced class name', function()
         {
@@ -49,7 +49,7 @@ describe(SitesRoute.className, function()
 
     describe('client', function()
     {
-        it('should have access to configured static file types', function(done)
+        xit('should have access to configured static file types', function(done)
         {
             fixtures.server.addRoute(new SitesRoute(fixtures.cliLogger, fixtures.entitiesRepository,
                 fixtures.globalConfiguration, fixtures.pathesConfiguration, fixtures.urlsConfiguration,
@@ -63,7 +63,7 @@ describe(SitesRoute.className, function()
             });
         });
 
-        it('should have no access to unconfigured static file types', function(done)
+        xit('should have no access to unconfigured static file types', function(done)
         {
             let options =
             {
@@ -80,7 +80,7 @@ describe(SitesRoute.className, function()
             });
         });
 
-        it('should have access to template files', function(done)
+        xit('should have access to template files', function(done)
         {
             fixtures.server.addRoute(new SitesRoute(fixtures.cliLogger, fixtures.entitiesRepository,
                 fixtures.globalConfiguration, fixtures.pathesConfiguration, fixtures.urlsConfiguration,
@@ -110,7 +110,7 @@ describe(SitesRoute.className, function()
             });
         });
 
-        it('should allow to configure a custom root path for specific file types', function(done)
+        xit('should allow to configure a custom root path for specific file types', function(done)
         {
             let options =
             {
