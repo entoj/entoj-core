@@ -10,7 +10,7 @@ const EntitiesRepository = require(SOURCE_ROOT + '/model/entity/EntitiesReposito
 const DocumentationVariable = require(SOURCE_ROOT + '/model/documentation/DocumentationVariable.js').DocumentationVariable;
 const DocumentationClass = require(SOURCE_ROOT + '/model/documentation/DocumentationClass.js').DocumentationClass;
 const ContentType = require(SOURCE_ROOT + '/model/ContentType.js');
-const styleguide = require(FIXTURES_ROOT + '/Styleguide/Styleguide.js');
+const styleguide = require(FIXTURES_ROOT + '/Styleguide/styleguide.js');
 
 
 /**
