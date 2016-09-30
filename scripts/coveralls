@@ -1,0 +1,11 @@
+#!/bin/bash
+
+# Prepare pathes
+SELF=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+COVERALL=$SELF/../node_modules/.bin/coveralls
+LCOV=$SELF/../coverage/lcov.info
+
+# Go
+$SELF/tests --coverage
+echo "Uploading coverage datato coveralls.io"
+$COVERALL < $LCOV

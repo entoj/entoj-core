@@ -7,6 +7,7 @@
   },
   "scripts": {
     "coverage": "./scripts/tests --coverage",
+    "coveralls": "./scripts/coveralls",
     "lint": "./scripts/lint",
     "test": "./scripts/tests"
   },
@@ -100,6 +101,7 @@
     "istanbul": "*",
     "mocha": "*",
     "sinon": "*",
-    "supertest": "*"
+    "supertest": "*",
+    "coveralls": "*"
   }
 }
