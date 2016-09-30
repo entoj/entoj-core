@@ -12,7 +12,7 @@ const styleguide = require(FIXTURES_ROOT + '/Styleguide/styleguide.js');
 /**
  * Spec
  */
-describe(ExamplesArgumentBuilder.className, function()
+xdescribe(ExamplesArgumentBuilder.className, function()
 {
     beforeEach(function()
     {
