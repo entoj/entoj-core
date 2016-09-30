@@ -99,15 +99,9 @@ function inquireEntityId(siteQuery, entityIdQuery, di)
 {
     const promise = co(function *()
     {
-        const site = yield inquireSite(siteQuery, di);
-        if (!site)
-        {
-            return false;
-        }
-
         const entityIdParser = di.create(IdParser);
-        let entityId = yield entityIdParser.parse(entityIdQuery);
-        if (!entityId)
+        let entity = yield entityIdParser.parse(entityIdQuery);
+        if (!entity)
         {
             const question =
             {
@@ -125,15 +119,25 @@ function inquireEntityId(siteQuery, entityIdQuery, di)
                 }
             };
             const selection = yield inquire([question]);
-            entityId = yield entityIdParser.parse(selection.entityId);
+            entity = yield entityIdParser.parse(selection.entityId);
         }
-        if (entityId)
+
+        if (!entity)
         {
-            entityId = entityId.entityId;
-            entityId.site = site;
-            return entityId;
+            return false;
         }
-        return false;
+
+        if (!entity.site)
+        {
+            const site = yield inquireSite(siteQuery, di);
+            if (!site)
+            {
+                return false;
+            }
+            entity.entityId.site = site;
+        }
+
+        return entity.entityId;
     });
     return promise;
 }
