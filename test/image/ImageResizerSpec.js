@@ -6,10 +6,10 @@
 const ImageResizer = require(SOURCE_ROOT + '/image/ImageResizer.js').ImageResizer;
 const PathesConfiguration = require(SOURCE_ROOT + '/model/configuration/PathesConfiguration.js').PathesConfiguration;
 const MissingArgumentError = require(SOURCE_ROOT + '/error/MissingArgumentError.js').MissingArgumentError;
-const baseSpec = require('../BaseShared.js').spec;
-const compact = require(FIXTURES_ROOT + '/Application/Compact.js');
-const co = require('co');
 const pathes = require(SOURCE_ROOT + '/utils/pathes.js');
+const compact = require(FIXTURES_ROOT + '/Application/Compact.js');
+const baseSpec = require(TEST_ROOT + '/BaseShared.js');
+const co = require('co');
 
 
 /**
@@ -17,6 +17,9 @@ const pathes = require(SOURCE_ROOT + '/utils/pathes.js');
  */
 describe(ImageResizer.className, function()
 {
+    /**
+     * Base Test
+     */
     baseSpec(ImageResizer, 'image/ImageResizer', function(parameters)
     {
         parameters.unshift(fixtures.pathesConfiguration);
@@ -24,6 +27,9 @@ describe(ImageResizer.className, function()
     });
 
 
+    /**
+     * ImageResizer Test
+     */
     beforeEach(function()
     {
         fixtures = compact.createFixture();
@@ -110,11 +116,11 @@ describe(ImageResizer.className, function()
     {
         it('should resolve to a object contianing the image width and height', function()
         {
-            let testee = new ImageResizer(fixtures.pathesConfiguration);
-            let promise = co(function*()
+            const testee = new ImageResizer(fixtures.pathesConfiguration);
+            const promise = co(function*()
             {
-                let imageFilename = yield testee.resolveImageFilename('southpark-01.jpg');
-                let size = yield testee.getImageSize(imageFilename);
+                const imageFilename = yield testee.resolveImageFilename('southpark-01.jpg');
+                const size = yield testee.getImageSize(imageFilename);
                 expect(size).to.be.deep.equal({ width: 960, height: 540 });
             });
             return promise;
@@ -126,11 +132,11 @@ describe(ImageResizer.className, function()
     {
         it('should resolve to a object containing the image width and height', function()
         {
-            let testee = new ImageResizer(fixtures.pathesConfiguration);
-            let promise = co(function*()
+            const testee = new ImageResizer(fixtures.pathesConfiguration);
+            const promise = co(function*()
             {
-                let imageFilename = yield testee.resolveImageFilename('southpark-01.jpg');
-                let size = yield testee.getImageSettings(imageFilename);
+                const imageFilename = yield testee.resolveImageFilename('southpark-01.jpg');
+                const size = yield testee.getImageSettings(imageFilename);
                 expect(size.width).to.be.equal(960);
                 expect(size.height).to.be.equal(540);
             });
@@ -139,11 +145,11 @@ describe(ImageResizer.className, function()
 
         it('should add a default focal point', function()
         {
-            let testee = new ImageResizer(fixtures.pathesConfiguration);
-            let promise = co(function*()
+            const testee = new ImageResizer(fixtures.pathesConfiguration);
+            const promise = co(function*()
             {
-                let imageFilename = yield testee.resolveImageFilename('southpark-01.jpg');
-                let settings = yield testee.getImageSettings(imageFilename);
+                const imageFilename = yield testee.resolveImageFilename('southpark-01.jpg');
+                const settings = yield testee.getImageSettings(imageFilename);
                 expect(settings.focal.x).to.be.equal(0);
                 expect(settings.focal.y).to.be.equal(0);
                 expect(settings.focal.width).to.be.equal(960);
@@ -154,11 +160,11 @@ describe(ImageResizer.className, function()
 
         it('should read a json file with the same name as the image that contains the focal point', function()
         {
-            let testee = new ImageResizer(fixtures.pathesConfiguration);
-            let promise = co(function*()
+            const testee = new ImageResizer(fixtures.pathesConfiguration);
+            const promise = co(function*()
             {
-                let imageFilename = yield testee.resolveImageFilename('southpark-02.jpg');
-                let settings = yield testee.getImageSettings(imageFilename);
+                const imageFilename = yield testee.resolveImageFilename('southpark-02.jpg');
+                const settings = yield testee.getImageSettings(imageFilename);
                 expect(settings.focal.x).to.be.equal(652);
                 expect(settings.focal.y).to.be.equal(176);
                 expect(settings.focal.width).to.be.equal(342);
@@ -173,10 +179,10 @@ describe(ImageResizer.className, function()
     {
         it('should resolve to a object containing  x, y, width and height of the area', function()
         {
-            let testee = new ImageResizer(fixtures.pathesConfiguration);
-            let promise = co(function*()
+            const testee = new ImageResizer(fixtures.pathesConfiguration);
+            const promise = co(function*()
             {
-                let settings =
+                const settings =
                 {
                     width: 500,
                     height: 500,
@@ -188,7 +194,7 @@ describe(ImageResizer.className, function()
                         height: 100
                     }
                 };
-                let area = yield testee.calculateArea(200, 100, '1', settings);
+                const area = yield testee.calculateArea(200, 100, '1', settings);
                 expect(area.x).to.be.defined;
                 expect(area.y).to.be.defined;
                 expect(area.width).to.be.defined;
@@ -199,10 +205,10 @@ describe(ImageResizer.className, function()
 
         it('should keep the focal area visible', function()
         {
-            let testee = new ImageResizer(fixtures.pathesConfiguration);
-            let promise = co(function*()
+            const testee = new ImageResizer(fixtures.pathesConfiguration);
+            const promise = co(function*()
             {
-                let settings =
+                const settings =
                 {
                     width: 500,
                     height: 500,
@@ -214,7 +220,7 @@ describe(ImageResizer.className, function()
                         height: 100
                     }
                 };
-                let area = yield testee.calculateArea(200, 100, '1', settings);
+                const area = yield testee.calculateArea(200, 100, '1', settings);
                 expect(area.x).to.be.below(settings.focal.x);
                 expect(area.y).to.be.below(settings.focal.y);
                 expect(area.width).to.be.above(settings.focal.width - 1);
@@ -229,11 +235,11 @@ describe(ImageResizer.className, function()
     {
         it('should create a image with given dimensions when forced', function()
         {
-            let testee = new ImageResizer(fixtures.pathesConfiguration);
-            let promise = co(function*()
+            const testee = new ImageResizer(fixtures.pathesConfiguration);
+            const promise = co(function*()
             {
-                let filename = yield testee.resizeForced('southpark-02.png', 300, 200, '1');
-                let size = yield testee.getImageSize(filename);
+                const filename = yield testee.resizeForced('southpark-02.png', 300, 200, '1');
+                const size = yield testee.getImageSize(filename);
                 expect(size.width).to.be.equal(300);
                 expect(size.height).to.be.equal(200);
             });
@@ -246,11 +252,11 @@ describe(ImageResizer.className, function()
     {
         it('should create a image with given dimensions', function()
         {
-            let testee = new ImageResizer(fixtures.pathesConfiguration);
-            let promise = co(function*()
+            const testee = new ImageResizer(fixtures.pathesConfiguration);
+            const promise = co(function*()
             {
-                let filename = yield testee.resizeUnforced('southpark-02.png', 100, 100);
-                let size = yield testee.getImageSize(filename);
+                const filename = yield testee.resizeUnforced('southpark-02.png', 100, 100);
+                const size = yield testee.getImageSize(filename);
                 expect(size.width).to.be.below(100 + 1);
                 expect(size.height).to.be.below(100 + 1);
             });

@@ -12,6 +12,7 @@ const VinylFile = require('vinyl');
 const MissingArgumentError = require(SOURCE_ROOT + '/error/MissingArgumentError.js').MissingArgumentError;
 const compact = require(FIXTURES_ROOT + '/Application/Compact.js');
 const PATH_SEPERATOR = require('path').sep;
+const baseRepositorySpec = require(TEST_ROOT + '/gulp/model/BaseRepositoryShared.js');
 
 
 /**
@@ -19,6 +20,15 @@ const PATH_SEPERATOR = require('path').sep;
  */
 describe(SassRepository.className, function()
 {
+    /**
+     * BaseRepository Test
+     */
+    baseRepositorySpec(SassRepository, 'gulp.model/SassRepository');
+
+
+    /**
+     * SassRepository Test
+     */
     beforeEach(function(done)
     {
         fixtures = compact.createFixture();
@@ -37,40 +47,6 @@ describe(SassRepository.className, function()
                 fixtures.siteExtended = site;
                 done();
             });
-        });
-    });
-
-
-    describe('#constructor()', function()
-    {
-        it('should throw a exception when created without a entitiesRepository configuration', function()
-        {
-            expect(function() { new SassRepository(); }).to.throw(MissingArgumentError);
-        });
-
-        it('should throw a exception when created without a proper entitiesRepository type', function()
-        {
-            expect(function() { new SassRepository('Entities'); }).to.throw(TypeError);
-        });
-
-        it('should throw a exception when created without a pathesConfiguration configuration', function()
-        {
-            expect(function() { new SassRepository(fixtures.entitiesRepository); }).to.throw(MissingArgumentError);
-        });
-
-        it('should throw a exception when created without a proper pathesConfiguration type', function()
-        {
-            expect(function() { new SassRepository(fixtures.entitiesRepository, 'Entities'); }).to.throw(TypeError);
-        });
-    });
-
-
-    describe('#className', function()
-    {
-        it('should return the namespaced class name', function()
-        {
-            const testee = new SassRepository(fixtures.entitiesRepository, fixtures.pathesConfiguration);
-            expect(testee.className).to.be.equal('gulp.model/SassRepository');
         });
     });
 

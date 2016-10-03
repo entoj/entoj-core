@@ -4,7 +4,7 @@
  * Requirements
  */
 const BaseMap = require(SOURCE_ROOT + '/base/BaseMap.js').BaseMap;
-let baseSpec = require('../BaseShared.js').spec;
+const baseSpec = require(TEST_ROOT + '/BaseShared.js');
 
 
 /**
@@ -12,23 +12,45 @@ let baseSpec = require('../BaseShared.js').spec;
  */
 describe(BaseMap.className, function()
 {
+    /**
+     * Base Test
+     */
     baseSpec(BaseMap, 'base/BaseMap');
 
+
+    /**
+     * BaseMap Test
+     */
     describe('#constructor', function()
     {
         it('should allow to initilize map with a iterable', function()
         {
-            let testee = new BaseMap({ foo: 'bar' });
+            const testee = new BaseMap({ foo: 'bar' });
 
             expect(testee.get('foo')).to.be.equal('bar');
         });
     });
 
+
     describe('#getByPath', function()
     {
+        it('should return defaultValue when no path is given', function()
+        {
+            const testee = new BaseMap();
+
+            expect(testee.getByPath(false, 'not found')).to.be.equal('not found');
+        });
+
+        it('should return defaultValue when path is not found', function()
+        {
+            const testee = new BaseMap();
+
+            expect(testee.getByPath('simple', 'not found')).to.be.equal('not found');
+        });
+
         it('should allow to get a value by path', function()
         {
-            let testee = new BaseMap();
+            const testee = new BaseMap();
             testee.set('simple', 'simple');
 
             expect(testee.getByPath('simple')).to.be.equal('simple');
@@ -36,7 +58,7 @@ describe(BaseMap.className, function()
 
         it('should support objects', function()
         {
-            let testee = new BaseMap();
+            const testee = new BaseMap();
             testee.set('object', { path: { to: 'object' } });
 
             expect(testee.getByPath('object.path.to')).to.be.equal('object');
@@ -44,9 +66,9 @@ describe(BaseMap.className, function()
 
         it('should support maps', function()
         {
-            let testee = new BaseMap();
-            let map1 = new Map();
-            let map2 = new Map();
+            const testee = new BaseMap();
+            const map1 = new Map();
+            const map2 = new Map();
             map2.set('to', 'map');
             map1.set('path', map2);
             testee.set('map', map1);
@@ -56,7 +78,7 @@ describe(BaseMap.className, function()
 
         it('should return undefined when path is not found and no defaultValue given', function()
         {
-            let testee = new BaseMap();
+            const testee = new BaseMap();
             testee.set('object', { path: { to: 'object' } });
 
             expect(testee.getByPath('object.path.from')).to.be.equal(undefined);
@@ -64,7 +86,7 @@ describe(BaseMap.className, function()
 
         it('should return the defaultValue when path is not found', function()
         {
-            let testee = new BaseMap();
+            const testee = new BaseMap();
 
             expect(testee.getByPath('object.path.to', 'Default')).to.be.equal('Default');
         });
@@ -145,6 +167,14 @@ describe(BaseMap.className, function()
 
     describe('#merge', function()
     {
+        it('should just swallow falsy values', function()
+        {
+            const testee = new BaseMap();
+            testee.merge();
+            testee.merge(null);
+            testee.merge(false);
+        });
+
         it('should allow to merge a Map', function()
         {
             const testee = new BaseMap();

@@ -5,6 +5,7 @@
  * @ignore
  */
 const Base = require(SOURCE_ROOT + '/Base.js').Base;
+const intel = require('intel');
 const create = require(SOURCE_ROOT + '/utils/objects.js').create;
 
 
@@ -28,7 +29,7 @@ function spec(type, className, prepareParameters)
     {
         it('should return the namespaced class name', function()
         {
-            let testee = type;
+            const testee = type;
             expect(testee.className).to.be.equal(className);
         });
     });
@@ -38,7 +39,7 @@ function spec(type, className, prepareParameters)
     {
         it('should return dependecies', function()
         {
-            let testee = type;
+            const testee = type;
             expect(testee.injections).to.be.ok;
         });
     });
@@ -48,7 +49,7 @@ function spec(type, className, prepareParameters)
     {
         it('should return the namespaced class name', function()
         {
-            let testee = createTestee();
+            const testee = createTestee();
             expect(testee.className).to.be.equal(className);
         });
     });
@@ -58,8 +59,8 @@ function spec(type, className, prepareParameters)
     {
         it('should return a unique instance id', function()
         {
-            let testee = createTestee();
-            let other = createTestee();
+            const testee = createTestee();
+            const other = createTestee();
             expect(testee.instanceId).to.be.ok;
             expect(other.instanceId).to.be.ok;
             expect(testee.instanceId).to.be.not.equal(other.instanceId);
@@ -67,11 +68,21 @@ function spec(type, className, prepareParameters)
     });
 
 
+    describe('#logger', function()
+    {
+        it('should return a intel logger instance', function()
+        {
+            const testee = createTestee();
+            expect(testee.logger).to.be.instanceOf(intel.Logger);
+        });
+    });
+
+
     describe('#toString()', function()
     {
-        it('should return a string representation that reflects its state', function()
+        it('should return a string representation that contains the class name', function()
         {
-            let testee = createTestee();
+            const testee = createTestee();
             expect(testee.toString()).to.contain(className);
         });
     });
@@ -82,5 +93,5 @@ function spec(type, className, prepareParameters)
  * Api
  * @ignore
  */
+module.exports = spec;
 module.exports.spec = spec;
-

@@ -37,8 +37,8 @@ function spec(type, className, prepareParameters)
     {
         it('should return a Promise', function()
         {
-            let testee = createTestee();
-            let promise = testee.load();
+            const testee = createTestee();
+            const promise = testee.load();
             expect(promise).to.be.instanceof(Promise);
             return promise;
         });

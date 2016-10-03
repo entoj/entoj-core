@@ -4,7 +4,7 @@
  * Requirements
  */
 const BaseArray = require(SOURCE_ROOT + '/base/BaseArray.js').BaseArray;
-let baseSpec = require('../BaseShared.js').spec;
+const baseSpec = require(TEST_ROOT + '/BaseShared.js');
 
 
 /**
@@ -12,14 +12,21 @@ let baseSpec = require('../BaseShared.js').spec;
  */
 describe(BaseArray.className, function()
 {
+    /**
+     * Base Test
+     */
     baseSpec(BaseArray, 'base/BaseArray');
 
+
+    /**
+     * BaseArray Test
+     */
     describe('#load', function()
     {
         it('should allow to import a Array', function()
         {
-            let testee = new BaseArray();
-            let data = ['foo', 'bar'];
+            const testee = new BaseArray();
+            const data = ['foo', 'bar'];
 
             testee.load(data);
             expect(testee).to.include('foo');
@@ -28,9 +35,9 @@ describe(BaseArray.className, function()
 
         it('should preserve existing items', function()
         {
-            let testee = new BaseArray();
+            const testee = new BaseArray();
             testee.push('bar');
-            let data = ['foo'];
+            const data = ['foo'];
 
             testee.load(data);
             expect(testee).to.include('foo');
@@ -39,9 +46,9 @@ describe(BaseArray.className, function()
 
         it('should allow to clear items before loading', function()
         {
-            let testee = new BaseArray();
+            const testee = new BaseArray();
             testee.push('bar');
-            let data = ['foo'];
+            const data = ['foo'];
 
             testee.load(data, true);
             expect(testee).to.include('foo');
@@ -50,7 +57,7 @@ describe(BaseArray.className, function()
 
         it('should do nothing when given non iterable data', function()
         {
-            let testee = new BaseArray();
+            const testee = new BaseArray();
 
             testee.load(undefined);
             expect(testee.length).to.be.equal(0);

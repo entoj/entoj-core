@@ -12,6 +12,7 @@ const VinylFile = require('vinyl');
 const MissingArgumentError = require(SOURCE_ROOT + '/error/MissingArgumentError.js').MissingArgumentError;
 const compact = require(FIXTURES_ROOT + '/Application/Compact.js');
 const PATH_SEPERATOR = require('path').sep;
+const baseRepositorySpec = require(TEST_ROOT + '/gulp/model/BaseRepositoryShared.js');
 
 
 /**
@@ -19,6 +20,15 @@ const PATH_SEPERATOR = require('path').sep;
  */
 describe(JsRepository.className, function()
 {
+    /**
+     * BaseRepository Test
+     */
+    baseRepositorySpec(JsRepository, 'gulp.model/JsRepository');
+
+
+    /**
+     * JsRepository Test
+     */
     beforeEach(function(done)
     {
         fixtures = compact.createFixture();
@@ -32,30 +42,6 @@ describe(JsRepository.className, function()
         {
             fixtures.siteBase = site;
             done();
-        });
-    });
-
-
-    describe('#constructor()', function()
-    {
-        it('should throw a exception when created without a entitiesRepository configuration', function()
-        {
-            expect(function() { new JsRepository(); }).to.throw(MissingArgumentError);
-        });
-
-        it('should throw a exception when created without a proper entitiesRepository type', function()
-        {
-            expect(function() { new JsRepository('Entities'); }).to.throw(TypeError);
-        });
-
-        it('should throw a exception when created without a pathesConfiguration configuration', function()
-        {
-            expect(function() { new JsRepository(fixtures.entitiesRepository); }).to.throw(MissingArgumentError);
-        });
-
-        it('should throw a exception when created without a proper pathesConfiguration type', function()
-        {
-            expect(function() { new JsRepository(fixtures.entitiesRepository, 'Entities'); }).to.throw(TypeError);
         });
     });
 
@@ -75,7 +61,6 @@ describe(JsRepository.className, function()
             });
             return promise;
         });
-
 
         it('should describe exactly which modules to in/exclude', function()
         {

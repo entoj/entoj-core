@@ -4,6 +4,7 @@
  * Requirements
  */
 const HtmlFormatter = require(SOURCE_ROOT + '/formatter/html/HtmlFormatter.js').HtmlFormatter;
+const baseFormatterSpec = require(TEST_ROOT + '/formatter/BaseFormatterShared.js');
 const glob = require('glob');
 const fs = require('fs');
 
@@ -13,10 +14,20 @@ const fs = require('fs');
  */
 describe(HtmlFormatter.className, function()
 {
+    /**
+     * BaseFormatter Test
+     */
+    baseFormatterSpec(HtmlFormatter, 'formatter.html/HtmlFormatter');
+
+
+    /**
+     * HtmlFormatter Test
+     */
     beforeEach(function()
     {
         fixtures = {};
     });
+
 
     describe('#format()', function()
     {

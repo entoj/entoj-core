@@ -4,7 +4,7 @@
  * Requirements
  */
 let Base = require(SOURCE_ROOT + '/Base.js').Base;
-let baseSpec = require('./BaseShared.js').spec;
+let baseSpec = require(TEST_ROOT + '/BaseShared.js').spec;
 
 
 /**
