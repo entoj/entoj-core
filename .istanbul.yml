@@ -1,0 +1,3 @@
+verbose: false
+instrumentation:
+    excludes: ['**/command/**', '**/cli/**', '**/gulp/task/**', '**/gulp/plugin/**', '**/model/styleguide/**']
