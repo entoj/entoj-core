@@ -6,12 +6,4 @@ ROOT="$SELF/../.."
 CLI="--harmony_proxies --es_staging $SELF/source/cli.js"
 COMMAND="$1"
 
-case $COMMAND in
-xserver)
-    echo "Running server vi nodemon"
-    $SELF/node_modules/nodemon/bin/nodemon.js -e "js j2 json" -w $ROOT -- $CLI "$@"
-  ;;
-*)
-    node $CLI "$@"
-  ;;
-esac
+node $CLI "$@"
