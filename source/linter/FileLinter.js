@@ -4,7 +4,7 @@
  * Requirements
  * @ignore
  */
-const Linter = require('./Linter.js').Linter;
+const BaseLinter = require('./BaseLinter.js').BaseLinter;
 const File = require('../model/file/File.js').File;
 const glob = require('../utils/glob.js');
 const co = require('co');
@@ -12,7 +12,7 @@ const co = require('co');
 /**
  * Reads files based on glob patterns
  */
-class FileLinter extends Linter
+class FileLinter extends BaseLinter
 {
     /**
      * @param {object|undefined} options
@@ -71,14 +71,14 @@ class FileLinter extends Linter
      * @param {model.file.File} file
      * @returns {Promise.<Array>}
      */
-    lintFile(file)
+    lintFile(file, filename)
     {
         if (!this._linter)
         {
             return Promise.resolve({ success: true, warningCount: 0, errorCount: 0, messages: [] });
         }
 
-        return this._linter.lint(file.contents, { filename: file.filename });
+        return this._linter.lint(file.contents, { filename: filename || file.filename });
     }
 
 
@@ -118,7 +118,7 @@ class FileLinter extends Linter
                 result.files.push(file);
                 if (file.contents)
                 {
-                    const lintResult = yield scope.lintFile(file);
+                    const lintResult = yield scope.lintFile(file, opts.filename);
                     if (lintResult)
                     {
                         if (!lintResult.success)

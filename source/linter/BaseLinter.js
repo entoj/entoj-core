@@ -10,14 +10,14 @@ const Base = require('../Base.js').Base;
 /**
  * Base class for Linters.
  */
-class Linter extends Base
+class BaseLinter extends Base
 {
     /**
      * @inheritDoc
      */
     static get className()
     {
-        return 'linter/Linter';
+        return 'linter/BaseLinter';
     }
 
 
@@ -44,4 +44,4 @@ class Linter extends Base
  * Exports
  * @ignore
  */
-module.exports.Linter = Linter;
+module.exports.BaseLinter = BaseLinter;

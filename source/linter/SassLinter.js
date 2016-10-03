@@ -4,14 +4,14 @@
  * Requirements
  * @ignore
  */
-const Linter = require('./Linter.js').Linter;
+const BaseLinter = require('./BaseLinter.js').BaseLinter;
 const sassLint = require('sass-lint');
 
 
 /**
  * A sass linter
  */
-class SassLinter extends Linter
+class SassLinter extends BaseLinter
 {
     /**
      * @param {Object} options

@@ -4,14 +4,14 @@
  * Requirements
  * @ignore
  */
-const Linter = require('./Linter.js').Linter;
+const BaseLinter = require('./BaseLinter.js').BaseLinter;
 const CLIEngine = require('eslint/lib/cli-engine');
 
 
 /**
  * A javascript linter
  */
-class JsLinter extends Linter
+class JsLinter extends BaseLinter
 {
     /**
      * @param {Object} options
