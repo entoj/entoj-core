@@ -10,14 +10,14 @@ const Base = require('../Base.js').Base;
 /**
  * Base class for Formatters.
  */
-class Formatter extends Base
+class BaseFormatter extends Base
 {
     /**
      * @inheritDoc
      */
     static get className()
     {
-        return 'formatter/Formatter';
+        return 'formatter/BaseFormatter';
     }
 
 
@@ -37,4 +37,4 @@ class Formatter extends Base
  * Exports
  * @ignore
  */
-module.exports.Formatter = Formatter;
+module.exports.BaseFormatter = BaseFormatter;

@@ -4,7 +4,7 @@
  * Requirements
  * @ignore
  */
-const Formatter = require('../Formatter.js').Formatter;
+const BaseFormatter = require('../BaseFormatter.js').BaseFormatter;
 const htmlparser = require('htmlparser2');
 const EOL = '\n';
 
@@ -12,7 +12,7 @@ const EOL = '\n';
 /**
  * A basic html formatter
  */
-class HtmlFormatter extends Formatter
+class HtmlFormatter extends BaseFormatter
 {
     /**
      * @param {Object} options
@@ -178,6 +178,7 @@ class HtmlFormatter extends Formatter
                     result+= '<!--' + node.data + '-->';
                     break;
 
+                /* istanbul ignore next */
                 default:
                     this.logger.error('Unknown Type : ' + node.type);
             }
@@ -214,6 +215,7 @@ class HtmlFormatter extends Formatter
         {
             const parser = new htmlparser.Parser(new htmlparser.DomHandler(function(error, dom)
             {
+                /* istanbul ignore next */
                 if (error)
                 {
                     reject(error);
