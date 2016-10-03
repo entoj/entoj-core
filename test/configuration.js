@@ -5,6 +5,7 @@
 const path = require('path');
 global.SOURCE_ROOT = path.resolve(__dirname + '/../source');
 global.FIXTURES_ROOT = path.resolve(__dirname + '/__fixtures__');
+global.TEST_ROOT = __dirname;
 
 /**
  * Configure chai
@@ -23,27 +24,11 @@ const chaiString = require("chai-string");
 chai.use(chaiString);
 
 /**
- * Configure winston
+ * Configure intel
  */
-const winston = require('winston');
-winston.loggers.add('cli',
-{
-    console:
-    {
-        level: 'error',
-        colorize: true,
-        label: ''
-    }
-});
-winston.loggers.add('debug',
-{
-    console:
-    {
-        level: 'error',
-        colorize: true,
-        label: ''
-    }
-});
+const intel = require('intel');
+const logger = intel.getLogger('entoj');
+logger.setLevel(intel.ERROR);
 
 /**
  * Configure fixtures

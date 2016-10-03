@@ -19,7 +19,6 @@ const CompactIdParser = require('../parser/entity/CompactIdParser.js').CompactId
 const SitesRepository = require('../model/site/SitesRepository.js').SitesRepository;
 const SitesLoader = require('../model/site/SitesLoader.js').SitesLoader;
 const ModelSynchronizer = require('../watch/ModelSynchronizer.js').ModelSynchronizer;
-const winston = require('winston');
 
 
 /**
@@ -130,30 +129,6 @@ class Context extends Base
 
 
     /**
-     * Creates an array of typed of configuration.
-     *
-     * @protected
-     * @returns {Array}
-     */
-    mapTypes(configuration, singleton)
-    {
-        if (!Array.isArray(configuration))
-        {
-            return;
-        }
-
-        const result = [];
-        for (const config of configuration)
-        {
-            const type = (typeof config === 'function') ? config : config.type;
-            this.mapType(type, singleton, config);
-            result.push(type);
-        }
-        return result;
-    }
-
-
-    /**
      * Creates instance of the given type configuration.
      *
      * @protected
@@ -216,26 +191,27 @@ class Context extends Base
      */
     configureLogger()
     {
-        //@todo should be configurable via config & cli option -v - -vvv
-        if (this._configuration.logger)
+        const intel = require('intel');
+        const logger = intel.getLogger('entoj');
+
+        let level = intel.ERROR;
+        if (this.parameters.v)
         {
-            if (this._configuration.logger.debug)
-            {
-                winston.loggers.add('debug',
-                    {
-                        console:
-                        {
-                            level: 'info',
-                            colorize: true,
-                            label: 'debug'
-                        }
-                    });
-            }
-            else
-            {
-                winston.loggers.get('debug').remove(winston.transports.Console);
-            }
+            level = intel.WARN;
         }
+        if (this.parameters.vv)
+        {
+            level = intel.INFO;
+        }
+        if (this.parameters.vvv)
+        {
+            level = intel.DEBUG;
+        }
+        if (this.parameters.vvvv)
+        {
+            level = intel.TRACE;
+        }
+        logger.setLevel(level);
     }
 
 

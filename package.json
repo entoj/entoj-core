@@ -90,7 +90,7 @@
     "thunkify": "*",
     "transliteration": "*",
     "vinyl": "*",
-    "winston": "*",
+    "intel": "*",
     "xregexp": "*"
   },
   "devDependencies": {

@@ -4,7 +4,46 @@
  * Requirements
  * @ignore
  */
-const winston = require('winston');
+const intel = require('intel');
+
+/**
+ * Instance Id counter
+ * @type {Number}
+ */
+let instanceId = 1;
+
+
+/**
+ * Setup intel
+ */
+intel.config(
+    {
+        formatters:
+        {
+            'console':
+            {
+                'datefmt': '%H:%M:%S:%L',
+                'format': '[%(date)s] %(levelname)s %(name)s - %(message)s',
+                'colorize': true
+            }
+        },
+        handlers:
+        {
+            'console':
+            {
+                'class': intel.handlers.Console,
+                'formatter': 'console'
+            }
+        },
+        loggers:
+        {
+            'entoj':
+            {
+                'handlers': ['console'],
+                'level': intel.ERROR
+            }
+        }
+    });
 
 
 /**
@@ -19,7 +58,7 @@ class Base
      */
     constructor()
     {
-        this._instanceId = (Date.now() * 1000) + (Math.random() * 100);
+        this._instanceId = instanceId++;
     }
 
 
@@ -72,11 +111,11 @@ class Base
     /**
      * The base debug logger
      *
-     * @type {Winston.logger}
+     * @type {intel.logger}
      */
     get logger()
     {
-        return winston.loggers.get('debug');
+        return intel.getLogger('entoj.' + this.className);
     }
 
 
