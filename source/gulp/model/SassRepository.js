@@ -4,11 +4,10 @@
  * Requirements
  * @ignore
  */
-const Base = require('../../Base.js').Base;
+const BaseRepository = require('./BaseRepository.js').BaseRepository;
 const EntitiesRepository = require('../../model/entity/EntitiesRepository.js').EntitiesRepository;
 const PathesConfiguration = require('../../model/configuration/PathesConfiguration.js').PathesConfiguration;
 const ContentType = require('../../model/ContentType.js');
-const assertParameter = require('../../utils/assert.js').assertParameter;
 const trimLeadingSlash = require('../../utils/pathes.js').trimLeadingSlash;
 const normalizeUrlPathSeperators = require('../../utils/urls.js').normalizePathSeperators;
 const union = require('lodash.union');
@@ -21,22 +20,16 @@ const VinylFile = require('vinyl');
  * @memberOf gulp.model
  * @extends {Base}
  */
-class SassRepository extends Base
+class SassRepository extends BaseRepository
 {
     /**
      * @ignore
      */
     constructor(entitiesRepository, pathesConfiguration, options)
     {
-        super();
-
-        //Check params
-        assertParameter(this, 'entitiesRepository', entitiesRepository, true, EntitiesRepository);
-        assertParameter(this, 'pathesConfiguration', pathesConfiguration, true, PathesConfiguration);
+        super(entitiesRepository, pathesConfiguration, options);
 
         // Add initial values
-        this._entitiesRepository = entitiesRepository;
-        this._pathesConfiguration = pathesConfiguration;
         this._defaultGroup = 'common';
     }
 
