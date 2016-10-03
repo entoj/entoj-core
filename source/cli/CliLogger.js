@@ -286,21 +286,6 @@ class CliLogger extends Base
 
 
     /**
-     * @param {string} name
-     * @returns {string}
-     */
-    debug()
-    {
-        if (this._level > 0)
-        {
-            return;
-        }
-        const message = Array.from(arguments).join(' ');
-        this.write(chalk.gray('  ' + this.formatMessage(message)));
-    }
-
-
-    /**
      * @param {array} data
      * @returns {void}
      */
