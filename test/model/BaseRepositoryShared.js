@@ -9,8 +9,7 @@ let BaseValueObject = require(SOURCE_ROOT + '/model/BaseValueObject.js').BaseVal
 let create = require(SOURCE_ROOT + '/utils/objects.js').create;
 let co = require('co');
 let sinon = require('sinon');
-let baseSpec = require('../BaseShared.js').spec;
-
+let baseSpec = require(TEST_ROOT + '/BaseShared.js');
 
 
 /**

@@ -3,23 +3,28 @@
 /**
  * Requirements
  */
-let FileLinter = require(SOURCE_ROOT + '/linter/FileLinter.js').FileLinter;
-let synchronize = require(SOURCE_ROOT + '/utils/synchronize.js');
-let compact = require(FIXTURES_ROOT + '/Entities/Compact.js');
-let sharedSpec = require('./FileLinterShared.js').spec;
+const FileLinter = require(SOURCE_ROOT + '/linter/FileLinter.js').FileLinter;
+const synchronize = require(SOURCE_ROOT + '/utils/synchronize.js');
+const compact = require(FIXTURES_ROOT + '/Entities/Compact.js');
+const fileLinterSpec = require('./FileLinterShared.js');
 
 
 /**
  * Spec
  */
-describe(FileLinter.className, sharedSpec(FileLinter, 'linter/FileLinter', function()
+describe(FileLinter.className, function()
 {
-    beforeEach(function()
-    {
-        fixtures = compact.createFixture();
-        fixtures.root = synchronize.execute(fixtures.pathes, 'resolveEntity', [fixtures.entityGallery]);
-        fixtures.glob = ['/js/*.js'];
-        fixtures.globCount = 2;
-        fixtures.warningRules = { 'no-empty-rulesets': 1 };
-    });
-}));
+    /**
+     * FileLinter Fixture
+     */
+    const fixture = compact.createFixture();
+    fixture.root = synchronize.execute(fixture.pathes, 'resolveEntity', [fixture.entityGallery]);
+    fixture.glob = ['/js/*.js'];
+    fixture.source = fixture.root;
+    fixture.globCount = 2;
+
+    /**
+     * BaseLinter Test
+     */
+    fileLinterSpec(FileLinter, 'linter/FileLinter', fixture);
+});

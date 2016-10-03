@@ -1,47 +1,56 @@
-
 "use strict";
 
 /**
  * Requirements
  */
-let SassFileLinter = require(SOURCE_ROOT + '/linter/SassFileLinter.js').SassFileLinter;
-let synchronize = require(SOURCE_ROOT + '/utils/synchronize.js');
-let compact = require(FIXTURES_ROOT + '/Entities/Compact.js');
-let sharedSpec = require('./FileLinterShared.js').spec;
-let co = require('co');
-let path = require('path');
+const SassFileLinter = require(SOURCE_ROOT + '/linter/SassFileLinter.js').SassFileLinter;
+const synchronize = require(SOURCE_ROOT + '/utils/synchronize.js');
+const compact = require(FIXTURES_ROOT + '/Entities/Compact.js');
+const fileLinterSpec = require('./FileLinterShared.js');
+const co = require('co');
+const path = require('path');
+
 
 /**
  * Spec
  */
-describe(SassFileLinter.className, sharedSpec(SassFileLinter, 'linter/SassFileLinter', function()
+describe(SassFileLinter.className, function()
 {
-    beforeEach(function()
-    {
-        fixtures = compact.createFixture();
-        fixtures.root = synchronize.execute(fixtures.pathes, 'resolveEntity', [fixtures.entityGallery]);
-        fixtures.glob = ['/sass/*.scss'];
-        fixtures.globCount = 1;
-        fixtures.warningRules = { 'mixin-name-format': 1 };
-        fixtures.warningCount = 1;
-    });
+    /**
+     * SassFileLinter Fixture
+     */
+    const fixture = compact.createFixture();
+    fixture.root = synchronize.execute(fixture.pathes, 'resolveEntity', [fixture.entityGallery]);
+    fixture.glob = ['/sass/*.scss'];
+    fixture.source = fixture.root;
+    fixture.globCount = 1;
+    fixture.warningRules = { 'mixin-name-format': 1 };
+    fixture.warningCount = 1;
+    fixture.linterClassName = 'linter/SassLinter';
 
 
+    /**
+     * FileLinter Test
+     */
+    fileLinterSpec(SassFileLinter, 'linter/SassFileLinter', fixture);
+
+
+    /**
+     * SassFileLinter Test
+     */
     describe('#lint', function()
     {
-       it('should accumulate results from all linted files', function()
+        it('should resolve to an array containing all linted files', function()
         {
-            let promise = co(function*()
+            const promise = co(function*()
             {
-                let testee = new SassFileLinter(fixtures.warningRules);
-                let result = yield testee.lint(fixtures.root);
+                const testee = new SassFileLinter(fixture.warningRules);
+                const result = yield testee.lint(fixture.root);
 
-                expect(result.success).to.be.not.ok;
-                expect(result.files).to.have.length(fixtures.globCount);
-                expect(result.warningCount).to.be.equal(fixtures.warningCount);
                 expect(result.messages.find(message => message.filename.endsWith(path.sep + 'm001-gallery.scss'))).to.be.ok;
             });
             return promise;
         });
     });
-}));
+});
+

@@ -3,21 +3,27 @@
 /**
  * Requirements
  */
-let JsLinter = require(SOURCE_ROOT + '/linter/JsLinter.js').JsLinter;
-let sharedSpec = require('./LinterShared.js').spec;
+const JsLinter = require(SOURCE_ROOT + '/linter/JsLinter.js').JsLinter;
+const baseLinterSpec = require('./BaseLinterShared.js');
 
 
 /**
  * Spec
  */
-describe(JsLinter.className, sharedSpec(JsLinter, 'linter/JsLinter', function()
+describe(JsLinter.className, function()
 {
-    beforeEach(function()
+    /**
+     * JsLinter Fixture
+     */
+    const fixture =
     {
-        fixtures =
-        {
-            source: `var a="1";`,
-            warningRules: { 'quotes': [1, 'single'] }
-        };
-    });
-}));
+        source: `var a="1";`,
+        warningRules: { 'quotes': [1, 'single'] },
+        warningCount: 1
+    };
+
+    /**
+     * BaseLinter Test
+     */
+    baseLinterSpec(JsLinter, 'linter/JsLinter', fixture);
+});

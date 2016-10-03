@@ -4,112 +4,75 @@
  * Requirements
  * @ignore
  */
-let create = require(SOURCE_ROOT + '/utils/objects.js').create;
-let co = require('co');
-let sinon = require('sinon');
+const create = require(SOURCE_ROOT + '/utils/objects.js').create;
+const baseLinterSpec = require(TEST_ROOT + '/linter/BaseLinterShared.js');
+const co = require('co');
+const sinon = require('sinon');
+
 
 /**
- * Shared Linter spec
+ * Shared FileLinter spec
  */
-function spec(type, className, specs, instanciator)
+function spec(type, className, fixture, prepareParameters)
 {
-    let createTestee = function(fixture, parameters)
+    /**
+     * BaseLinter Test
+     */
+    baseLinterSpec(type, className, fixture);
+
+    /**
+     * FileLinter Test
+     */
+    const createTestee = function()
     {
-        if (instanciator)
+        const parameters = Array.from(arguments);
+        if (prepareParameters)
         {
-            return instanciator(type, fixture);
+            parameters = prepareParameters(parameters);
         }
         return create(type, parameters);
     };
 
-    return function()
+
+    describe('#constructor', function()
     {
-        describe('#constructor', function()
+        it('should allow to configure glob via options', function()
         {
-            it('should allow to configure glob via options', function()
+            const testee = createTestee({}, { glob: fixture.glob });
+            expect(testee.glob).to.be.contain(fixture.glob[0]);
+        });
+    });
+
+
+    describe('#lint', function()
+    {
+        it('should resolve to an object containing all parsed files', function()
+        {
+            const promise = co(function*()
             {
-                let testee = createTestee(fixtures, [{}, { glob:fixtures.glob }]);
-                expect(testee.glob).to.be.contain(fixtures.glob[0]);
+                const testee = createTestee({}, { glob: fixture.glob });
+                const result = yield testee.lint(fixture.root);
+                expect(result).to.be.ok;
+                expect(result.files).to.have.length(fixture.globCount);
             });
+            return promise;
         });
 
-
-        describe('#className', function()
+        it('should lint each file that is matched by the given glob and root path', function()
         {
-            it('should return the namespaced class name', function()
+            const promise = co(function*()
             {
-                let testee = createTestee(fixtures);
-                expect(testee.className).to.be.equal(className);
+                const testee = createTestee();
+                sinon.spy(testee, 'lintFile');
+                const result = yield testee.lint(fixture.root, { glob: fixture.glob });
+                expect(testee.lintFile.called).to.be.ok;
             });
+            return promise;
         });
-
-
-        describe('#lint', function()
-        {
-            it('should resolve to an object with a success flag and the linting results', function()
-            {
-                let testee = createTestee(fixtures);
-                let promise = testee.lint(fixtures.root).then(function(result)
-                {
-                    expect(result.success).to.exist;
-                    expect(result.errorCount).to.exist;
-                    expect(result.warningCount).to.exist;
-                    expect(result.messages).to.exist;
-                    expect(result.files).to.exist;
-                });
-                return promise;
-            });
-
-
-            it('should resolve to an object containing all parsed files', function()
-            {
-                let promise = co(function*()
-                {
-                    let testee = createTestee(fixtures, [{}, { glob: fixtures.glob }]);
-                    let result = yield testee.lint(fixtures.root);
-                    expect(result).to.be.ok;
-                    expect(result.files).to.have.length(fixtures.globCount);
-                });
-                return promise;
-            });
-
-
-            it('should apply no rules per default', function()
-            {
-                let testee = createTestee(fixtures);
-                let promise = testee.lint(fixtures.root).then(function(result)
-                {
-                    expect(result.success).to.be.ok;
-                    expect(result.errorCount).to.equal(0);
-                    expect(result.warningCount).to.equal(0);
-                    expect(result.messages).to.have.length(0);
-                });
-                return promise;
-            });
-
-
-            it('should lint each file that is matched by the given glob and root path', function()
-            {
-                let promise = co(function*()
-                {
-                    let testee = createTestee(fixtures);
-                    sinon.spy(testee, 'lintFile');
-                    let result = yield testee.lint(fixtures.root, { glob: fixtures.glob });
-                    expect(testee.lintFile.called).to.be.ok;
-                });
-                return promise;
-            });
-        });
-
-
-        if (specs)
-        {
-            specs();
-        }
-    };
+    });
 }
 
 /**
  * Exports
  */
-module.exports.spec = spec;
+module.exports = spec;
