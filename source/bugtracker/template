@@ -1,9 +1,0 @@
-|               | *CHROME* | *FIREFOX* | *IE9* | *IE10* | *IE11* | *iOS8* | *Android 4.4* |
-| *DESKTOP*     | none     | none      | none  | none   | none   |        |               |
-| *TABLET*      | none     | none      | none  | none   | none   |        |               |
-| *MINI TABLET* | none     | none      | none  | none   | none   |        |               |
-| *PHABLET*     | none     | none      | none  | none   | none   |        |               |
-| *PHONE*       | none     | none      | none  | none   | none   |        |               |
-
-error - Es wurden beim Testing Fehler gefunden
-ok - Getestet & Fertig
