@@ -4,8 +4,9 @@
  * Requirements
  * @ignore
  */
-const winston = require('winston');
+const intel = require('intel');
 const isPlainObject = require('lodash.isplainobject');
+
 
 /**
  * @class
@@ -73,11 +74,11 @@ class BaseArray extends Array
     /**
      * The base debug logger
      *
-     * @type {Winston.logger}
+     * @type {intel.logger}
      */
     get logger()
     {
-        return winston.loggers.get('debug');
+        return intel.getLogger('entoj.' + this.className);
     }
 
 

@@ -4,7 +4,7 @@
  * Requirements
  * @ignore
  */
-const winston = require('winston');
+const intel = require('intel');
 const isPlainObject = require('lodash.isplainobject');
 const iterable = require('../utils/iterable.js').iterable;
 const merge = require('lodash.merge');
@@ -76,11 +76,11 @@ class BaseMap extends Map
     /**
      * The base debug logger
      *
-     * @type {Winston.logger}
+     * @type {intel.logger}
      */
     get logger()
     {
-        return winston.loggers.get('debug');
+        return intel.getLogger('entoj.' + this.className);
     }
 
 
@@ -90,6 +90,13 @@ class BaseMap extends Map
      */
     getByPath(path, defaultValue)
     {
+        // Path valid?
+        if (!path)
+        {
+            return defaultValue;
+        }
+
+        // Walk path and find value
         const names = path.split('.');
         let current = this;
         for (const name of names)
@@ -108,21 +115,14 @@ class BaseMap extends Map
                 current = undefined;
             }
 
-            // Are we done?
+            // Should we stop here?
             if (typeof current === 'undefined')
             {
                 return defaultValue;
             }
         }
 
-        // Return found value
-        if (typeof current !== 'undefined')
-        {
-            return current;
-        }
-
-        // Return default when nothing was found
-        return defaultValue;
+        return current;
     }
 
 
