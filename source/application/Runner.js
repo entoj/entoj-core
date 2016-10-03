@@ -89,6 +89,7 @@ class Runner extends Base
     }
 
 
+    /* istanbul ignore next */
     /**
      * @returns {Promise}
      */
@@ -184,18 +185,18 @@ class Runner extends Base
     /**
      * @returns {Promise}
      */
-    run(options)
+    run()
     {
         const scope = this;
         let handled = false;
-        const parameters = require('minimist')(options);
-        parameters.command = parameters._.length ? parameters._.shift() : false;
-        parameters.action = parameters._.length ? parameters._.shift() : false;
+        this._context.parameters._ = this._context.parameters._ || [];
+        this._context.parameters.command = this._context.parameters._.length ? this._context.parameters._.shift() : false;
+        this._context.parameters.action = this._context.parameters._.length ? this._context.parameters._.shift() : false;
         const promise = co(function *()
         {
             for (const command of scope._commands)
             {
-                const result = yield command.execute(parameters);
+                const result = yield command.execute(scope._context.parameters);
                 if (result !== false)
                 {
                     handled = true;
@@ -203,10 +204,11 @@ class Runner extends Base
             }
             if (!handled)
             {
-                scope.cliLogger.debug('No command handled request');
+                scope.cliLogger.error('No command handled request');
                 scope.help();
             }
             return true;
+
         }).catch(function(error)
         {
             scope.cliLogger.error(error);

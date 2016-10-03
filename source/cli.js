@@ -11,11 +11,10 @@ if (process.argv.length > 1 && process.argv[process.argv.length - 2] == '--confi
     configuration = require(filename);
 }
 
-// Add cli configuration
-const parameters = process.argv.splice(2);
-configuration.parameters = require('minimist')(parameters);
+// Add cli parameters
+configuration.parameters = require('minimist')(process.argv.splice(2));
 
 // Create context & run commands
 const context = new Context(configuration);
 const runner = context.di.create(Runner);
-runner.run(parameters);
+runner.run();
