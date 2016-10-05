@@ -16,12 +16,14 @@ const LinkFilter = require('./filter/LinkFilter.js').LinkFilter;
 const LinkTypeFilter = require('./filter/LinkTypeFilter.js').LinkTypeFilter;
 const EmptyFilter = require('./filter/EmptyFilter.js').EmptyFilter;
 const NotEmptyFilter = require('./filter/NotEmptyFilter.js').NotEmptyFilter;
+const MarkupFilter = require('./filter/MarkupFilter.js').MarkupFilter;
 const GlobalConfiguration = require('../model/configuration/GlobalConfiguration.js').GlobalConfiguration;
 const BuildConfiguration = require('../model/configuration/BuildConfiguration.js').BuildConfiguration;
 const PathesConfiguration = require('../model/configuration/PathesConfiguration.js').PathesConfiguration;
 const EntitiesRepository = require('../model/entity/EntitiesRepository.js').EntitiesRepository;
 const Template = require('./Template.js').Template;
 const assertParameter = require('../utils/assert.js').assertParameter;
+const intel = require('intel');
 
 
 /**
@@ -66,6 +68,7 @@ class Environment extends nunjucks.Environment
         new LinkTypeFilter(this);
         new EmptyFilter(this);
         new NotEmptyFilter(this);
+        new MarkupFilter(this);
 
         // Add globals
         this.addGlobal('environment', this._buildConfiguration);
@@ -105,6 +108,17 @@ class Environment extends nunjucks.Environment
 
 
     /**
+     * The base debug logger
+     *
+     * @type {intel.logger}
+     */
+    get logger()
+    {
+        return intel.getLogger('entoj.' + this.className);
+    }
+
+
+    /**
      * Returns true if the rendered content should contain
      * no random elements.
      *
@@ -134,7 +148,20 @@ class Environment extends nunjucks.Environment
     renderString(content, context, callback)
     {
         const template = this._template.prepare(content);
-        return super.renderString(template, context, callback);
+        const result = super.renderString(template, context, callback);
+        this.logger.verbose('renderString\n', result);
+        return result;
+    }
+
+
+    /**
+     * @type {string}
+     */
+    render(name, context, callback)
+    {
+        const result = super.render(name, context, callback);
+        this.logger.verbose('render name=' + name + '\n', result);
+        return result;
     }
 }
 
