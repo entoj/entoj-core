@@ -10,6 +10,7 @@ const CallParser = require('../parser/jinja/CallParser.js').CallParser;
 const ContentType = require('../model/ContentType.js');
 const DocumentationCallable = require('../model/documentation/DocumentationCallable.js').DocumentationCallable;
 const synchronize = require('../utils/synchronize.js');
+const stopWatch = require('../utils/StopWatch.js').stopWatch;
 const urls = require('../utils/urls.js');
 const unique = require('lodash.uniq');
 const assertParameter = require('../utils/assert.js').assertParameter;
@@ -32,9 +33,9 @@ class Template extends Base
         assertParameter(this, 'entitiesRepository', entitiesRepository, true, EntitiesRepository);
 
         // Add options
-        this._basePath = basePath;
+        this._basePath = basePath || '';
         this._entitiesRepository = entitiesRepository;
-        this._jinjaParser = new CallParser();
+        this._callParser = new CallParser();
     }
 
 
@@ -62,10 +63,12 @@ class Template extends Base
     /**
      * @returns {Boolean|String}
      */
-    getMacroInclude(name)
+    getInclude(name)
     {
+        stopWatch.start(this.className + '.getInclude');
+        stopWatch.start(this.className + '.getInclude:getItems');
         const items = synchronize.execute(this._entitiesRepository, 'getItems');
-
+        stopWatch.stop(this.className + '.getInclude:getItems');
         for (const item of items)
         {
             const macros = item.documentation.filter(doc => doc.contentType == ContentType.JINJA && doc instanceof DocumentationCallable);
@@ -73,11 +76,12 @@ class Template extends Base
             {
                 if (macro.name === name)
                 {
+                    stopWatch.stop(this.className + '.getInclude');
                     return '{% include "' + urls.normalize(macro.file.filename.replace(this._basePath, '')) + '" %}';
                 }
             }
         }
-
+        stopWatch.stop(this.className + '.getInclude');
         return false;
     }
 
@@ -87,14 +91,16 @@ class Template extends Base
      */
     prepare(content)
     {
+        stopWatch.start(this.className + '.prepare');
+
         // Get macros
-        const macros = synchronize.execute(this._jinjaParser, 'parse', [content]);
+        const macros = synchronize.execute(this._callParser, 'parse', [content]);
 
         // Build includes
         let includes = [];
-        for (const macro of macros)
+        for (const macro of macros.externals)
         {
-            const include = this.getMacroInclude(macro);
+            const include = this.getInclude(macro);
             if (include)
             {
                 includes.push(include);
@@ -108,6 +114,9 @@ class Template extends Base
         {
             result = include + '\n' + result;
         }
+
+        stopWatch.stop(this.className + '.prepare');
+        this.logger.verbose('Prepared Template\n', result);
 
         return result;
     }
