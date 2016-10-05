@@ -14,6 +14,8 @@ const BreakpointFilter = require('./filter/BreakpointFilter.js').BreakpointFilte
 const MediaQueryFilter = require('./filter/MediaQueryFilter.js').MediaQueryFilter;
 const LinkFilter = require('./filter/LinkFilter.js').LinkFilter;
 const LinkTypeFilter = require('./filter/LinkTypeFilter.js').LinkTypeFilter;
+const EmptyFilter = require('./filter/EmptyFilter.js').EmptyFilter;
+const NotEmptyFilter = require('./filter/NotEmptyFilter.js').NotEmptyFilter;
 const GlobalConfiguration = require('../model/configuration/GlobalConfiguration.js').GlobalConfiguration;
 const BuildConfiguration = require('../model/configuration/BuildConfiguration.js').BuildConfiguration;
 const PathesConfiguration = require('../model/configuration/PathesConfiguration.js').PathesConfiguration;
@@ -62,6 +64,8 @@ class Environment extends nunjucks.Environment
         new MediaQueryFilter(this, this._globalConfiguration.get('breakpoints'));
         new LinkFilter(this);
         new LinkTypeFilter(this);
+        new EmptyFilter(this);
+        new NotEmptyFilter(this);
 
         // Add globals
         this.addGlobal('environment', this._buildConfiguration);
