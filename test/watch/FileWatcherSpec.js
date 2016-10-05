@@ -270,7 +270,7 @@ describe(FileWatcher.className, function()
             return promise;
         });
 
-        it('should remove duplicate changes', function()
+        it('should ignore duplicate changes', function()
         {
             let promise = co(function *()
             {
@@ -339,6 +339,44 @@ describe(FileWatcher.className, function()
                     sites:
                     [
                         'foo'
+                    ]
+                };
+                const changes = yield testee.processEvents(input);
+                expect(changes).to.be.deep.equal(expected);
+                return true;
+            });
+            return promise;
+        });
+
+        it('should recognize changes of entity files', function()
+        {
+            const promise = co(function *()
+            {
+                const testee = new FileWatcher(fixtures.cliLogger, fixtures.pathes, fixtures.categoriesRepository, fixtures.entityIdParser);
+                const input =
+                [
+                    { name: 'change', path: '/base/module-groups/g001-footer/g001-footer.md' }
+                ];
+                const expected =
+                {
+                    entity:
+                    {
+                        add:
+                        [
+                            '/base/module-groups/g001-footer'
+                        ]
+                    },
+                    extensions:
+                    [
+                        '.md'
+                    ],
+                    files:
+                    [
+                        '/base/module-groups/g001-footer/g001-footer.md'
+                    ],
+                    sites:
+                    [
+                        'base'
                     ]
                 };
                 const changes = yield testee.processEvents(input);

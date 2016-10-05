@@ -11,6 +11,7 @@ const EntityCategoriesRepository = require('../model/entity/EntityCategoriesRepo
 const EntityCategory = require('../model/entity/EntityCategory.js').EntityCategory;
 const IdParser = require('../parser/entity/IdParser.js').IdParser;
 const assertParameter = require('../utils/assert.js').assertParameter;
+const urlify = require('../utils/urls.js').urlify;
 const chokidar = require('chokidar');
 const co = require('co');
 const debounce = require('lodash.debounce');
@@ -108,6 +109,12 @@ class FileWatcher extends Base
                 extensions: [],
                 sites: []
             };
+
+            const compare = function(value1, value2)
+            {
+                return (value1 === value2) || (urlify(value1) === urlify(value2));
+            };
+
             for (const event of events)
             {
                 // Add path & extension
@@ -118,27 +125,31 @@ class FileWatcher extends Base
                 }
 
                 // Prepare
+                let eventName = event.name;
                 const parts = pathes.normalizePathSeperators(event.path).split(PATH_SEPERATOR);
                 const siteName = parts[1] || false;
                 const entityCategoryName = parts[2] || false;
                 const entityName = parts[3] || false;
+
+                // Get category
                 let entityCategory;
                 if (entityCategoryName)
                 {
-                    entityCategory = yield scope._entityCategoriesRepository.findBy(EntityCategory.ANY, entityCategoryName);
+                    entityCategory = yield scope._entityCategoriesRepository.findBy(EntityCategory.ANY, entityCategoryName, compare);
                 }
+
+                // Get entity id
                 let entityId;
                 if (entityName)
                 {
                     entityId = yield scope._entityIdParser.parse(entityName);
                 }
-                let eventName = event.name;
 
                 // Site
                 if (siteName)
                 {
                     result.sites.push(siteName);
-                    if (!entityCategory  && (!entityCategoryName || entityCategoryName.indexOf('.') !== -1) && !entityId)
+                    if (!entityCategory && (!entityCategoryName || entityCategoryName.indexOf('.') !== -1) && !entityId)
                     {
                         if (parts.length > 2)
                         {
@@ -189,7 +200,6 @@ class FileWatcher extends Base
                         result.entity[eventName].push(entityPath);
                     }
                 }
-
 
                 // Entity
                 if (siteName && entityCategory && entityId)
