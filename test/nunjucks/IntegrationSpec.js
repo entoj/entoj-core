@@ -37,8 +37,8 @@ describe('nunjucks/Integration', function()
     {
         it('should be able to access maps via pathes', function()
         {
-            let tpl = "Value:{{ map.p.s }}";
-            let testee = fixtures.environment.renderString(tpl, { map: fixtures.map });
+            const tpl = "Value:{{ map.p.s }}";
+            const testee = fixtures.environment.renderString(tpl, { map: fixtures.map });
             expect(testee).to.contain('Value:secret');
         });
     });
@@ -48,8 +48,8 @@ describe('nunjucks/Integration', function()
     {
         it('should be able to call methods', function()
         {
-            let tpl = "Count:{{ repository.getItems().length }}";
-            let testee = fixtures.environment.renderString(tpl, { repository: fixtures.repository });
+            const tpl = "Count:{{ repository.getItems().length }}";
+            const testee = fixtures.environment.renderString(tpl, { repository: fixtures.repository });
             expect(testee).to.contain('Count:2');
         });
     });
@@ -58,8 +58,8 @@ describe('nunjucks/Integration', function()
     {
         it('should be able to call methods', function()
         {
-            let tpl = "Count:{{ repository.getItems().length }}";
-            let testee = fixtures.environment.renderString(tpl, { repository: fixtures.repository });
+            const tpl = "Count:{{ repository.getItems().length }}";
+            const testee = fixtures.environment.renderString(tpl, { repository: fixtures.repository });
             expect(testee).to.contain('Count:2');
         });
     });
@@ -68,8 +68,8 @@ describe('nunjucks/Integration', function()
     {
         it('should be able to call methods with class arguments', function()
         {
-            let tpl = "Class:{{ className(BaseRepository) }}";
-            let testee = fixtures.environment.renderString(tpl, { className: fixtures.className, BaseRepository: BaseRepository });
+            const tpl = "Class:{{ className(BaseRepository) }}";
+            const testee = fixtures.environment.renderString(tpl, { className: fixtures.className, BaseRepository: BaseRepository });
             expect(testee).to.contain('Class:model/BaseRepository');
         });
     });
