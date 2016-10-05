@@ -1,5 +1,4 @@
 'use strict';
-/* eslint no-cond-assign:0 */
 
 /**
  * Requirements
@@ -9,6 +8,7 @@ const Parser = require('../Parser.js').Parser;
 const co = require('co');
 const nunjucks = require('nunjucks');
 const unique = require('lodash.uniq');
+const difference = require('lodash.difference');
 require('../../utils/prototypes.js');
 
 
@@ -29,21 +29,25 @@ class CallParser extends Parser
     /**
      * @inheritDoc
      */
-    parseYieldCall(ast)
+    parseCallOrMacro(ast)
     {
         let token = ast.nextToken();
-        let result = false;
+        const result = {};
         let name = false;
-        let callmacro = false;
+        let call = false;
+        let definition = false;
         while(token)
         {
-            //console.log('parseYieldCall', token);
             switch(token.type)
             {
                 case nunjucks.lexer.TOKEN_SYMBOL:
                     if (token.value === 'call')
                     {
-                        callmacro = true;
+                        call = true;
+                    }
+                    else if (token.value === 'macro')
+                    {
+                        definition = true;
                     }
                     else
                     {
@@ -52,9 +56,13 @@ class CallParser extends Parser
                     break;
 
                 case nunjucks.lexer.TOKEN_LEFT_PAREN:
-                    if (callmacro && !result)
+                    if (call && !result.call)
                     {
-                        result = name;
+                        result.call = name;
+                    }
+                    if (definition && !result.definition)
+                    {
+                        result.definition = name;
                     }
                     break;
 
@@ -82,7 +90,6 @@ class CallParser extends Parser
         let name = false;
         while(token)
         {
-            //console.log('parseSimpleCall', token);
             switch(token.type)
             {
                 case nunjucks.lexer.TOKEN_SYMBOL:
@@ -114,18 +121,26 @@ class CallParser extends Parser
     find(content)
     {
         const ast = nunjucks.lexer.lex(content);
-        const result = [];
+        const result =
+        {
+            calls: [],
+            definitions: [],
+            externals: []
+        };
         let token;
         while ((token = ast.nextToken()))
         {
-            //console.log('tokenize', token);
             switch (token.type)
             {
                 case 'block-start':
-                    const yieldCall = this.parseYieldCall(ast);
-                    if (yieldCall)
+                    const yieldCall = this.parseCallOrMacro(ast);
+                    if (yieldCall.call)
                     {
-                        result.push(yieldCall);
+                        result.calls.push(yieldCall.call);
+                    }
+                    if (yieldCall.definition)
+                    {
+                        result.definitions.push(yieldCall.definition);
                     }
                     break;
 
@@ -133,7 +148,7 @@ class CallParser extends Parser
                     const simpleCall = this.parseSimpleCall(ast);
                     if (simpleCall)
                     {
-                        result.push(simpleCall);
+                        result.calls.push(simpleCall);
                     }
                     break;
 
@@ -161,8 +176,9 @@ class CallParser extends Parser
         const scope = this;
         const promise = co(function*()
         {
-            let result = yield scope.find(content);
-            result = unique(result);
+            const result = yield scope.find(content);
+            result.calls = unique(result.calls);
+            result.externals = difference(result.calls, result.definitions);
             return result;
         })
         .catch(function(error)
