@@ -140,6 +140,7 @@ class BaseRepository extends Base
         return promise;
     }
 
+
     /**
      * Called whenever any item has changed.
      * This is done automatically when invalidating the repository.
@@ -166,9 +167,11 @@ class BaseRepository extends Base
         {
             const result = {};
 
-            // Check if we only need to load all items
+            // Check if we need to load all items
             if (!changes || !scope._isLoaded || !scope._items)
             {
+                scope.logger.debug('invalidate: load all items');
+
                 if (scope._loader)
                 {
                     scope._items = yield scope._loader.load();
@@ -190,7 +193,9 @@ class BaseRepository extends Base
                 // Load updates
                 if (changes.add)
                 {
+                    scope.logger.debug('invalidate: load updated items', changes.add);
                     items = yield scope._loader.load(changes.add);
+                    scope.logger.debug('invalidate: loaded items', items);
                 }
 
                 // Apply updates
@@ -203,6 +208,7 @@ class BaseRepository extends Base
                     {
                         for (existingItem of existingItems)
                         {
+                            scope.logger.debug('invalidate: updating existing items');
                             yield scope.invalidateBefore(result, 'update', existingItem);
                             yield existingItem.update(item, true);
                             yield scope.invalidateAfter(result, 'update', existingItem);
