@@ -5,6 +5,7 @@
  * @ignore
  */
 const Base = require('../Base.js').Base;
+const stopWatch = require('../utils/StopWatch.js').stopWatch;
 const signals = require('signals');
 const co = require('co');
 
@@ -23,7 +24,7 @@ class BaseRepository extends Base
     {
         super();
 
-        // Assign options
+        // Assign
         this._items = [];
         this._loader = loader;
         this._isLoaded = false;
@@ -43,6 +44,7 @@ class BaseRepository extends Base
     {
         return 'model/BaseRepository';
     }
+
 
     /**
      * @property {*}
@@ -115,19 +117,24 @@ class BaseRepository extends Base
      */
     getItems()
     {
+        stopWatch.start(this.className + '.getItems');
         if (this._isLoaded || !this._loader)
         {
+            stopWatch.stop(this.className + '.getItems');
             return Promise.resolve(this._items);
         }
         const scope = this;
         const promise = co(function* ()
         {
+            stopWatch.start(scope.className + '.getItems:load');
             const data = yield scope._loader.load();
             const loadedItems = Array.isArray(data) ? data : [];
             scope._items = loadedItems;
             scope._isLoaded = true;
             yield scope.loadAfter(scope._items);
             yield scope.updatedItems();
+            stopWatch.stop(scope.className + '.getItems:load');
+            stopWatch.stop(scope.className + '.getItems');
             return scope._items;
         });
         return promise;
