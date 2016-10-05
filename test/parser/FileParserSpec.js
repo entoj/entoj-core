@@ -10,6 +10,7 @@ const co = require('co');
 const sinon = require('sinon');
 const compact = require(FIXTURES_ROOT + '/Entities/Compact.js');
 
+
 /**
  * Spec
  */
