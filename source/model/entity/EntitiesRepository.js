@@ -102,41 +102,6 @@ class EntitiesRepository extends BaseRepository
 
 
     /**
-     * Removes items by their uniqueId's or the actual value's.
-     *
-     * @returns {Promise.<Boolean>}
-     */
-    __remove()
-    {
-        const scope = this;
-        const removeItems = Array.from(arguments);
-        const promise = co(function *()
-        {
-            const items = yield scope.getItems();
-            scope._items = [];
-            for (const item of items)
-            {
-                let keep = true;
-                for (const removeItem of removeItems)
-                {
-                    if (item.id.isEqualTo(removeItem.id))
-                    {
-                        keep = false;
-                    }
-                }
-                if (keep)
-                {
-                    scope._items.push(item);
-                }
-            }
-            yield scope.updatedItems();
-            return true;
-        });
-        return promise;
-    }
-
-
-    /**
      * @param {Site}
      * @returns {Promise.<Array>}
      */
