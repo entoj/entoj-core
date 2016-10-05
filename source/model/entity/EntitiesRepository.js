@@ -88,7 +88,7 @@ class EntitiesRepository extends BaseRepository
                 const entity = yield scope.getById(query.id);
                 if (entity)
                 {
-                    result.push(entity);
+                    result.push(entity instanceof EntityAspect ? entity.entity : entity);
                 }
             }
             else
