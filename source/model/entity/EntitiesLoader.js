@@ -94,12 +94,13 @@ class EntitiesLoader extends PluggableLoader
                         const categoryPathExists = yield fs.exists(categoryPath);
                         if (categoryPathExists)
                         {
+                            const categoryName = categoryPath.replace(scope._pathesConfiguration.sites, '');
                             let entityId;
 
                             // Global category
                             if (category.isGlobal)
                             {
-                                result.push(categoryPath);
+                                result.push(categoryName);
                             }
                             // Read entities
                             else
@@ -107,10 +108,10 @@ class EntitiesLoader extends PluggableLoader
                                 const directories = yield fs.readdir(categoryPath);
                                 for (const entityName of directories)
                                 {
-                                    entityId = yield scope._entityIdParser.parse(categoryPath + '/' + entityName);
+                                    entityId = yield scope._entityIdParser.parse(categoryName + '/' + entityName);
                                     if (entityId && (entityId.entityName.length || entityId.entityNumber))
                                     {
-                                        result.push(categoryPath + '/' + entityName);
+                                        result.push(categoryName + '/' + entityName);
                                     }
                                 }
                             }
