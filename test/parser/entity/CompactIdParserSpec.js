@@ -89,6 +89,21 @@ describe(CompactIdParser.className, function()
                 return promise;
             });
 
+            xit('should handle trailing pathes that look like entities gracefully /hamburg-sued-relaunch/sites/default/modules/m-gallery/test.j2', function()
+            {
+                const testee = new CompactIdParser(fixtures.sitesRepository, fixtures.categoriesRepository, { useNumbers: false });
+                const promise = testee.parse('/hamburg-sued-relaunch/sites/default/modules/m-gallery/test.j2').then(function(result)
+                {
+                    console.log(result);
+                    expect(result).to.be.ok;
+                    expect(result.entityCategory).to.be.equal(fixtures.categoryModule);
+                    expect(result.entityName).to.be.equal('gallery');
+                    expect(result.entityNumber).to.be.equal(0);
+                    expect(result.siteName).to.be.equal('default');
+                });
+                return promise;
+            });
+
             it('should resolve to false when a unconfigured category is used like in x-gallery', function()
             {
                 const testee = new CompactIdParser(fixtures.sitesRepository, fixtures.categoriesRepository, { useNumbers: false });

@@ -30,7 +30,7 @@ describe(NodeTransformer.className, function()
     });
 
 
-    describe('#transform()', function()
+    xdescribe('#transform()', function()
     {
         const rootPath = FIXTURES_ROOT + '/Transformer/';
 

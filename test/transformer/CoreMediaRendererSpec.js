@@ -30,7 +30,7 @@ describe(CoreMediaRenderer.className, function()
     });
 
 
-    describe('#render()', function()
+    xdescribe('#render()', function()
     {
         const rootPath = FIXTURES_ROOT + '/Transformer/';
         const files = glob.sync('*.input.j2', { cwd: rootPath });
