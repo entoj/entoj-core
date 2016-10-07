@@ -26,6 +26,7 @@ class HtmlFormatter extends BaseFormatter
         this._currentTag = false;
         this._voidTags = ['area', 'base', 'br', 'col', 'command', 'embed', 'hr', 'img', 'input', 'keygen', 'link', 'meta', 'param', 'source', 'track', 'wbr'];
         this._inlineTags = ['a', 'span', 'title', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'small', 'em', 'b'];
+        this._inlineTags = [];
     }
 
 
