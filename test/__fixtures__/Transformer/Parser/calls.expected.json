@@ -1,0 +1,55 @@
+{
+    "type": "transformer.node/NodeList",
+    "children": [
+        {
+            "type": "transformer.node/CallNode",
+            "children": [],
+            "name": "simple",
+            "parameters": [
+                {
+                    "type": "transformer.node/ParameterNode",
+                    "fields": [
+                        "model"
+                    ],
+                    "value": [
+                        {
+                            "type": "transformer.node/VariableNode",
+                            "fields": [
+                                "self"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "transformer.node/TextNode",
+            "value": "\n"
+        },
+        {
+            "type": "transformer.node/CallNode",
+            "children": [],
+            "name": "yield",
+            "parameters": [
+                {
+                    "type": "transformer.node/ParameterNode",
+                    "fields": [
+                        "model"
+                    ],
+                    "value": [
+                        {
+                            "type": "transformer.node/VariableNode",
+                            "fields": [
+                                "self"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "transformer.node/TextNode",
+            "value": "\n"
+        }
+    ]
+}

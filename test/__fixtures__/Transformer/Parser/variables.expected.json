@@ -1,0 +1,38 @@
+{
+    "type": "transformer.node/NodeList",
+    "children": [
+        {
+            "type": "transformer.node/OutputNode",
+            "children": [
+                {
+                    "type": "transformer.node/VariableNode",
+                    "fields": [
+                        "moduleClass"
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "transformer.node/TextNode",
+            "value": "\n"
+        },
+        {
+            "type": "transformer.node/OutputNode",
+            "children": [
+                {
+                    "type": "transformer.node/VariableNode",
+                    "fields": [
+                        "model",
+                        "image",
+                        "url",
+                        "1x1"
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "transformer.node/TextNode",
+            "value": "\n"
+        }
+    ]
+}

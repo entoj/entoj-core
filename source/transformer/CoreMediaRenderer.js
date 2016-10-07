@@ -1,0 +1,429 @@
+'use strict';
+
+/**
+ * Requirements
+ * @ignore
+ */
+const BaseRenderer = require('./BaseRenderer.js').BaseRenderer;
+
+
+/**
+ * CoreMedia template renderer
+ */
+class CoreMediaRenderer extends BaseRenderer
+{
+    /**
+     * @inheritDoc
+     */
+    static get className()
+    {
+        return 'transformer/CoreMediaRenderer';
+    }
+
+
+    /**
+     * Renders a variable
+     */
+    getVariable(node)
+    {
+        let result = '';
+        if (node.fields && node.fields.length > 0)
+        {
+            for (const field of node.fields)
+            {
+                if (typeof field == 'number')
+                {
+                    result = result.substring(0, result.length - 1);
+                    result+= '[' + field + '].';
+                }
+                else
+                {
+                    result+= field + '.';
+                }
+            }
+            result = result.substring(0, result.length - 1);
+        }
+        return result;
+    }
+
+
+    /**
+     *
+     */
+    getLiteral(node)
+    {
+        let result = '';
+        if (typeof node.value == 'string')
+        {
+            result+= '\'';
+        }
+        result+= node.value;
+        if (typeof node.value == 'string')
+        {
+            result+= '\'';
+        }
+        return result;
+    }
+
+
+    /**
+     *
+     */
+    renderFilter(node)
+    {
+        let result = '';
+
+        // handle cm:include for markup fields
+        if (node.name === 'markup')
+        {
+            result+= '<cm:include';
+            result+= ' self="${ ' + this.renderExpression(node.value) + ' }"';
+            result+= ' />';
+        }
+        else
+        {
+            result = '<!-- failed rendering filter -->';
+            console.log('renderFilter: Not Implemented', node);
+        }
+
+        return result;
+    }
+
+
+    /**
+     *
+     */
+    renderVariable(node)
+    {
+        return '${ ' + this.getVariable(node) + ' }';
+    }
+
+
+    /**
+     *
+     */
+    renderCondition(node)
+    {
+        let result = '';
+        switch(node.type)
+        {
+            case 'FilterNode':
+                if (node.value.type === 'FilterNode')
+                {
+                    result+= '(';
+                }
+                result+= this.renderCondition(node.value);
+                if (node.value.type === 'FilterNode')
+                {
+                    result+= ')';
+                }
+                result+= '.' + node.name + '()';
+                break;
+
+            case 'VariableNode':
+                result+= node.fields.join('.');
+                break;
+
+            case 'NodeList':
+            case 'OutputNode':
+            case 'ConditionNode':
+                for (const child of node.children)
+                {
+                    result+= this.renderCondition(child);
+                }
+                break;
+
+            case 'LiteralNode':
+                result+= this.getLiteral(node);
+                break;
+
+            case 'OperandNode':
+            case 'BooleanOperandNode':
+                result = result.trim() + ' ' + node.value + ' ';
+                break;
+
+            case 'VariableNode':
+                result+= this.getVariable(node);
+                break;
+
+            case 'GroupNode':
+                result+= '(';
+                for (const groupNode of node.children)
+                {
+                    result+= this.renderCondition(groupNode);
+                }
+                result+= ')';
+                break;
+
+            default:
+                this.logger.error('renderCondition: Not Implemented', node);
+        }
+        return result;
+    }
+
+
+    /**
+     *
+     */
+    renderExpression(node)
+    {
+        let result = '';
+        const type = Array.isArray(node) ? 'Array' : node.type;
+        switch(type)
+        {
+            case 'NodeList':
+            case 'OutputNode':
+                for (const child of node.children)
+                {
+                    result+= this.renderExpression(child);
+                }
+                break;
+
+            case 'Array':
+                for (const child of node)
+                {
+                    result+= this.renderExpression(child);
+                }
+                break;
+
+            case 'ExpressionNode':
+                for (const child of node.children)
+                {
+                    result+= this.renderExpression(child);
+                }
+                break;
+
+            case 'LiteralNode':
+                result+= this.getLiteral(node);
+                break;
+
+            case 'OperandNode':
+            case 'BooleanOperandNode':
+                result = result.trim() + ' ' + node.value + ' ';
+                break;
+
+            case 'VariableNode':
+                result+= this.getVariable(node);
+                break;
+
+            default:
+                this.logger.error('renderExpression: Not Implemented', type, node);
+        }
+        return result;
+    }
+
+
+    /**
+     *
+     */
+    renderMacro(node)
+    {
+        let result = '';
+        result+= '<!-- Macro ' + node.name + ' -->' + EOL;
+
+        // Handle default values
+        for (const parameter of node.parameters)
+        {
+            if (parameter.fields.length && parameter.fields[0] !== 'model')
+            {
+                result+= '<c:if test="${ empty ' + this.getVariable(parameter) + ' }">' + EOL;
+                result+= '  <c:set var="' + this.getVariable(parameter) + '" value="${ ' + this.renderExpression(parameter.value) + ' }" />' + EOL;
+                result+= '</c:if>' + EOL;
+            }
+        }
+
+        // Render contents
+        for (const child of node.children)
+        {
+            result+= this.renderNode(child);
+        }
+
+        result+= '<!-- /Macro ' + node.name + ' -->' + EOL;
+        return result;
+    }
+
+
+    /**
+     *
+     */
+    renderSet(node)
+    {
+        let result = '';
+
+        // handle cm:link
+        if (node.type === 'SetNode' &&
+            node.value.type === 'ExpressionNode' &&
+            node.value.children.length &&
+            node.value.children[0].type === 'FilterNode' &&
+            node.value.children[0].name === 'link')
+        {
+            result+= '<cm:link';
+            result+= ' var="' + this.getVariable(node.variable) + '"';
+            result+= ' target="${ ' + this.renderExpression(node.value.children[0].value) + ' }"';
+            result+= ' />';
+        }
+        // Handle standard set
+        else if (node.variable.type == 'VariableNode')
+        {
+            result+= '<c:set';
+            result+= ' var="' + this.getVariable(node.variable) + '"';
+            result+= ' value="${ ' + this.renderExpression(node.value) + ' }"';
+            result+= ' />';
+        }
+        return result;
+    }
+
+
+    /**
+     *
+     */
+    renderIf(node)
+    {
+        let result = '';
+        result+= '<c:if test="${ ';
+        result+= this.renderCondition(node.condition).trim();
+        result+= ' }">';
+        for (const child of node.children)
+        {
+            result+= this.renderNode(child);
+        }
+        result+= '</c:if>';
+        return result;
+    }
+
+
+    /**
+     *
+     */
+    renderFor(node)
+    {
+        let result = '';
+        result+= '<c:forEach var="';
+        result+= node.name;
+        result+= '" items="${ ';
+        result+= this.renderExpression(node.values).trim();
+        result+= ' }">';
+        for (const child of node.children)
+        {
+            result+= this.renderNode(child);
+        }
+        result+= '</c:forEach>';
+        return result;
+    }
+
+
+    /**
+     *
+     */
+    renderCall(node)
+    {
+        /*
+        <cm:include self="${list}" view="linklist">
+            <cm:param name="key" value="${}"/>
+        </cm:include>
+        */
+
+        let result = '';
+        result+= '<cm:include ';
+
+        // Determine self
+        const modelParameter = node.parameters.find((parameter) =>
+        {
+            return parameter.fields.length == 1 && parameter.fields[0] == 'model';
+        });
+        if (modelParameter && modelParameter.value && modelParameter.value[0].fields)
+        {
+            result+= 'self="${ ' + this.getVariable(modelParameter.value[0]) + ' }" ';
+        }
+
+        // Determine view
+        if (!node.name.endsWith('_dispatcher'))
+        {
+            result+= 'view="' + node.name + '"';
+        }
+        result+= '>';
+
+        // Determine parameters
+        for (const parameter of node.parameters)
+        {
+            if (parameter !== modelParameter)
+            {
+                result+= '<cm:param name="' + this.getVariable(parameter) + '" value="${ ' + this.renderExpression(parameter.value) + ' }"/>';
+            }
+        }
+
+        // Close include
+        result+= '</cm:include>';
+
+        return result;
+    }
+
+
+    /**
+     *
+     */
+    renderNode(node)
+    {
+        let result = '';
+        switch(node.type)
+        {
+            case 'RootNode':
+            case 'NodeList':
+            case 'OutputNode':
+                for (const child of node.children)
+                {
+                    result+= this.renderNode(child);
+                }
+                break;
+
+            case 'TextNode':
+            case 'LiteralNode':
+                result+= node.value;
+                break;
+
+            case 'IfNode':
+                result+= this.renderIf(node);
+                break;
+
+            case 'SetNode':
+                result+= this.renderSet(node);
+                break;
+
+            case 'MacroNode':
+                result+= this.renderMacro(node);
+                break;
+
+            case 'VariableNode':
+                result+= this.renderVariable(node);
+                break;
+
+            case 'FilterNode':
+                result+= this.renderFilter(node);
+                break;
+
+            case 'ForNode':
+                result+= this.renderFor(node);
+                break;
+
+            case 'CallNode':
+                result+= this.renderCall(node);
+                break;
+
+            default:
+                this.logger.error('renderNode: Not Implemented', node);
+        }
+
+        return result;
+    }
+
+
+    /**
+     */
+    render(node)
+    {
+        return this.renderNode(node);
+    }
+}
+
+
+module.exports.CoreMediaRenderer = CoreMediaRenderer;
