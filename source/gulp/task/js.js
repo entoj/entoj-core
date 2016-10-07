@@ -112,6 +112,13 @@ function src(query, cliLogger)
                 const builder = new Builder(pathesConfiguration.entoj, pathesConfiguration.entoj + '/jspm.js');
                 builder.config(
                     {
+                        babelOptions:
+                        {
+                            "optional":
+                            [
+                                "runtime"
+                            ]
+                        },
                         paths:
                         {
                             'jspm_packages/*': './entoj/jspm_packages/*',
