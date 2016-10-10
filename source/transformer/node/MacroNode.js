@@ -21,7 +21,7 @@ class MacroNode extends NodeList
         this.serializeFields.push('name', 'parameters');
         this.nodeFields.push('parameters');
         this.name = name;
-        this.parameters = parameters || [];
+        this.parameters = parameters;
     }
 
 

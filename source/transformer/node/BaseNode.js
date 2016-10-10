@@ -34,6 +34,24 @@ class BaseNode extends Base
 
 
     /**
+     * @param {String} type - Node type
+     * @param {Object} properties - Node properties
+     * @return {Bool}
+     */
+    isNode(type, properties)
+    {
+        // Check type
+        const types = Array.isArray(type) ? type : [type];
+        if (types.indexOf(this.type) === -1)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+
+    /**
      *
      */
     serialize()
@@ -75,51 +93,36 @@ class BaseNode extends Base
     /**
      *
      */
-    clone(deep)
+    clone()
     {
         const result = new this.constructor();
-        const keys = Object.keys(this).filter((value) => this.nodeFields.indexOf(value) === -1);
-        for (const key of keys)
-        {
-            result[key] = this[key];
-        }
-/*
         for (const field of this.serializeFields)
         {
-            console.log('Copy ' + field);
             result[field] = this[field];
-            if (deep)
+            if (Array.isArray(this[field]))
             {
-                if (Array.isArray(this[field]))
+                result[field] = [];
+                for (const item of this[field])
                 {
-                    result[field] = [];
-                    for (const item of this[field])
+                    if (item instanceof BaseNode)
                     {
-                        if (item instanceof BaseNode)
-                        {
-                            result[field].push(item.clone());
-                        }
-                        else
-                        {
-                            result[field].push(item);
-                        }
+                        result[field].push(item.clone());
+                    }
+                    else
+                    {
+                        result[field].push(item);
                     }
                 }
-                else if (this[field] instanceof BaseNode)
-                {
-                    result[field] = this[field].clone();
-                }
-                else
-                {
-                    result[field] = this[field];
-                }
+            }
+            else if (this[field] instanceof BaseNode)
+            {
+                result[field] = this[field].clone();
             }
             else
             {
                 result[field] = this[field];
             }
         }
-*/
         return result;
     }
 }

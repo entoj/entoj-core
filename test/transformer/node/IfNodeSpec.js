@@ -4,7 +4,7 @@
  * Requirements
  */
 const IfNode = require(SOURCE_ROOT + '/transformer/node/IfNode.js').IfNode;
-const TextNode = require(SOURCE_ROOT + '/transformer/node/TextNode.js').TextNode;
+const BaseNode = require(SOURCE_ROOT + '/transformer/node/BaseNode.js').BaseNode;
 const baseNodeSpec = require(TEST_ROOT + '/transformer/node/BaseNodeShared.js');
 
 
@@ -18,49 +18,27 @@ describe(IfNode.className, function()
      */
     baseNodeSpec(IfNode, 'transformer.node/IfNode',
     {
-        nodeFields: ['children', 'condition'],
         serialized:
         {
             type: IfNode.className,
-            condition: undefined,
-            children: []
-        }
-    });
-
-
-    /**
-     * IfNode Test
-     */
-    describe('#constructor()', function()
-    {
-        it('should allow to populate condition and children', function()
-        {
-            const testee = new IfNode(new TextNode(), [new TextNode()]);
-            expect(testee.condition).to.be.instanceOf(TextNode);
-            expect(testee.children).to.have.length(1);
-        });
-    });
-
-
-    describe('#serialize()', function()
-    {
-        it('should serialize all nodes in children', function()
-        {
-            const testee = new IfNode();
-            const expected =
+            condition:
             {
-                type: 'transformer.node/IfNode',
-                condition: undefined,
-                children:
-                [
-                    {
-                        type: 'transformer.node/TextNode',
-                        value: undefined
-                    }
-                ]
-            };
-            testee.children.push(new TextNode());
-            expect(testee.serialize()).to.be.deep.equal(expected);
-        });
-    });
+                type: 'transformer.node/BaseNode'
+            },
+            children:
+            [
+                {
+                    type: 'transformer.node/BaseNode'
+                }
+            ]
+        }
+    }, prepareParameters);
+
+
+    function prepareParameters(parameters)
+    {
+        parameters.push(new BaseNode());
+        parameters.push([new BaseNode()]);
+        return parameters;
+    }
 });

@@ -3,7 +3,7 @@
 /**
  * Requirements
  */
-const MacroNode = require(SOURCE_ROOT + '/transformer/node/MacroNode.js').MacroNode;
+const ExpressionNode = require(SOURCE_ROOT + '/transformer/node/ExpressionNode.js').ExpressionNode;
 const BaseNode = require(SOURCE_ROOT + '/transformer/node/BaseNode.js').BaseNode;
 const baseNodeSpec = require(TEST_ROOT + '/transformer/node/BaseNodeShared.js');
 
@@ -11,21 +11,16 @@ const baseNodeSpec = require(TEST_ROOT + '/transformer/node/BaseNodeShared.js');
 /**
  * Spec
  */
-describe(MacroNode.className, function()
+describe(ExpressionNode.className, function()
 {
     /**
      * BaseNode Test
      */
-    baseNodeSpec(MacroNode, 'transformer.node/MacroNode',
+    baseNodeSpec(ExpressionNode, 'transformer.node/ExpressionNode',
     {
         serialized:
         {
-            type: MacroNode.className,
-            name: 'macro_name',
-            parameters:
-            {
-                type: 'transformer.node/BaseNode'
-            },
+            type: ExpressionNode.className,
             children:
             [
                 {
@@ -38,8 +33,6 @@ describe(MacroNode.className, function()
 
     function prepareParameters(parameters)
     {
-        parameters.push('macro_name');
-        parameters.push(new BaseNode());
         parameters.push([new BaseNode()]);
         return parameters;
     }

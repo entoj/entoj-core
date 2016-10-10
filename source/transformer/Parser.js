@@ -13,6 +13,7 @@ const IfNode = require('./node/IfNode.js').IfNode;
 const ForNode = require('./node/ForNode.js').ForNode;
 const VariableNode = require('./node/VariableNode.js').VariableNode;
 const ParameterNode = require('./node/ParameterNode.js').ParameterNode;
+const ParametersNode = require('./node/ParametersNode.js').ParametersNode;
 const ExpressionNode = require('./node/ExpressionNode.js').ExpressionNode;
 const LiteralNode = require('./node/LiteralNode.js').LiteralNode;
 const OperandNode = require('./node/OperandNode.js').OperandNode;
@@ -118,29 +119,29 @@ class Parser extends BaseParser
      */
     parseParameters(node)
     {
-        const parse = (node) =>
+        const parse = (node, parameters) =>
         {
             const type = Object.getPrototypeOf(node).typename;
-            const result = [];
+            const result = parameters ? parameters : new ParametersNode();
             switch(type)
             {
                 case 'NodeList':
                 case 'KeywordArgs':
                     for (const child of node.children)
                     {
-                        Array.prototype.push.apply(result, parse(child));
+                        Array.prototype.push.apply(result.children, parse(child, result));
                     }
                     break;
 
                 case 'Pair':
                     if (node.key.value !== 'caller')
                     {
-                        result.push(new ParameterNode([node.key.value], this.parseNode(node.value, 'parameter')));
+                        result.children.push(new ParameterNode([node.key.value], this.parseExpression(node.value, 'parameter')));
                     }
                     break;
 
                 case 'Symbol':
-                    result.push(new ParameterNode([node.value]));
+                    result.children.push(new ParameterNode([node.value]));
                     break;
 
                 default:
@@ -274,6 +275,7 @@ class Parser extends BaseParser
                     result.push(new LiteralNode(node.value));
                     break;
 
+                case 'Symbol':
                 case 'LookupVal':
                     result.push(this.parseVariable(node));
                     break;

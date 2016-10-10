@@ -3,24 +3,23 @@
 /**
  * Requirements
  */
-const LiteralNode = require(SOURCE_ROOT + '/transformer/node/LiteralNode.js').LiteralNode;
+const BooleanOperandNode = require(SOURCE_ROOT + '/transformer/node/BooleanOperandNode.js').BooleanOperandNode;
 const baseNodeSpec = require(TEST_ROOT + '/transformer/node/BaseNodeShared.js');
 
 
 /**
  * Spec
  */
-describe(LiteralNode.className, function()
+describe(BooleanOperandNode.className, function()
 {
     /**
      * BaseNode Test
      */
-    baseNodeSpec(LiteralNode, 'transformer.node/LiteralNode',
+    baseNodeSpec(BooleanOperandNode, 'transformer.node/BooleanOperandNode',
     {
-        nodeFields: [],
         serialized:
         {
-            type: LiteralNode.className,
+            type: BooleanOperandNode.className,
             value: 'value'
         }
     }, prepareParameters);

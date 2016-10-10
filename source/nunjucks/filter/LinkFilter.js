@@ -51,7 +51,7 @@ class LinkFilter extends Filter
         const scope = this;
         return function (value)
         {
-            return value;
+            return value && value.selfLink ? value.selfLink : 'JavaScript:;';
         };
     }
 }

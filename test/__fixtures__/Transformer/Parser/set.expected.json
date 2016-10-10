@@ -1,0 +1,94 @@
+{
+    "type": "transformer.node/NodeList",
+    "children": [
+        {
+            "type": "transformer.node/SetNode",
+            "variable": {
+                "type": "transformer.node/VariableNode",
+                "fields": [
+                    "className"
+                ]
+            },
+            "value": {
+                "type": "transformer.node/ExpressionNode",
+                "children": [
+                    {
+                        "type": "transformer.node/VariableNode",
+                        "fields": [
+                            "model",
+                            "headline"
+                        ]
+                    },
+                    {
+                        "type": "transformer.node/OperandNode",
+                        "value": "+"
+                    },
+                    {
+                        "type": "transformer.node/LiteralNode",
+                        "value": "-teaser"
+                    }
+                ]
+            }
+        },
+        {
+            "type": "transformer.node/TextNode",
+            "value": "\n"
+        },
+        {
+            "type": "transformer.node/SetNode",
+            "variable": {
+                "type": "transformer.node/VariableNode",
+                "fields": [
+                    "model",
+                    "nr"
+                ]
+            },
+            "value": {
+                "type": "transformer.node/ExpressionNode",
+                "children": [
+                    {
+                        "type": "transformer.node/VariableNode",
+                        "fields": [
+                            "model",
+                            "id"
+                        ]
+                    },
+                    {
+                        "type": "transformer.node/OperandNode",
+                        "value": "+"
+                    },
+                    {
+                        "type": "transformer.node/LiteralNode",
+                        "value": 1
+                    }
+                ]
+            }
+        },
+        {
+            "type": "transformer.node/TextNode",
+            "value": "\n"
+        },
+        {
+            "type": "transformer.node/SetNode",
+            "variable": {
+                "type": "transformer.node/VariableNode",
+                "fields": [
+                    "simple"
+                ]
+            },
+            "value": {
+                "type": "transformer.node/ExpressionNode",
+                "children": [
+                    {
+                        "type": "transformer.node/LiteralNode",
+                        "value": 1.5
+                    }
+                ]
+            }
+        },
+        {
+            "type": "transformer.node/TextNode",
+            "value": "\n"
+        }
+    ]
+}

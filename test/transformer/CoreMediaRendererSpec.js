@@ -30,23 +30,40 @@ describe(CoreMediaRenderer.className, function()
     });
 
 
-    xdescribe('#render()', function()
+    function testFixture(name)
     {
         const rootPath = FIXTURES_ROOT + '/Transformer/';
-        const files = glob.sync('*.input.j2', { cwd: rootPath });
-        for (const file of files)
+        const input = fs.readFileSync(rootPath + name + '.input.j2', { encoding: 'utf8' }).replace(/\r/g, '');
+        const expected = fs.readFileSync(rootPath + 'CoreMediaRenderer/' + name + '.expected.jsp', { encoding: 'utf8' }).replace(/\r/g, '');
+        const parser = new Parser();
+        const nodes = parser.parse(input);
+        //console.log(JSON.stringify(nodes.serialize(), null, 4));
+        const testee = new CoreMediaRenderer();
+        const jsp = testee.render(nodes);
+        expect(jsp).to.be.deep.equal(expected);
+    }
+
+
+    xdescribe('#render()', function()
+    {
+        it('should render embedded variables', function()
         {
-            const basename = file.replace('.input.j2', '');
-            it('should conform to fixture ' + basename, function()
-            {
-                const input = fs.readFileSync(rootPath + file, { encoding: 'utf8' }).replace(/\r/g, '');
-                const expected = fs.readFileSync(rootPath + 'CoreMediaRenderer/' + basename + '.expected.jsp', { encoding: 'utf8' });
-                const parser = new Parser();
-                const nodes = parser.parse(input);
-                const testee = new CoreMediaRenderer();
-                const jsp = testee.render(nodes);
-                expect(jsp).to.be.deep.equal(expected);
-            });
-        }
+            testFixture('variables');
+        });
+
+        it('should render set tags', function()
+        {
+            testFixture('set');
+        })
+
+        it('should render macro calls', function()
+        {
+            testFixture('calls');
+        })
+
+        it('should render flow tags (if, for)', function()
+        {
+            testFixture('flow');
+        })
     });
 });

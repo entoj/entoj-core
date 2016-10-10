@@ -32,22 +32,13 @@ function spec(type, className, fixture, prepareParameters)
     };
 
 
-    describe('#nodeFields', function()
+    describe('#isNode()', function()
     {
-        it('should return a array', function()
+        it('should allow to check the node type', function()
         {
             const testee = createTestee();
-            expect(testee.nodeFields).to.be.instanceof(Array);
+            expect(testee.isNode(testee.type)).to.be.ok;
         });
-
-        if (fixture && fixture.nodeFields)
-        {
-            it('should return [' + fixture.nodeFields.join(', ') + ']', function()
-            {
-                const testee = createTestee();
-                expect(testee.nodeFields).to.be.deep.equal(fixture.nodeFields);
-            });
-        }
     });
 
 
@@ -56,7 +47,7 @@ function spec(type, className, fixture, prepareParameters)
         it('should return a object', function()
         {
             const testee = createTestee();
-            expect(testee.nodeFields).to.be.instanceof(Object);
+            expect(testee.serialize()).to.be.instanceof(Object);
         });
 
         if (fixture && fixture.serialized)
@@ -64,6 +55,7 @@ function spec(type, className, fixture, prepareParameters)
             it('should return a serialized representation', function()
             {
                 const testee = createTestee();
+                //console.log(JSON.stringify(testee.serialize(), null, 4));
                 expect(testee.serialize()).to.be.deep.equal(fixture.serialized);
             });
         }
@@ -77,6 +69,18 @@ function spec(type, className, fixture, prepareParameters)
             const testee = createTestee();
             expect(testee.clone()).to.be.instanceof(type);
             expect(testee.clone()).to.be.not.equal(testee);
+        });
+
+        it('should return a object with the same structure', function()
+        {
+            const testee = createTestee();
+            expect(testee.clone().serialize()).to.be.deep.equal(testee.serialize());
+        });
+
+        it('should return a object where all child objects are cloned', function()
+        {
+            const testee = createTestee();
+            expect(testee).to.be.not.deep.equal(testee.serialize());
         });
     });
 }

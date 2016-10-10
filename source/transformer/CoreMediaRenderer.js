@@ -167,6 +167,10 @@ class CoreMediaRenderer extends BaseRenderer
      */
     renderExpression(node)
     {
+        if (!node)
+        {
+            throw new Error(this.className + '::renderExpression node is undefined');
+        }
         let result = '';
         const type = Array.isArray(node) ? 'Array' : node.type;
         switch(type)
@@ -222,7 +226,7 @@ class CoreMediaRenderer extends BaseRenderer
         result+= '<!-- Macro ' + node.name + ' -->' + EOL;
 
         // Handle default values
-        for (const parameter of node.parameters)
+        for (const parameter of node.parameters.children)
         {
             if (parameter.fields.length && parameter.fields[0] !== 'model')
             {
@@ -301,7 +305,7 @@ class CoreMediaRenderer extends BaseRenderer
         result+= '<c:forEach var="';
         result+= node.name;
         result+= '" items="${ ';
-        result+= this.renderExpression(node.values).trim();
+        result+= this.renderExpression(node.value).trim();
         result+= ' }">';
         for (const child of node.children)
         {
@@ -327,13 +331,13 @@ class CoreMediaRenderer extends BaseRenderer
         result+= '<cm:include ';
 
         // Determine self
-        const modelParameter = node.parameters.find((parameter) =>
+        const modelParameter = node.parameters.children.find((parameter) =>
         {
             return parameter.fields.length == 1 && parameter.fields[0] == 'model';
         });
-        if (modelParameter && modelParameter.value && modelParameter.value[0].fields)
+        if (modelParameter && modelParameter.value)
         {
-            result+= 'self="${ ' + this.getVariable(modelParameter.value[0]) + ' }" ';
+            result+= 'self="${ ' + this.renderExpression(modelParameter.value) + ' }" ';
         }
 
         // Determine view
@@ -344,7 +348,7 @@ class CoreMediaRenderer extends BaseRenderer
         result+= '>';
 
         // Determine parameters
-        for (const parameter of node.parameters)
+        for (const parameter of node.parameters.children)
         {
             if (parameter !== modelParameter)
             {

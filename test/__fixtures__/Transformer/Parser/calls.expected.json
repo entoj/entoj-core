@@ -5,22 +5,28 @@
             "type": "transformer.node/CallNode",
             "children": [],
             "name": "simple",
-            "parameters": [
-                {
-                    "type": "transformer.node/ParameterNode",
-                    "fields": [
-                        "model"
-                    ],
-                    "value": [
-                        {
-                            "type": "transformer.node/VariableNode",
-                            "fields": [
-                                "self"
+            "parameters": {
+                "type": "transformer.node/ParametersNode",
+                "children": [
+                    {
+                        "type": "transformer.node/ParameterNode",
+                        "fields": [
+                            "model"
+                        ],
+                        "value": {
+                            "type": "transformer.node/ExpressionNode",
+                            "children": [
+                                {
+                                    "type": "transformer.node/VariableNode",
+                                    "fields": [
+                                        "self"
+                                    ]
+                                }
                             ]
                         }
-                    ]
-                }
-            ]
+                    }
+                ]
+            }
         },
         {
             "type": "transformer.node/TextNode",
@@ -30,22 +36,67 @@
             "type": "transformer.node/CallNode",
             "children": [],
             "name": "yield",
-            "parameters": [
-                {
-                    "type": "transformer.node/ParameterNode",
-                    "fields": [
-                        "model"
-                    ],
-                    "value": [
-                        {
-                            "type": "transformer.node/VariableNode",
-                            "fields": [
-                                "self"
+            "parameters": {
+                "type": "transformer.node/ParametersNode",
+                "children": [
+                    {
+                        "type": "transformer.node/ParameterNode",
+                        "fields": [
+                            "model"
+                        ],
+                        "value": {
+                            "type": "transformer.node/ExpressionNode",
+                            "children": [
+                                {
+                                    "type": "transformer.node/VariableNode",
+                                    "fields": [
+                                        "self"
+                                    ]
+                                }
                             ]
                         }
-                    ]
-                }
-            ]
+                    }
+                ]
+            }
+        },
+        {
+            "type": "transformer.node/TextNode",
+            "value": "\n"
+        },
+        {
+            "type": "transformer.node/CallNode",
+            "children": [],
+            "name": "simple",
+            "parameters": {
+                "type": "transformer.node/ParametersNode",
+                "children": [
+                    {
+                        "type": "transformer.node/ParameterNode",
+                        "fields": [
+                            "classes"
+                        ],
+                        "value": {
+                            "type": "transformer.node/ExpressionNode",
+                            "children": [
+                                {
+                                    "type": "transformer.node/VariableNode",
+                                    "fields": [
+                                        "moduleName"
+                                    ]
+                                },
+                                {
+                                    "type": "transformer.node/OperandNode",
+                                    "value": "+"
+                                },
+                                {
+                                    "type": "transformer.node/LiteralNode",
+                                    "value": "--check"
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
         },
         {
             "type": "transformer.node/TextNode",

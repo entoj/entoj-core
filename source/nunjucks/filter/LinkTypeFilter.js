@@ -51,7 +51,7 @@ class LinkTypeFilter extends Filter
         const scope = this;
         return function (value)
         {
-            return (value.type === 'com.coremedia.blueprint.cae.contentbeans.CMExternalLinkImpl$$') ? 'external' : 'internal';
+            return (value.type && value.type === 'com.coremedia.blueprint.cae.contentbeans.CMExternalLinkImpl$$') ? 'external' : 'internal';
         };
     }
 }

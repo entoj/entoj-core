@@ -3,7 +3,7 @@
 /**
  * Requirements
  */
-const MacroNode = require(SOURCE_ROOT + '/transformer/node/MacroNode.js').MacroNode;
+const ForNode = require(SOURCE_ROOT + '/transformer/node/ForNode.js').ForNode;
 const BaseNode = require(SOURCE_ROOT + '/transformer/node/BaseNode.js').BaseNode;
 const baseNodeSpec = require(TEST_ROOT + '/transformer/node/BaseNodeShared.js');
 
@@ -11,18 +11,18 @@ const baseNodeSpec = require(TEST_ROOT + '/transformer/node/BaseNodeShared.js');
 /**
  * Spec
  */
-describe(MacroNode.className, function()
+describe(ForNode.className, function()
 {
     /**
      * BaseNode Test
      */
-    baseNodeSpec(MacroNode, 'transformer.node/MacroNode',
+    baseNodeSpec(ForNode, 'transformer.node/ForNode',
     {
         serialized:
         {
-            type: MacroNode.className,
-            name: 'macro_name',
-            parameters:
+            type: ForNode.className,
+            name: 'item',
+            value:
             {
                 type: 'transformer.node/BaseNode'
             },
@@ -38,7 +38,7 @@ describe(MacroNode.className, function()
 
     function prepareParameters(parameters)
     {
-        parameters.push('macro_name');
+        parameters.push('item');
         parameters.push(new BaseNode());
         parameters.push([new BaseNode()]);
         return parameters;

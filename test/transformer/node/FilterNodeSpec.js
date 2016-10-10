@@ -3,7 +3,7 @@
 /**
  * Requirements
  */
-const MacroNode = require(SOURCE_ROOT + '/transformer/node/MacroNode.js').MacroNode;
+const FilterNode = require(SOURCE_ROOT + '/transformer/node/FilterNode.js').FilterNode;
 const BaseNode = require(SOURCE_ROOT + '/transformer/node/BaseNode.js').BaseNode;
 const baseNodeSpec = require(TEST_ROOT + '/transformer/node/BaseNodeShared.js');
 
@@ -11,36 +11,34 @@ const baseNodeSpec = require(TEST_ROOT + '/transformer/node/BaseNodeShared.js');
 /**
  * Spec
  */
-describe(MacroNode.className, function()
+describe(FilterNode.className, function()
 {
     /**
      * BaseNode Test
      */
-    baseNodeSpec(MacroNode, 'transformer.node/MacroNode',
+    baseNodeSpec(FilterNode, 'transformer.node/FilterNode',
     {
         serialized:
         {
-            type: MacroNode.className,
-            name: 'macro_name',
+            type: FilterNode.className,
+            name: 'filter',
             parameters:
             {
                 type: 'transformer.node/BaseNode'
             },
-            children:
-            [
-                {
-                    type: 'transformer.node/BaseNode'
-                }
-            ]
+            value:
+            {
+                type: 'transformer.node/BaseNode'
+            }
         }
     }, prepareParameters);
 
 
     function prepareParameters(parameters)
     {
-        parameters.push('macro_name');
+        parameters.push('filter');
         parameters.push(new BaseNode());
-        parameters.push([new BaseNode()]);
+        parameters.push(new BaseNode());
         return parameters;
     }
 });

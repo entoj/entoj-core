@@ -34,7 +34,7 @@ describe(NodeTransformer.className, function()
     {
         const rootPath = FIXTURES_ROOT + '/Transformer/';
 
-        it('should visit all nodes', function()
+        it('should visit all nodes and clone them', function()
         {
             const input = fs.readFileSync(rootPath + 'calls.input.j2', { encoding: 'utf8' }).replace(/\r/g, '');
             const parser = new Parser();
@@ -42,8 +42,11 @@ describe(NodeTransformer.className, function()
             const testee = new NodeTransformer();
             const transformed = testee.transform(rootNode);
 
-            //console.log(rootNode);
-            //console.log(transformed);
+            // Shoud be new objects
+            expect(transformed).to.be.not.deep.equal(rootNode);
+
+            // Shoud have the same structure
+            expect(transformed.serialize()).to.be.deep.equal(rootNode.serialize());
         });
     });
 });

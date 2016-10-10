@@ -15,13 +15,13 @@ class ParameterNode extends BaseNode
     /**
      * @ignore
      */
-    constructor(fields, value)
+    constructor(name, value)
     {
         super();
-        this.serializeFields.push('fields', 'value');
+        this.serializeFields.push('name', 'value');
         this.nodeFields.push('value');
-        this.fields = fields || [];
-        this.value = value;
+        this.name = name || '';
+        this.value = value || undefined;
     }
 
 

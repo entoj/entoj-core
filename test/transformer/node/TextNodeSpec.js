@@ -21,20 +21,14 @@ describe(TextNode.className, function()
         serialized:
         {
             type: TextNode.className,
-            value: undefined
+            value: 'text'
         }
-    });
+    }, prepareParameters);
 
 
-    /**
-     * TextNode Test
-     */
-    describe('#constructor()', function()
+    function prepareParameters(parameters)
     {
-        it('should allow to populate value', function()
-        {
-            const testee = new TextNode('value');
-            expect(testee.value).to.be.equal('value');
-        });
-    });
+        parameters.push('text');
+        return parameters;
+    }
 });

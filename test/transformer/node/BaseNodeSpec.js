@@ -17,7 +17,6 @@ describe(BaseNode.className, function()
      */
     baseNodeSpec(BaseNode, 'transformer.node/BaseNode',
     {
-        nodeFields: [],
         serialized:
         {
             type: BaseNode.className

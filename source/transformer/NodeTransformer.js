@@ -5,6 +5,7 @@
  * @ignore
  */
 const Base = require('../Base.js').Base;
+const BaseNode = require('./node/BaseNode.js').BaseNode;
 
 
 /**
@@ -35,11 +36,6 @@ class NodeTransformer extends Base
      */
     walk(node, transformer, options, level)
     {
-        if (!node)
-        {
-            return false;
-        }
-
         level = level || 0;
         this.logger.debug(String('    ').repeat(level), 'Node', node.type);
 
@@ -48,6 +44,7 @@ class NodeTransformer extends Base
         {
             if (Array.isArray(node[field]))
             {
+                result[field] = Array.isArray(result[field]) ? result[field] : [];
                 for (const child of node[field])
                 {
                     const childNodes = this.walk(child, transformer, options, level + 1);
@@ -61,7 +58,7 @@ class NodeTransformer extends Base
                     }
                 }
             }
-            else if (node instanceof Node)
+            else if (node instanceof BaseNode)
             {
                 result[field] = this.walk(node[field], transformer, options, level + 1);
             }

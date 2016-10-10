@@ -29,22 +29,38 @@ describe(Parser.className, function()
     });
 
 
-    describe('#parse()', function()
+    function testFixture(name)
     {
         const rootPath = FIXTURES_ROOT + '/Transformer/';
-        const files = glob.sync('*.input.j2', { cwd: rootPath });
-        for (const file of files)
+        const input = fs.readFileSync(rootPath + name + '.input.j2', { encoding: 'utf8' }).replace(/\r/g, '');
+        const expected = JSON.parse(fs.readFileSync(rootPath + 'Parser/' + name + '.expected.json', { encoding: 'utf8' }));
+        const testee = new Parser();
+        const node = testee.parse(input);
+        //console.log(JSON.stringify(node.serialize(), null, 4));
+        expect(node.serialize()).to.be.deep.equal(expected);
+    }
+
+
+    xdescribe('#parse()', function()
+    {
+        it('should parse embedded variables', function()
         {
-            const basename = file.replace('.input.j2', '');
-            it('should conform to fixture ' + basename, function()
-            {
-                const input = fs.readFileSync(rootPath + file, { encoding: 'utf8' }).replace(/\r/g, '');
-                const expected = JSON.parse(fs.readFileSync(rootPath + 'Parser/' + basename + '.expected.json', { encoding: 'utf8' }));
-                const testee = new Parser();
-                const tokens = testee.parse(input).serialize();
-                //console.log(JSON.stringify(tokens, null, 4));
-                expect(tokens).to.be.deep.equal(expected);
-            });
-        }
+            testFixture('variables');
+        });
+
+        it('should parse set tags', function()
+        {
+            testFixture('set');
+        })
+
+        it('should parse macro calls', function()
+        {
+            testFixture('calls');
+        })
+
+        it('should parse flow tags (if, for)', function()
+        {
+            testFixture('flow');
+        })
     });
 });

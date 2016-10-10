@@ -5,6 +5,7 @@
  * @ignore
  */
 const NodeList = require('./NodeList.js').NodeList;
+const ParametersNode = require('./ParametersNode.js').ParametersNode;
 
 
 /**
@@ -21,7 +22,7 @@ class CallNode extends NodeList
         this.serializeFields.push('name', 'parameters');
         this.nodeFields.push('parameters');
         this.name = name;
-        this.parameters = parameters || [];
+        this.parameters = parameters;
     }
 
 
