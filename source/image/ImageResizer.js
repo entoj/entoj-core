@@ -93,6 +93,13 @@ class ImageResizer extends Base
         const promise = co(function*()
         {
             const result = yield scope.getImageSize(filename);
+			
+			if(!result)
+			{
+				// TODO log ('getImageSize failed propably install GraphicsMagic');
+				return result;
+			}
+			
             const settingsFile = filename.substr(0, filename.length - 3) + 'json';
             const settingsFileExists = yield fs.exists(settingsFile);
             if (settingsFileExists)
