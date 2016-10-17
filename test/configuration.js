@@ -1,3 +1,9 @@
+'use strict';
+
+/**
+ * Configure parameters
+ */
+const parameters = require('minimist')(process.argv.splice(2));
 
 /**
  * Configure path
@@ -26,9 +32,27 @@ chai.use(chaiString);
 /**
  * Configure intel
  */
+require(SOURCE_ROOT + '/Base.js'); // Load Base to be able to override the defaults set there
 const intel = require('intel');
 const logger = intel.getLogger('entoj');
-logger.setLevel(intel.ERROR);
+let level = intel.ERROR;
+if (parameters.v)
+{
+    level = intel.WARN;
+}
+if (parameters.vv)
+{
+    level = intel.INFO;
+}
+if (parameters.vvv)
+{
+    level = intel.DEBUG;
+}
+if (parameters.vvvv)
+{
+    level = intel.TRACE;
+}
+logger.setLevel(level);
 
 /**
  * Configure fixtures
