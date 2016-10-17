@@ -80,7 +80,7 @@ class BaseNode extends Base
             {
                 result[field] = this[field].serialize();
             }
-            else
+            else if (typeof this[field] !== 'undefined')
             {
                 result[field] = this[field];
             }

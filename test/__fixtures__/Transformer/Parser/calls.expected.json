@@ -10,9 +10,7 @@
                 "children": [
                     {
                         "type": "transformer.node/ParameterNode",
-                        "fields": [
-                            "model"
-                        ],
+                        "name": "model",
                         "value": {
                             "type": "transformer.node/ExpressionNode",
                             "children": [
@@ -34,16 +32,20 @@
         },
         {
             "type": "transformer.node/CallNode",
-            "children": [],
+            "children":
+            [
+                {
+                    "type": "transformer.node/TextNode",
+                    "value": "children"
+                }
+            ],
             "name": "yield",
             "parameters": {
                 "type": "transformer.node/ParametersNode",
                 "children": [
                     {
                         "type": "transformer.node/ParameterNode",
-                        "fields": [
-                            "model"
-                        ],
+                        "name": "model",
                         "value": {
                             "type": "transformer.node/ExpressionNode",
                             "children": [
@@ -72,9 +74,7 @@
                 "children": [
                     {
                         "type": "transformer.node/ParameterNode",
-                        "fields": [
-                            "classes"
-                        ],
+                        "name": "classes",
                         "value": {
                             "type": "transformer.node/ExpressionNode",
                             "children": [

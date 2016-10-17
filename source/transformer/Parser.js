@@ -7,6 +7,7 @@
 const BaseParser = require('./BaseParser.js').BaseParser;
 const nunjucks = require('nunjucks');
 const nodes = require('nunjucks/src/nodes.js');
+const unique = require('lodash.uniq');
 const TextNode = require('./node/TextNode.js').TextNode;
 const SetNode = require('./node/SetNode.js').SetNode;
 const IfNode = require('./node/IfNode.js').IfNode;
@@ -25,6 +26,7 @@ const NodeList = require('./node/NodeList.js').NodeList;
 const MacroNode = require('./node/MacroNode.js').MacroNode;
 const CallNode = require('./node/CallNode.js').CallNode;
 const OutputNode = require('./node/OutputNode.js').OutputNode;
+const YieldNode = require('./node/YieldNode.js').YieldNode;
 
 
 /**
@@ -72,6 +74,7 @@ class Parser extends BaseParser
                     Array.prototype.push.apply(result, parse(node.val));
                     break;
 
+                /* istanbul ignore next */
                 default:
                     scope.logger.error('parseVariable: Not Implemented', type, JSON.stringify(node, null, 4));
             }
@@ -80,7 +83,6 @@ class Parser extends BaseParser
 
         return new VariableNode(parse(node));
     }
-
 
 
     /**
@@ -94,23 +96,22 @@ class Parser extends BaseParser
             const type = Object.getPrototypeOf(node).typename;
             if (type === 'Filter')
             {
-                result = new FilterNode(node.name.value);
-                result.value = parse(node.args.children[0]);
+                result = new FilterNode(node.name.value, new ParametersNode(), parse(node.args.children[0]));
                 if (node.args.children.length > 1)
                 {
                     for (let i = 1; i < node.args.children.length; i++)
                     {
-                        result.parameters.push(this.parseExpression(node.args.children[i]));
+                        result.parameters.children.push(new ParameterNode(undefined, this.parseExpression(node.args.children[i])));
                     }
                 }
             }
             else
             {
-                result = new NodeList(this.parseNode(node));
+                result = this.parseNode(node);
             }
             return result;
         }
-        return parseFilter(node);
+        return parse(node);
     }
 
 
@@ -136,21 +137,54 @@ class Parser extends BaseParser
                 case 'Pair':
                     if (node.key.value !== 'caller')
                     {
-                        result.children.push(new ParameterNode([node.key.value], this.parseExpression(node.value, 'parameter')));
+                        result.children.push(new ParameterNode(node.key.value, this.parseExpression(node.value, 'parameter')));
                     }
                     break;
 
                 case 'Symbol':
-                    result.children.push(new ParameterNode([node.value]));
+                    result.children.push(new ParameterNode(node.value));
                     break;
 
+                /* istanbul ignore next */
                 default:
                     this.logger.error('parseParameters: Not Implemented', type, JSON.stringify(node, null, 4));
             }
             return result;
-        }
+        };
 
         return parse(node);
+    }
+
+
+    /**
+     *
+     */
+    parseYield(node)
+    {
+        let result = false;
+        const parse = (node) =>
+        {
+            const type = Object.getPrototypeOf(node).typename;
+            switch(type)
+            {
+                case 'NodeList':
+                case 'KeywordArgs':
+                    for (const child of node.children)
+                    {
+                        parse(child);
+                    }
+                    break;
+
+                case 'Pair':
+                    if (node.key.value === 'caller' && node.value.body)
+                    {
+                        result = [this.parseNode(node.value.body)];
+                    }
+                    break;
+            }
+        };
+        parse(node);
+        return result;
     }
 
 
@@ -217,32 +251,10 @@ class Parser extends BaseParser
                     break;
 
                 case 'Filter':
-                    const parseFilter = (node) =>
-                    {
-                        let result;
-                        const type = Object.getPrototypeOf(node).typename;
-                        if (type === 'Filter')
-                        {
-                            result = new FilterNode(node.name.value);
-                            result.value = parseFilter(node.args.children[0]);
-                            if (node.args.children.length > 1)
-                            {
-                                for (let i = 1; i < node.args.children.length; i++)
-                                {
-                                    result.parameters.push(this.parseExpression(node.args.children[i]));
-                                }
-                            }
-                        }
-                        else
-                        {
-                            result = new NodeList(this.parseNode(node, 'condition'));
-                        }
-                        return result;
-                    }
-                    const filter = parseFilter(node);
-                    result.push(filter);
+                    result.push(this.parseFilter(node));
                     break;
 
+                /* istanbul ignore next */
                 default:
                     this.logger.error('parseCondition: Not Implemented', type, JSON.stringify(node, null, 4));
             }
@@ -281,32 +293,10 @@ class Parser extends BaseParser
                     break;
 
                 case 'Filter':
-                    const parseFilter = (node) =>
-                    {
-                        let result;
-                        const type = Object.getPrototypeOf(node).typename;
-                        if (type === 'Filter')
-                        {
-                            result = new FilterNode(node.name.value);
-                            result.value = parseFilter(node.args.children[0]);
-                            if (node.args.children.length > 1)
-                            {
-                                for (let i = 1; i < node.args.children.length; i++)
-                                {
-                                    result.parameters.push(this.parseExpression(node.args.children[i]));
-                                }
-                            }
-                        }
-                        else
-                        {
-                            result = new NodeList(this.parseNode(node, 'expression'));
-                        }
-                        return result;
-                    }
-                    const filter = parseFilter(node);
-                    result.push(filter);
+                    result.push(this.parseFilter(node));
                     break;
 
+                /* istanbul ignore next */
                 default:
                     this.logger.error('parseExpression: Not Implemented', type, JSON.stringify(node, null, 4));
             }
@@ -322,7 +312,25 @@ class Parser extends BaseParser
      */
     parseOutput(node)
     {
-        return new OutputNode([this.parseVariable(node)]);
+        const children = [];
+        let types = [];
+        for (const child of node.children)
+        {
+            const childNode = this.parseNode(child);
+            types.push(childNode.type);
+            children.push(childNode);
+        }
+        types = unique(types);
+
+        // Only TextNode/CallNode(s)?
+        if (types.length == 1 &&
+            ((types[0] === 'TextNode') || (types[0] === 'CallNode')))
+        {
+            return children.length > 1 ? new NodeList(children) : children[0];
+        }
+
+        // Just add the output
+        return new OutputNode(children);
     }
 
 
@@ -347,7 +355,7 @@ class Parser extends BaseParser
         const children = [];
         for (const child of node.body.children)
         {
-            children.push.apply(children, this.parseNode(child));
+            children.push(this.parseNode(child));
         }
         return new IfNode(condition, children);
     }
@@ -363,7 +371,7 @@ class Parser extends BaseParser
         const children = [];
         for (const child of node.body.children)
         {
-            children.push.apply(children, this.parseNode(child));
+            children.push(this.parseNode(child));
         }
         return new ForNode(node.name.value, values, children);
     }
@@ -378,7 +386,7 @@ class Parser extends BaseParser
         const parameters = this.parseParameters(node.args);
         for (const child of node.body.children)
         {
-            children.push.apply(children, this.parseNode(child));
+            children.push(this.parseNode(child));
         }
 
         return new MacroNode(node.name.value, parameters, children);
@@ -390,17 +398,38 @@ class Parser extends BaseParser
     parseCall(node)
     {
         //console.log(JSON.stringify(node, null, 4));
-        const parameters = this.parseParameters(node.args);
-        const children = [];
-        if (node.body)
+        if (node.name.value === 'caller')
         {
-            for (const child of node.body.children)
-            {
-                children.push.apply(children, this.parseNode(child));
-            }
+            return new YieldNode();
+        }
+        else
+        {
+            const children = this.parseYield(node.args);
+            const parameters = this.parseParameters(node.args);
+            return new CallNode(node.name.value, parameters, children);
+        }
+    }
+
+
+    /**
+     *
+     */
+    parseList(node)
+    {
+        const children = [];
+        for (const child of node.children)
+        {
+            children.push(this.parseNode(child));
         }
 
-        return new CallNode(node.name.value, parameters, children);
+        if (children.length > 1)
+        {
+            return new NodeList(children);
+        }
+        else
+        {
+            return children[0];
+        }
     }
 
 
@@ -410,70 +439,56 @@ class Parser extends BaseParser
     parseNode(node, context)
     {
         const type = Object.getPrototypeOf(node).typename;
-        const result = [];
+        let result;
         switch(type)
         {
             case 'NodeList':
             case 'Root':
+                result = this.parseList(node);
+                break;
+
             case 'Output':
-                for (const child of node.children)
-                {
-                    result.push.apply(result, this.parseNode(child));
-                }
+                result = this.parseOutput(node);
                 break;
 
             case 'TemplateData':
-                result.push(this.parseText(node));
+                result = this.parseText(node);
                 break;
 
             case 'Set':
-                result.push(this.parseSet(node));
+                result = this.parseSet(node);
                 break;
 
             case 'If':
-                result.push(this.parseIf(node));
+                result = this.parseIf(node);
                 break;
 
             case 'For':
-                result.push(this.parseFor(node));
+                result = this.parseFor(node);
                 break;
 
             case 'Symbol':
             case 'LookupVal':
-                if (context)
-                {
-                    result.push(this.parseVariable(node));
-                }
-                else
-                {
-                    result.push(this.parseOutput(node));
-                }
-                break;
-
-            case 'KeywordArgs':
-                result.push(this.parseVariable(node));
+                result = this.parseVariable(node);
                 break;
 
             case 'Macro':
-                result.push(this.parseMacro(node));
+                result = this.parseMacro(node);
                 break;
 
             case 'FunCall':
-                result.push(this.parseCall(node));
-                break;
-
-            case 'Literal':
-                result.push(new LiteralNode(node.value));
+                result = this.parseCall(node);
                 break;
 
             case 'Filter':
-                result.push(this.parseFilter(node));
+                result = this.parseFilter(node);
                 break;
 
             case 'Caller':
                 // Just ignore this
                 break;
 
+            /* istanbul ignore next */
             default:
                 this.logger.error('parseNode: Not Implemented', type, node);
         }
@@ -483,13 +498,19 @@ class Parser extends BaseParser
 
 
     /**
+     * @inheritDoc
      */
     parse(source)
     {
-        const ast = nunjucks.parser.parse(source);
-        return new NodeList(this.parseNode(ast));
+        const ast = nunjucks.parser.parse(source || '');
+        //console.log(JSON.stringify(ast, null, 4));
+        return Promise.resolve(this.parseNode(ast));
     }
 }
 
 
+/**
+ * Exports
+ * @ignore
+ */
 module.exports.Parser = Parser;

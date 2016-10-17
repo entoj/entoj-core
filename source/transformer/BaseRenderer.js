@@ -22,12 +22,17 @@ class BaseRenderer extends Base
 
 
     /**
+     * @return {Promise}
      */
     render(node)
     {
-        return '';
+        return Promise.resolve('');
     }
 }
 
 
+/**
+ * Exports
+ * @ignore
+ */
 module.exports.BaseRenderer = BaseRenderer;

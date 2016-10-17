@@ -1,0 +1,53 @@
+{
+    "type": "transformer.node/NodeList",
+    "children": [
+        {
+            "type": "transformer.node/MacroNode",
+            "children": [
+                {
+                    "type": "transformer.node/TextNode",
+                    "value": "\n    "
+                },
+                {
+                    "type": "transformer.node/OutputNode",
+                    "children": [
+                        {
+                            "type": "transformer.node/YieldNode"
+                        }
+                    ]
+                },
+                {
+                    "type": "transformer.node/TextNode",
+                    "value": "\n"
+                }
+            ],
+            "name": "macro",
+            "parameters": {
+                "type": "transformer.node/ParametersNode",
+                "children": [
+                    {
+                        "type": "transformer.node/ParameterNode",
+                        "name": "model"
+                    },
+                    {
+                        "type": "transformer.node/ParameterNode",
+                        "name": "classes",
+                        "value": {
+                            "type": "transformer.node/ExpressionNode",
+                            "children": [
+                                {
+                                    "type": "transformer.node/LiteralNode",
+                                    "value": "foo"
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "type": "transformer.node/TextNode",
+            "value": "\n"
+        }
+    ]
+}

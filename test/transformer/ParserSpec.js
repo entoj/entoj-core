@@ -4,9 +4,10 @@
  * Requirements
  */
 const Parser = require(SOURCE_ROOT + '/transformer/Parser.js').Parser;
-const baseSpec = require(TEST_ROOT + '/BaseShared.js');
+const baseParserSpec = require(TEST_ROOT + '/transformer/BaseParserShared.js');
 const glob = require('glob');
 const fs = require('fs');
+const co = require('co');
 
 
 /**
@@ -17,50 +18,79 @@ describe(Parser.className, function()
     /**
      * Base Test
      */
-    baseSpec(Parser, 'transformer/Parser');
+    baseParserSpec(Parser, 'transformer/Parser');
 
 
     /**
      * Parser Test
      */
-    beforeEach(function()
-    {
-        fixtures = {};
-    });
-
-
     function testFixture(name)
     {
-        const rootPath = FIXTURES_ROOT + '/Transformer/';
-        const input = fs.readFileSync(rootPath + name + '.input.j2', { encoding: 'utf8' }).replace(/\r/g, '');
-        const expected = JSON.parse(fs.readFileSync(rootPath + 'Parser/' + name + '.expected.json', { encoding: 'utf8' }));
-        const testee = new Parser();
-        const node = testee.parse(input);
-        //console.log(JSON.stringify(node.serialize(), null, 4));
-        expect(node.serialize()).to.be.deep.equal(expected);
+        const promise = co(function*()
+        {
+            const rootPath = FIXTURES_ROOT + '/Transformer/';
+            const input = fs.readFileSync(rootPath + name + '.input.j2', { encoding: 'utf8' }).replace(/\r/g, '');
+            const expected = JSON.parse(fs.readFileSync(rootPath + 'Parser/' + name + '.expected.json', { encoding: 'utf8' }));
+            const testee = new Parser();
+            const node = yield testee.parse(input);
+            try
+            {
+                expect(node.serialize()).to.be.deep.equal(expected);
+            }
+            catch(e)
+            {
+                console.log(JSON.stringify(node.serialize(), null, 4));
+                throw e;
+            }
+        });
+        return promise;
     }
 
 
-    xdescribe('#parse()', function()
+    describe('#parse()', function()
     {
         it('should parse embedded variables', function()
         {
-            testFixture('variables');
+            return testFixture('variables');
         });
 
         it('should parse set tags', function()
         {
-            testFixture('set');
-        })
+            return testFixture('set');
+        });
 
         it('should parse macro calls', function()
         {
-            testFixture('calls');
-        })
+            return testFixture('calls');
+        });
 
         it('should parse flow tags (if, for)', function()
         {
-            testFixture('flow');
+            return testFixture('flow');
+        });
+
+        it('should parse filters', function()
+        {
+            return testFixture('filter');
+        });
+
+        it('should parse conditions', function()
+        {
+            return testFixture('condition');
+        });
+
+        it('should parse macros', function()
+        {
+            return testFixture('macro');
+        });
+    });
+
+
+    xdescribe('#parse()', function()
+    {
+        it('check', function()
+        {
+            return testFixture('macro');
         })
     });
 });

@@ -5,6 +5,7 @@
  * @ignore
  */
 const BaseRenderer = require('./BaseRenderer.js').BaseRenderer;
+const EOL = '\n';
 
 
 /**
@@ -228,7 +229,7 @@ class CoreMediaRenderer extends BaseRenderer
         // Handle default values
         for (const parameter of node.parameters.children)
         {
-            if (parameter.fields.length && parameter.fields[0] !== 'model')
+            if (parameter.name !== 'model')
             {
                 result+= '<c:if test="${ empty ' + this.getVariable(parameter) + ' }">' + EOL;
                 result+= '  <c:set var="' + this.getVariable(parameter) + '" value="${ ' + this.renderExpression(parameter.value) + ' }" />' + EOL;
@@ -333,7 +334,7 @@ class CoreMediaRenderer extends BaseRenderer
         // Determine self
         const modelParameter = node.parameters.children.find((parameter) =>
         {
-            return parameter.fields.length == 1 && parameter.fields[0] == 'model';
+            return parameter.name == 'model';
         });
         if (modelParameter && modelParameter.value)
         {
@@ -352,7 +353,7 @@ class CoreMediaRenderer extends BaseRenderer
         {
             if (parameter !== modelParameter)
             {
-                result+= '<cm:param name="' + this.getVariable(parameter) + '" value="${ ' + this.renderExpression(parameter.value) + ' }"/>';
+                result+= '<cm:param name="' + parameter.name + '" value="${ ' + this.renderExpression(parameter.value) + ' }"/>';
             }
         }
 
@@ -360,6 +361,15 @@ class CoreMediaRenderer extends BaseRenderer
         result+= '</cm:include>';
 
         return result;
+    }
+
+
+    /**
+     *
+     */
+    renderYield(node)
+    {
+        return '<cm:include self="${ self }"/>';
     }
 
 
@@ -413,6 +423,10 @@ class CoreMediaRenderer extends BaseRenderer
                 result+= this.renderCall(node);
                 break;
 
+            case 'YieldNode':
+                result+= this.renderYield(node);
+                break;
+
             default:
                 this.logger.error('renderNode: Not Implemented', node);
         }
@@ -425,9 +439,17 @@ class CoreMediaRenderer extends BaseRenderer
      */
     render(node)
     {
+        if (!node)
+        {
+            return Promise.resolve('');
+        }
         return this.renderNode(node);
     }
 }
 
 
+/**
+ * Exports
+ * @ignore
+ */
 module.exports.CoreMediaRenderer = CoreMediaRenderer;

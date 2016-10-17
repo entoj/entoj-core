@@ -5,9 +5,10 @@
  */
 const CoreMediaRenderer = require(SOURCE_ROOT + '/transformer/CoreMediaRenderer.js').CoreMediaRenderer;
 const Parser = require(SOURCE_ROOT + '/transformer/Parser.js').Parser;
-const baseSpec = require(TEST_ROOT + '/BaseShared.js');
+const baseRendererSpec = require(TEST_ROOT + '/transformer/BaseRendererShared.js');
 const glob = require('glob');
 const fs = require('fs');
+const co = require('co');
 
 
 /**
@@ -18,52 +19,70 @@ describe(CoreMediaRenderer.className, function()
     /**
      * Base Test
      */
-    baseSpec(CoreMediaRenderer, 'transformer/CoreMediaRenderer');
+    baseRendererSpec(CoreMediaRenderer, 'transformer/CoreMediaRenderer');
 
 
     /**
      * CoreMediaRenderer Test
      */
-    beforeEach(function()
-    {
-        fixtures = {};
-    });
-
-
     function testFixture(name)
     {
-        const rootPath = FIXTURES_ROOT + '/Transformer/';
-        const input = fs.readFileSync(rootPath + name + '.input.j2', { encoding: 'utf8' }).replace(/\r/g, '');
-        const expected = fs.readFileSync(rootPath + 'CoreMediaRenderer/' + name + '.expected.jsp', { encoding: 'utf8' }).replace(/\r/g, '');
-        const parser = new Parser();
-        const nodes = parser.parse(input);
-        //console.log(JSON.stringify(nodes.serialize(), null, 4));
-        const testee = new CoreMediaRenderer();
-        const jsp = testee.render(nodes);
-        expect(jsp).to.be.deep.equal(expected);
+        const promise = co(function*()
+        {
+            const rootPath = FIXTURES_ROOT + '/Transformer/';
+            const input = fs.readFileSync(rootPath + name + '.input.j2', { encoding: 'utf8' }).replace(/\r/g, '');
+            const expected = fs.readFileSync(rootPath + 'CoreMediaRenderer/' + name + '.expected.jsp', { encoding: 'utf8' }).replace(/\r/g, '');
+            const parser = new Parser();
+            const nodes = yield parser.parse(input);
+            const testee = new CoreMediaRenderer();
+            const jsp = yield testee.render(nodes);
+            try
+            {
+                expect(jsp).to.be.deep.equal(expected);
+            }
+            catch(e)
+            {
+                console.log('Parsed:');
+                console.log(JSON.stringify(nodes.serialize(), null, 4));
+                console.log('Rendered:');
+                console.log(jsp);
+                throw e;
+            }
+        });
+        return promise;
     }
 
 
-    xdescribe('#render()', function()
+    describe('#render()', function()
     {
         it('should render embedded variables', function()
         {
-            testFixture('variables');
+            return testFixture('variables');
         });
 
         it('should render set tags', function()
         {
-            testFixture('set');
-        })
+            return testFixture('set');
+        });
 
         it('should render macro calls', function()
         {
-            testFixture('calls');
-        })
+            return testFixture('calls');
+        });
 
         it('should render flow tags (if, for)', function()
         {
-            testFixture('flow');
-        })
+            return testFixture('flow');
+        });
+
+        it('should render conditions', function()
+        {
+            return testFixture('condition');
+        });
+
+        it('should render macros', function()
+        {
+            return testFixture('macro');
+        });
     });
 });

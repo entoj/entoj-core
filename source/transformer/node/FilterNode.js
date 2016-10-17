@@ -21,7 +21,7 @@ class FilterNode extends BaseNode
         this.serializeFields.push('name', 'parameters', 'value');
         this.nodeFields.push('parameters', 'value');
         this.name = name || '';
-        this.parameters = parameters;
+        this.parameters = parameters || false;
         this.value = value;
     }
 

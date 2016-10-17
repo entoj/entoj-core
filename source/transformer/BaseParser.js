@@ -22,12 +22,17 @@ class BaseParser extends Base
 
 
     /**
+     * @return {Promise}
      */
     parse(source)
     {
-        return false;
+        return Promise.resolve(false);
     }
 }
 
 
+/**
+ * Exports
+ * @ignore
+ */
 module.exports.BaseParser = BaseParser;

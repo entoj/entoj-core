@@ -76,4 +76,9 @@ class NodeTransformer extends Base
     }
 }
 
+
+/**
+ * Exports
+ * @ignore
+ */
 module.exports.NodeTransformer = NodeTransformer;
