@@ -5,3 +5,4 @@ test/__fixtures__/Application/Compact/entoj/cache/css/base
 test/__fixtures__/Application/Compact/entoj/cache/images
 .DS_Store
 crash.log
+/npm-debug.log
