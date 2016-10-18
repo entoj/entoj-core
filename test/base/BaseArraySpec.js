@@ -21,6 +21,27 @@ describe(BaseArray.className, function()
     /**
      * BaseArray Test
      */
+    describe('#remove()', function()
+    {
+        it('should allow to remove a existing item', function()
+        {
+            const testee = new BaseArray();
+            testee.push('one', 'two');
+            expect(testee).to.have.length(2);
+            expect(testee.remove('two')).to.be.ok;
+            expect(testee).to.have.length(1);
+        });
+
+        it('should return false when item was not found', function()
+        {
+            const testee = new BaseArray();
+            testee.push('one', 'two');
+            expect(testee.remove('three')).to.be.not.ok;
+            expect(testee).to.have.length(2);
+        });
+    });
+
+
     describe('#load', function()
     {
         it('should allow to import a Array', function()

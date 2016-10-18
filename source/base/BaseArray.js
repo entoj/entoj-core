@@ -83,6 +83,37 @@ class BaseArray extends Array
 
 
     /**
+     * @param {*} item
+     * @returns {Boolean}
+     */
+    remove(item)
+    {
+        const index = this.indexOf(item);
+        if (index !== -1)
+        {
+            this.splice(index, 1);
+        }
+        return (index !== -1);
+    }
+
+
+    /**
+     * @param {*} reference
+     * @param {*} item
+     * @returns {Boolean}
+     */
+    insertBefore(reference, item)
+    {
+        const index = this.indexOf(reference);
+        if (index !== -1)
+        {
+            this.splice(index, 0, item);
+        }
+        return (index !== -1);
+    }
+
+
+    /**
      * @param {*} data
      * @param {bool} clear
      */
