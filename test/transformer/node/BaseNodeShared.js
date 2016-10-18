@@ -34,10 +34,23 @@ function spec(type, className, fixture, prepareParameters)
 
     describe('#isNode()', function()
     {
+        it('should return true when no type or properties are given', function()
+        {
+            const testee = createTestee();
+            expect(testee.isNode()).to.be.ok;
+        });
+
         it('should allow to check the node type', function()
         {
             const testee = createTestee();
             expect(testee.isNode(testee.type)).to.be.ok;
+            expect(testee.isNode('foo')).to.be.not.ok;
+        });
+
+        it('should allow to check multiple node types', function()
+        {
+            const testee = createTestee();
+            expect(testee.isNode([testee.type, 'foo'])).to.be.ok;
         });
     });
 
@@ -69,6 +82,12 @@ function spec(type, className, fixture, prepareParameters)
             const testee = createTestee();
             expect(testee.clone()).to.be.instanceof(type);
             expect(testee.clone()).to.be.not.equal(testee);
+
+            //console.log(JSON.stringify(testee, null, 4));
+            //console.log(JSON.stringify(testee.clone(), null, 4));
+
+            //console.log(testee.children.toString());
+            //console.log(testee.clone().children.toString());
         });
 
         it('should return a object with the same structure', function()

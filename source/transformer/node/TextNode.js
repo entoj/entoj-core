@@ -4,25 +4,14 @@
  * Requirements
  * @ignore
  */
-const BaseNode = require('./BaseNode.js').BaseNode;
+const ValueNode = require('./ValueNode.js').ValueNode;
 
 
 /**
  *
  */
-class TextNode extends BaseNode
+class TextNode extends ValueNode
 {
-    /**
-     * @ignore
-     */
-    constructor(value)
-    {
-        super();
-        this.serializeFields.push('value');
-        this.value = value;
-    }
-
-
     /**
      * @inheritDoc
      */

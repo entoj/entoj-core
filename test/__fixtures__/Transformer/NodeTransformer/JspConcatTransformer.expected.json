@@ -1,0 +1,154 @@
+{
+    "type": "transformer.node/NodeList",
+    "children": [
+        {
+            "type": "transformer.node/CallNode",
+            "children": [],
+            "name": "simple",
+            "parameters": {
+                "type": "transformer.node/ParametersNode",
+                "children": [
+                    {
+                        "type": "transformer.node/ParameterNode",
+                        "name": "classes",
+                        "value": {
+                            "type": "transformer.node/ExpressionNode",
+                            "children": [
+                                {
+                                    "type": "transformer.node/VariableNode",
+                                    "fields": [
+                                        "moduleName"
+                                    ]
+                                },
+                                {
+                                    "type": "transformer.node/OperandNode",
+                                    "value": "+="
+                                },
+                                {
+                                    "type": "transformer.node/LiteralNode",
+                                    "value": "__check"
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "type": "transformer.node/TextNode",
+            "value": "\n"
+        },
+        {
+            "type": "transformer.node/SetNode",
+            "variable": {
+                "type": "transformer.node/VariableNode",
+                "fields": [
+                    "variable"
+                ]
+            },
+            "value": {
+                "type": "transformer.node/ExpressionNode",
+                "children": [
+                    {
+                        "type": "transformer.node/VariableNode",
+                        "fields": [
+                            "model",
+                            "headline"
+                        ]
+                    },
+                    {
+                        "type": "transformer.node/OperandNode",
+                        "value": "+="
+                    },
+                    {
+                        "type": "transformer.node/LiteralNode",
+                        "value": "-teaser"
+                    }
+                ]
+            }
+        },
+        {
+            "type": "transformer.node/TextNode",
+            "value": "\n"
+        },
+        {
+            "type": "transformer.node/SetNode",
+            "variable": {
+                "type": "transformer.node/VariableNode",
+                "fields": [
+                    "strings"
+                ]
+            },
+            "value": {
+                "type": "transformer.node/ExpressionNode",
+                "children": [
+                    {
+                        "type": "transformer.node/LiteralNode",
+                        "value": "class"
+                    },
+                    {
+                        "type": "transformer.node/OperandNode",
+                        "value": "+="
+                    },
+                    {
+                        "type": "transformer.node/LiteralNode",
+                        "value": "-teaser"
+                    }
+                ]
+            }
+        },
+        {
+            "type": "transformer.node/TextNode",
+            "value": "\n"
+        },
+        {
+            "type": "transformer.node/SetNode",
+            "variable": {
+                "type": "transformer.node/VariableNode",
+                "fields": [
+                    "multiple"
+                ]
+            },
+            "value": {
+                "type": "transformer.node/ExpressionNode",
+                "children": [
+                    {
+                        "type": "transformer.node/LiteralNode",
+                        "value": "class"
+                    },
+                    {
+                        "type": "transformer.node/OperandNode",
+                        "value": "+="
+                    },
+                    {
+                        "type": "transformer.node/LiteralNode",
+                        "value": "-teaser"
+                    },
+                    {
+                        "type": "transformer.node/OperandNode",
+                        "value": "+="
+                    },
+                    {
+                        "type": "transformer.node/VariableNode",
+                        "fields": [
+                            "model",
+                            "headline"
+                        ]
+                    },
+                    {
+                        "type": "transformer.node/OperandNode",
+                        "value": "+="
+                    },
+                    {
+                        "type": "transformer.node/LiteralNode",
+                        "value": "yes"
+                    }
+                ]
+            }
+        },
+        {
+            "type": "transformer.node/TextNode",
+            "value": "\n"
+        }
+    ]
+}

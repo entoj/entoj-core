@@ -26,6 +26,10 @@
                 "type": "transformer.node/ParametersNode",
                 "children": [
                     {
+                        "name": "type",
+                        "type": "transformer.node/ParameterNode"
+                    },
+                    {
                         "type": "transformer.node/ParameterNode",
                         "name": "model"
                     },

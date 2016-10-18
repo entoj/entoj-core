@@ -1,10 +1,10 @@
-"use strict";
+'use strict';
 
 /**
  * Requirements
  */
 const BooleanOperandNode = require(SOURCE_ROOT + '/transformer/node/BooleanOperandNode.js').BooleanOperandNode;
-const baseNodeSpec = require(TEST_ROOT + '/transformer/node/BaseNodeShared.js');
+const valueNodeSpec = require(TEST_ROOT + '/transformer/node/ValueNodeShared.js');
 
 
 /**
@@ -13,21 +13,19 @@ const baseNodeSpec = require(TEST_ROOT + '/transformer/node/BaseNodeShared.js');
 describe(BooleanOperandNode.className, function()
 {
     /**
-     * BaseNode Test
+     * ValueNode Test
      */
-    baseNodeSpec(BooleanOperandNode, 'transformer.node/BooleanOperandNode',
+    valueNodeSpec(BooleanOperandNode, 'transformer.node/BooleanOperandNode',
     {
+        nodeFields: [],
+        values:
+        {
+            value: 'and'
+        },
         serialized:
         {
             type: BooleanOperandNode.className,
-            value: 'value'
+            value: 'and'
         }
-    }, prepareParameters);
-
-
-    function prepareParameters(parameters)
-    {
-        parameters.push('value');
-        return parameters;
-    }
+    });
 });

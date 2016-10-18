@@ -3,29 +3,29 @@
 /**
  * Requirements
  */
-const TextNode = require(SOURCE_ROOT + '/transformer/node/TextNode.js').TextNode;
+const ValueNode = require(SOURCE_ROOT + '/transformer/node/ValueNode.js').ValueNode;
 const valueNodeSpec = require(TEST_ROOT + '/transformer/node/ValueNodeShared.js');
 
 
 /**
  * Spec
  */
-describe(TextNode.className, function()
+describe(ValueNode.className, function()
 {
     /**
      * ValueNode Test
      */
-    valueNodeSpec(TextNode, 'transformer.node/TextNode',
+    valueNodeSpec(ValueNode, 'transformer.node/ValueNode',
     {
         nodeFields: [],
         values:
         {
-            value: 'Lorem Ipsum'
+            value: 'value'
         },
         serialized:
         {
-            type: TextNode.className,
-            value: 'Lorem Ipsum'
+            type: ValueNode.className,
+            value: 'value'
         }
     });
 });

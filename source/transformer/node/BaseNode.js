@@ -5,6 +5,7 @@
  * @ignore
  */
 const Base = require('../../Base.js').Base;
+const BaseArray = require('../../base/BaseArray.js').BaseArray;
 
 
 /**
@@ -40,11 +41,25 @@ class BaseNode extends Base
      */
     isNode(type, properties)
     {
+        return this.is(type, properties);
+    }
+
+
+    /**
+     * @param {String} type - Node type
+     * @param {Object} properties - Node properties
+     * @return {Bool}
+     */
+    is(type, properties)
+    {
         // Check type
-        const types = Array.isArray(type) ? type : [type];
-        if (types.indexOf(this.type) === -1)
+        if (type)
         {
-            return false;
+            const types = Array.isArray(type) ? type : [type];
+            if (types.indexOf(this.type) === -1)
+            {
+                return false;
+            }
         }
 
         return true;
@@ -101,7 +116,7 @@ class BaseNode extends Base
             result[field] = this[field];
             if (Array.isArray(this[field]))
             {
-                result[field] = [];
+                result[field] = new BaseArray();
                 for (const item of this[field])
                 {
                     if (item instanceof BaseNode)

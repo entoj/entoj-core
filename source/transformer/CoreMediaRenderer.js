@@ -229,10 +229,10 @@ class CoreMediaRenderer extends BaseRenderer
         // Handle default values
         for (const parameter of node.parameters.children)
         {
-            if (parameter.name !== 'model')
+            if (parameter.value && parameter.name !== 'model')
             {
-                result+= '<c:if test="${ empty ' + this.getVariable(parameter) + ' }">' + EOL;
-                result+= '  <c:set var="' + this.getVariable(parameter) + '" value="${ ' + this.renderExpression(parameter.value) + ' }" />' + EOL;
+                result+= '<c:if test="${ empty ' + parameter.name + ' }">' + EOL;
+                result+= '  <c:set var="' + parameter.name + '" value="${ ' + this.renderExpression(parameter.value) + ' }" />' + EOL;
                 result+= '</c:if>' + EOL;
             }
         }
@@ -443,7 +443,7 @@ class CoreMediaRenderer extends BaseRenderer
         {
             return Promise.resolve('');
         }
-        return this.renderNode(node);
+        return Promise.resolve(this.renderNode(node));
     }
 }
 

@@ -32,38 +32,37 @@ class NodeTransformer extends Base
 
 
     /**
-     *
+     * @private
      */
     walk(node, transformer, options, level)
     {
         level = level || 0;
         this.logger.debug(String('    ').repeat(level), 'Node', node.type);
 
-        const result = node.clone();
         for (const field of node.nodeFields)
         {
             if (Array.isArray(node[field]))
             {
-                result[field] = Array.isArray(result[field]) ? result[field] : [];
+                const nodes = [];
                 for (const child of node[field])
                 {
-                    const childNodes = this.walk(child, transformer, options, level + 1);
                     try
                     {
-                        result[field].push(childNodes);
+                        nodes.push(this.walk(child, transformer, options, level + 1));
                     }
                     catch(e)
                     {
                         this.logger.error('Walk failed for ', child, e);
                     }
                 }
+                node[field].load(nodes, true);
             }
             else if (node instanceof BaseNode)
             {
-                result[field] = this.walk(node[field], transformer, options, level + 1);
+                node[field] = this.walk(node[field], transformer, options, level + 1);
             }
         }
-        return this.transformNode(result, options);
+        return this.transformNode(node, options);
     }
 
 
@@ -72,7 +71,11 @@ class NodeTransformer extends Base
      */
     transform(rootNode, transformer, options)
     {
-        return this.walk(rootNode, transformer, options);
+        if (!rootNode)
+        {
+            return Promise.resolve(false);
+        }
+        return Promise.resolve(this.walk(rootNode.clone(), transformer, options));
     }
 }
 

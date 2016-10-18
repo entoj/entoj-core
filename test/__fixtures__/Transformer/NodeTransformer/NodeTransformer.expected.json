@@ -1,0 +1,24 @@
+{
+    "type": "transformer.node/NodeList",
+    "children": [
+        {
+            "type": "transformer.node/TextNode",
+            "value": "Hello "
+        },
+        {
+            "type": "transformer.node/OutputNode",
+            "children": [
+                {
+                    "type": "transformer.node/VariableNode",
+                    "fields": [
+                        "world"
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "transformer.node/TextNode",
+            "value": "!\n"
+        }
+    ]
+}

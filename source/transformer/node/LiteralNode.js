@@ -4,31 +4,53 @@
  * Requirements
  * @ignore
  */
-const BaseNode = require('./BaseNode.js').BaseNode;
+const ValueNode = require('./ValueNode.js').ValueNode;
 
 
 /**
  *
  */
-class LiteralNode extends BaseNode
+class LiteralNode extends ValueNode
 {
-    /**
-     * @ignore
-     */
-    constructor(value)
-    {
-        super();
-        this.serializeFields.push('value');
-        this.value = value;
-    }
-
-
     /**
      * @inheritDoc
      */
     static get className()
     {
         return 'transformer.node/LiteralNode';
+    }
+
+
+    /**
+     * @inheritDoc
+     */
+    get valueType()
+    {
+        return typeof this.value;
+    }
+
+
+    /**
+     * @inheritDoc
+     */
+    is(type, properties)
+    {
+        if (!super.is(type, properties))
+        {
+            return false;
+        }
+
+        // Check value
+        if (properties && typeof properties.valueType !== 'undefined')
+        {
+            const value = Array.isArray(properties.valueType) ? properties.valueType : [properties.valueType];
+            if (value.indexOf(this.valueType) === -1)
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 }
 

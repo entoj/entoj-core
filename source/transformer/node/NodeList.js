@@ -5,6 +5,7 @@
  * @ignore
  */
 const BaseNode = require('./BaseNode.js').BaseNode;
+const BaseArray = require('../../base/BaseArray.js').BaseArray;
 
 
 /**
@@ -20,7 +21,11 @@ class NodeList extends BaseNode
         super();
         this.serializeFields.push('children');
         this.nodeFields.push('children');
-        this.children = children || [];
+        this.children = new BaseArray();
+        if (children)
+        {
+            this.children.load(children);
+        }
     }
 
 
