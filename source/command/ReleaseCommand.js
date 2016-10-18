@@ -6,7 +6,6 @@
  */
 const BaseCommand = require('./BaseCommand.js').BaseCommand;
 const Context = require('../application/Context.js').Context;
-const utils = require('./utils.js');
 const gulp = require('gulp');
 
 
