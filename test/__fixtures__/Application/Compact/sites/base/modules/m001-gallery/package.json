@@ -4,5 +4,15 @@
         "css": "core",
         "js": "core"
     },
-    "tags": ["common", "gallery"]
+    "tags": ["common", "gallery"],
+    "release":
+    {
+        "coremedia":
+        [
+            {},
+            {
+                "filename": "CMCollection.m-gallery"
+            }
+        ]
+    }
 }
