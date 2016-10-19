@@ -9,6 +9,19 @@
                     "value": "\n    "
                 },
                 {
+                    "type": "transformer.node/CallNode",
+                    "children": [],
+                    "name": "macro_dispatcher",
+                    "parameters": {
+                        "type": "transformer.node/ParametersNode",
+                        "children": []
+                    }
+                },
+                {
+                    "type": "transformer.node/TextNode",
+                    "value": "\n    "
+                },
+                {
                     "type": "transformer.node/YieldNode"
                 },
                 {
