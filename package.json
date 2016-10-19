@@ -6,10 +6,10 @@
     "node": "4.x"
   },
   "scripts": {
-    "coverage": "./scripts/tests --coverage",
-    "coveralls": "./scripts/coveralls",
-    "lint": "./scripts/lint",
-    "test": "./scripts/tests"
+    "coverage": "scripts/tests --coverage",
+    "coveralls": "scripts/coveralls",
+    "lint": "scripts/lint",
+    "test": "scripts/tests"
   },
   "dependencies": {
     "async": "*",
