@@ -8,8 +8,8 @@ install:
 
 # Post-install test scripts.
 test_script:
-  - bash -lc "pwd"
-  - bash -lc "/c/projects/entoj-core/scripts/coveralls"
+  - npm install
+  - bash -lc "/c/projects/entoj-core/scripts/tests"
 
 # Don't actually build.
 build: off
