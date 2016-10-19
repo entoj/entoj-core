@@ -493,6 +493,11 @@ class Parser extends BaseParser
                 this.logger.error('parseNode: Not Implemented', type, node);
         }
 
+        // return a node - always
+        if (!result)
+        {
+            result = new TextNode('');
+        }
         return result;
     }
 
