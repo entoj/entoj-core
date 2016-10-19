@@ -5,10 +5,11 @@ environment:
 install:
   # Get the latest stable version of Node.js or io.js
   - ps: Install-Product node $env:nodejs_version
+  - npm cache clean
+  - npm install
 
 # Post-install test scripts.
 test_script:
-  - npm install
   - bash -lc "/c/projects/entoj-core/scripts/tests"
 
 # Don't actually build.
