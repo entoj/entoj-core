@@ -21,7 +21,7 @@ describe(JspEmptyTransformer.className, function()
     /**
      * JspEmptyTransformer Test
      */
-    xdescribe('#transform()', function()
+    describe('#transform()', function()
     {
         it('should replace comparisons to falsy values with empty/notempty', function()
         {
