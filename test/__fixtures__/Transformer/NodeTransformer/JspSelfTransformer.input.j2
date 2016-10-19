@@ -1,0 +1,5 @@
+{% set model = model|load %}
+{% set text = model.text %}
+{% for item in model.items %}ITEM{% endfor %}
+{% if model.copy %}COPY{% endif %}
+{{ model.headline }}

@@ -1,0 +1,96 @@
+{
+    "type": "transformer.node/NodeList",
+    "children": [
+        {
+            "type": "transformer.node/TextNode",
+            "value": "\n"
+        },
+        {
+            "type": "transformer.node/SetNode",
+            "variable": {
+                "type": "transformer.node/VariableNode",
+                "fields": [
+                    "text"
+                ]
+            },
+            "value": {
+                "type": "transformer.node/ExpressionNode",
+                "children": [
+                    {
+                        "type": "transformer.node/VariableNode",
+                        "fields": [
+                            "self",
+                            "text"
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "type": "transformer.node/TextNode",
+            "value": "\n"
+        },
+        {
+            "type": "transformer.node/ForNode",
+            "children": [
+                {
+                    "type": "transformer.node/TextNode",
+                    "value": "ITEM"
+                }
+            ],
+            "name": "item",
+            "value": {
+                "type": "transformer.node/VariableNode",
+                "fields": [
+                    "self",
+                    "items"
+                ]
+            }
+        },
+        {
+            "type": "transformer.node/TextNode",
+            "value": "\n"
+        },
+        {
+            "type": "transformer.node/IfNode",
+            "children": [
+                {
+                    "type": "transformer.node/TextNode",
+                    "value": "COPY"
+                }
+            ],
+            "condition": {
+                "type": "transformer.node/ConditionNode",
+                "children": [
+                    {
+                        "type": "transformer.node/VariableNode",
+                        "fields": [
+                            "self",
+                            "copy"
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "type": "transformer.node/TextNode",
+            "value": "\n"
+        },
+        {
+            "type": "transformer.node/OutputNode",
+            "children": [
+                {
+                    "type": "transformer.node/VariableNode",
+                    "fields": [
+                        "self",
+                        "headline"
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "transformer.node/TextNode",
+            "value": "\n"
+        }
+    ]
+}
