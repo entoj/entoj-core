@@ -48,7 +48,11 @@ class NodeTransformer extends Base
                 {
                     try
                     {
-                        nodes.push(this.walk(child, transformer, options, level + 1));
+                        const transformedNode = this.walk(child, transformer, options, level + 1);
+                        if (transformedNode)
+                        {
+                            nodes.push(transformedNode);
+                        }
                     }
                     catch(e)
                     {
