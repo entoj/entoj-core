@@ -1,1 +1,151 @@
-{}
+{
+  "type": "transformer.node/NodeList",
+  "children": [
+    {
+      "type": "transformer.node/IfNode",
+      "children": [],
+      "condition": {
+        "type": "transformer.node/ConditionNode",
+        "children": [
+          {
+            "type": "transformer.node/FilterNode",
+            "name": "notempty",
+            "parameters": {
+              "type": "transformer.node/ParametersNode",
+              "children": []
+            },
+            "value": {
+              "type": "transformer.node/VariableNode",
+              "fields": [
+                "model",
+                "headline"
+              ]
+            }
+          },
+          {
+            "type": "transformer.node/BooleanOperandNode",
+            "value": "and"
+          },
+          {
+            "type": "transformer.node/FilterNode",
+            "name": "notempty",
+            "parameters": {
+              "type": "transformer.node/ParametersNode",
+              "children": []
+            },
+            "value": {
+              "type": "transformer.node/VariableNode",
+              "fields": [
+                "model",
+                "copy"
+              ]
+            }
+          },
+          {
+            "type": "transformer.node/BooleanOperandNode",
+            "value": "or"
+          },
+          {
+            "type": "transformer.node/FilterNode",
+            "name": "empty",
+            "parameters": {
+              "type": "transformer.node/ParametersNode",
+              "children": []
+            },
+            "value": {
+              "type": "transformer.node/VariableNode",
+              "fields": [
+                "model",
+                "headline"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "transformer.node/TextNode",
+      "value": "\n"
+    },
+    {
+      "type": "transformer.node/IfNode",
+      "children": [],
+      "condition": {
+        "type": "transformer.node/ConditionNode",
+        "children": [
+          {
+            "type": "transformer.node/FilterNode",
+            "name": "empty",
+            "parameters": {
+              "type": "transformer.node/ParametersNode",
+              "children": []
+            },
+            "value": {
+              "type": "transformer.node/VariableNode",
+              "fields": [
+                "model",
+                "headline"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "transformer.node/TextNode",
+      "value": "\n"
+    },
+    {
+      "type": "transformer.node/IfNode",
+      "children": [],
+      "condition": {
+        "type": "transformer.node/ConditionNode",
+        "children": [
+          {
+            "type": "transformer.node/FilterNode",
+            "name": "notempty",
+            "parameters": {
+              "type": "transformer.node/ParametersNode",
+              "children": []
+            },
+            "value": {
+              "type": "transformer.node/VariableNode",
+              "fields": [
+                "model",
+                "headline"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "transformer.node/TextNode",
+      "value": "\n"
+    },
+    {
+      "type": "transformer.node/IfNode",
+      "children": [],
+      "condition": {
+        "type": "transformer.node/ConditionNode",
+        "children": [
+          {
+            "type": "transformer.node/FilterNode",
+            "name": "empty",
+            "parameters": {
+              "type": "transformer.node/ParametersNode",
+              "children": []
+            },
+            "value": {
+              "type": "transformer.node/VariableNode",
+              "fields": [
+                "model",
+                "headline"
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
