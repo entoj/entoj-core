@@ -412,7 +412,11 @@ class CoreMediaRenderer extends BaseRenderer
         }
 
         // Determine view
-        if (!node.name.endsWith('_dispatcher'))
+        if (node.name.endsWith('_dispatcher'))
+        {
+            result+= 'view="' + node.name.substr(0, node.name.length - 11) + '"';
+        }
+        else
         {
             result+= 'view="' + node.name + '"';
         }
@@ -512,7 +516,11 @@ class CoreMediaRenderer extends BaseRenderer
         {
             return Promise.resolve('');
         }
-        return Promise.resolve(this.renderNode(node));
+        let source = '';
+        source+= '<%@ page contentType="text/html; charset=UTF-8" session="false" %>' + EOL;
+        source+= '<%@ include file="../../../../../WEB-INF/includes/taglibs.jinc" %>' + EOL;
+        source+= this.renderNode(node);
+        return Promise.resolve(source);
     }
 }
 

@@ -38,7 +38,7 @@ describe(CoreMediaRenderer.className, function()
             const jsp = yield testee.render(nodes);
             try
             {
-                expect(jsp).to.be.deep.equal(expected);
+                expect(jsp.trim()).to.be.deep.equal(expected.trim());
             }
             catch(e)
             {

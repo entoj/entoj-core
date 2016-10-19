@@ -1,3 +1,5 @@
+<%@ page contentType="text/html; charset=UTF-8" session="false" %>
+<%@ include file="../../../../../WEB-INF/includes/taglibs.jinc" %>
 <c:if test="${ classes }"></c:if>
 <c:if test="${ classes.markup() }"></c:if>
 <c:if test="${ empty classes }"></c:if>
