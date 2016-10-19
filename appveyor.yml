@@ -8,7 +8,7 @@ install:
 
 # Post-install test scripts.
 test_script:
-  - npm run coveralls
+  - bash -lc "npm run coveralls"
 
 # Don't actually build.
 build: off
