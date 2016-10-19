@@ -90,6 +90,11 @@ class LintCommand extends BaseCommand
         {
             const query = parameters.action || '*';
             const section = logger.section('Linting <' + query + '>');
+            const sectionResult =
+            {
+                errorCount: 0,
+                warningCount: 0
+            };
 
             const entities = yield scope._globalRepository.resolveEntities(query);
             for (const entity of entities)
@@ -113,6 +118,8 @@ class LintCommand extends BaseCommand
                     }
                     result.errorCount+= linterResult.errorCount;
                     result.warningCount+= linterResult.warningCount;
+                    sectionResult.errorCount+= linterResult.errorCount;
+                    sectionResult.warningCount+= linterResult.warningCount;
                     Array.prototype.push.apply(result.messages, linterResult.messages);
                     Array.prototype.push.apply(result.files, linterResult.files);
                 }
@@ -133,7 +140,17 @@ class LintCommand extends BaseCommand
                 }
             }
 
-            logger.end(section);
+            if (sectionResult.errorCount > 0)
+            {
+                // exit with non-zero for git hooks
+                logger.end(section, true);
+                process.exit(1);
+            } else
+            {
+                // exit with zero
+                logger.end(section, false);
+                process.exit(0);
+            }
         })
         .catch(function(e)
         {
