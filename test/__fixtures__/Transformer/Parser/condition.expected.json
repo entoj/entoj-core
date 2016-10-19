@@ -54,26 +54,18 @@
                 "type": "transformer.node/ConditionNode",
                 "children": [
                     {
-                        "type": "transformer.node/BooleanOperandNode",
-                        "value": "not"
-                    },
-                    {
-                        "type": "transformer.node/VariableNode",
-                        "fields": [
-                            "model",
-                            "headline"
-                        ]
-                    },
-                    {
-                        "type": "transformer.node/BooleanOperandNode",
-                        "value": "or"
-                    },
-                    {
-                        "type": "transformer.node/VariableNode",
-                        "fields": [
-                            "mode",
-                            "copy"
-                        ]
+                        "type": "transformer.node/FilterNode",
+                        "name": "empty",
+                        "parameters": {
+                            "type": "transformer.node/ParametersNode",
+                            "children": []
+                        },
+                        "value": {
+                            "type": "transformer.node/VariableNode",
+                            "fields": [
+                                "classes"
+                            ]
+                        }
                     }
                 ]
             }
@@ -89,19 +81,93 @@
                 "type": "transformer.node/ConditionNode",
                 "children": [
                     {
-                        "type": "transformer.node/LiteralNode",
-                        "value": ""
+                        "type": "transformer.node/FilterNode",
+                        "name": "notempty",
+                        "parameters": {
+                            "type": "transformer.node/ParametersNode",
+                            "children": []
+                        },
+                        "value": {
+                            "type": "transformer.node/VariableNode",
+                            "fields": [
+                                "classes"
+                            ]
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "type": "transformer.node/TextNode",
+            "value": "\n"
+        },
+        {
+            "type": "transformer.node/IfNode",
+            "children": [],
+            "condition": {
+                "type": "transformer.node/ConditionNode",
+                "children": [
+                    {
+                        "type": "transformer.node/FilterNode",
+                        "name": "empty",
+                        "parameters": {
+                            "type": "transformer.node/ParametersNode",
+                            "children": []
+                        },
+                        "value": {
+                            "type": "transformer.node/VariableNode",
+                            "fields": [
+                                "model",
+                                "headline"
+                            ]
+                        }
                     },
                     {
-                        "type": "transformer.node/OperandNode",
-                        "value": "!="
+                        "type": "transformer.node/BooleanOperandNode",
+                        "value": "or"
                     },
                     {
-                        "type": "transformer.node/VariableNode",
-                        "fields": [
-                            "model",
-                            "headline"
-                        ]
+                        "type": "transformer.node/FilterNode",
+                        "name": "notempty",
+                        "parameters": {
+                            "type": "transformer.node/ParametersNode",
+                            "children": []
+                        },
+                        "value": {
+                            "type": "transformer.node/VariableNode",
+                            "fields": [
+                                "mode",
+                                "copy"
+                            ]
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "type": "transformer.node/TextNode",
+            "value": "\n"
+        },
+        {
+            "type": "transformer.node/IfNode",
+            "children": [],
+            "condition": {
+                "type": "transformer.node/ConditionNode",
+                "children": [
+                    {
+                        "type": "transformer.node/FilterNode",
+                        "name": "notempty",
+                        "parameters": {
+                            "type": "transformer.node/ParametersNode",
+                            "children": []
+                        },
+                        "value": {
+                            "type": "transformer.node/VariableNode",
+                            "fields": [
+                                "model",
+                                "headline"
+                            ]
+                        }
                     },
                     {
                         "type": "transformer.node/BooleanOperandNode",
@@ -111,19 +177,19 @@
                         "type": "transformer.node/GroupNode",
                         "children": [
                             {
-                                "type": "transformer.node/LiteralNode",
-                                "value": ""
-                            },
-                            {
-                                "type": "transformer.node/OperandNode",
-                                "value": "!="
-                            },
-                            {
-                                "type": "transformer.node/VariableNode",
-                                "fields": [
-                                    "model",
-                                    "subline"
-                                ]
+                                "type": "transformer.node/FilterNode",
+                                "name": "notempty",
+                                "parameters": {
+                                    "type": "transformer.node/ParametersNode",
+                                    "children": []
+                                },
+                                "value": {
+                                    "type": "transformer.node/VariableNode",
+                                    "fields": [
+                                        "model",
+                                        "subline"
+                                    ]
+                                }
                             },
                             {
                                 "type": "transformer.node/BooleanOperandNode",

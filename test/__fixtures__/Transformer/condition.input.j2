@@ -1,4 +1,6 @@
 {% if classes %}{% endif %}
 {% if classes|markup %}{% endif %}
-{% if not model.headline or mode.copy %}{% endif %}
-{% if '' != model.headline or ('' != model.subline and model.type == 'teaser') %}{% endif %}
+{% if classes|empty %}{% endif %}
+{% if classes|notempty %}{% endif %}
+{% if model.headline|empty or mode.copy|notempty %}{% endif %}
+{% if model.headline|notempty or (model.subline|notempty and model.type == 'teaser') %}{% endif %}

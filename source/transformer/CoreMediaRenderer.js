@@ -138,16 +138,29 @@ class CoreMediaRenderer extends BaseRenderer
         switch(node.type)
         {
             case 'FilterNode':
-                if (node.value.type === 'FilterNode')
+                if (node.name == "empty")
                 {
-                    result+= '(';
+                    result+= "empty ";
+                    result+= this.renderExpression(node.value);
                 }
-                result+= this.renderCondition(node.value);
-                if (node.value.type === 'FilterNode')
+                else if (node.name == "notempty")
                 {
-                    result+= ')';
+                    result+= " not empty ";
+                    result+= this.renderExpression(node.value);
                 }
-                result+= '.' + node.name + '()';
+                else
+                {
+                    if (node.value.type === 'FilterNode')
+                    {
+                        result+= '(';
+                    }
+                    result+= this.renderCondition(node.value);
+                    if (node.value.type === 'FilterNode')
+                    {
+                        result+= ')';
+                    }
+                    result+= '.' + node.name + '()';
+                }
                 break;
 
             case 'VariableNode':
@@ -169,10 +182,6 @@ class CoreMediaRenderer extends BaseRenderer
             case 'OperandNode':
             case 'BooleanOperandNode':
                 result = result.trim() + ' ' + node.value + ' ';
-                break;
-
-            case 'VariableNode':
-                result+= this.getVariable(node);
                 break;
 
             case 'GroupNode':
@@ -232,6 +241,7 @@ class CoreMediaRenderer extends BaseRenderer
                 }
                 result+= parameters.join(', ');
                 result+= ')';
+
                 break;
 
             case 'ExpressionNode':
