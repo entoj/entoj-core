@@ -1,3 +1,4 @@
 {% macro macro(type, model, classes = 'foo') %}
+    {{ macro_dispatcher() }}
     {{ caller() }}
 {% endmacro %}
