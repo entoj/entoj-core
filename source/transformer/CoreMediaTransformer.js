@@ -9,6 +9,7 @@ const Parser = require('./Parser.js').Parser;
 const CoreMediaRenderer = require('./CoreMediaRenderer.js').CoreMediaRenderer;
 const JspConcatTransformer = require('./nodetransformer/JspConcatTransformer.js').JspConcatTransformer;
 const JspEmptyTransformer = require('./nodetransformer/JspEmptyTransformer.js').JspEmptyTransformer;
+const JspSelfTransformer = require('./nodetransformer/JspSelfTransformer.js').JspSelfTransformer;
 const GlobalRepository = require('../model/GlobalRepository.js').GlobalRepository;
 const co = require('co');
 
@@ -26,7 +27,7 @@ class CoreMediaTransformer extends Transformer
         super(globalRepository,
             new Parser(),
             new CoreMediaRenderer(),
-            [new JspConcatTransformer(), new JspEmptyTransformer()]);
+            [new JspConcatTransformer(), new JspEmptyTransformer(), new JspSelfTransformer()]);
     }
 
 
