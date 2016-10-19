@@ -324,7 +324,7 @@ class Parser extends BaseParser
 
         // Only TextNode/CallNode(s)?
         if (types.length == 1 &&
-            ((types[0] === 'TextNode') || (types[0] === 'CallNode')))
+            (['TextNode', 'CallNode', 'YieldNode'].indexOf(types[0]) > -1))
         {
             return children.length > 1 ? new NodeList(children) : children[0];
         }

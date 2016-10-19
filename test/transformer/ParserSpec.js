@@ -8,6 +8,7 @@ const baseParserSpec = require(TEST_ROOT + '/transformer/BaseParserShared.js');
 const glob = require('glob');
 const fs = require('fs');
 const co = require('co');
+const nunjucks = require('nunjucks');
 
 
 /**
@@ -39,6 +40,9 @@ describe(Parser.className, function()
             }
             catch(e)
             {
+                console.log('Nunjucks AST:');
+                console.log(JSON.stringify(nunjucks.parser.parse(input), null, 4));
+                console.log('Parsed:');
                 console.log(JSON.stringify(node.serialize(), null, 4));
                 throw e;
             }
@@ -79,6 +83,15 @@ describe(Parser.className, function()
             return testFixture('condition');
         });
 
+        it('should parse macros', function()
+        {
+            return testFixture('macro');
+        });
+    });
+
+
+    xdescribe('#parse()', function()
+    {
         it('should parse macros', function()
         {
             return testFixture('macro');

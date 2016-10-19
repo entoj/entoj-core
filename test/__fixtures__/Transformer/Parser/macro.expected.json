@@ -9,12 +9,7 @@
                     "value": "\n    "
                 },
                 {
-                    "type": "transformer.node/OutputNode",
-                    "children": [
-                        {
-                            "type": "transformer.node/YieldNode"
-                        }
-                    ]
+                    "type": "transformer.node/YieldNode"
                 },
                 {
                     "type": "transformer.node/TextNode",
