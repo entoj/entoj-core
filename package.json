@@ -52,7 +52,6 @@
     "harmony-reflect": "*",
     "htmlparser2": "*",
     "http2": "*",
-    "ink-docstrap": "*",
     "inquirer": "*",
     "jspm": "*",
     "jspm-bower-endpoint": "*",
@@ -102,6 +101,8 @@
     "mocha": "*",
     "sinon": "*",
     "supertest": "*",
-    "coveralls": "*"
+    "coveralls": "*",
+    "jsdoc": "*",
+    "ink-docstrap": "*"
   }
 }

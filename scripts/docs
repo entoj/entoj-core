@@ -8,4 +8,4 @@ SOURCE=$SELF/../source
 TEMPLATE=$SELF/../node_modules/ink-docstrap/template
 
 # Doit
-echo "$JSDOC --destination $DOCS --recurse $SOURCE --template $TEMPLATE"
+$JSDOC --destination $DOCS --recurse $SOURCE --template $TEMPLATE
