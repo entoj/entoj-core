@@ -4,12 +4,14 @@
  * Requirements
  * @ignore
  */
-const BaseRepository = require('./BaseRepository.js').BaseRepository;
+const Base = require('../Base.js').Base;
 const SitesRepository = require('./site/SitesRepository.js').SitesRepository;
 const EntityCategoriesRepository = require('./entity/EntityCategoriesRepository.js').EntityCategoriesRepository;
 const EntitiesRepository = require('./entity/EntitiesRepository.js').EntitiesRepository;
 const EntityCategory = require('./entity/EntityCategory.js').EntityCategory;
 const Site = require('./site/Site.js').Site;
+const ContentType = require('./ContentType.js');
+const DocumentationCallable = require('./documentation/DocumentationCallable.js').DocumentationCallable;
 const assertParameter = require('../utils/assert.js').assertParameter;
 const co = require('co');
 
@@ -19,7 +21,7 @@ const co = require('co');
  * @memberOf model
  * @extends {BaseRepository}
  */
-class GlobalRepository extends BaseRepository
+class GlobalRepository extends Base
 {
     /**
      * @param {EntityIdParser} entityIdParser
@@ -178,6 +180,48 @@ class GlobalRepository extends BaseRepository
             }
 
             return result;
+        });
+        return promise;
+    }
+
+
+    /**
+     * @returns {Promise<Object>}
+     */
+    resolveMacro(siteQuery, macroQuery)
+    {
+        const scope = this;
+        const promise = co(function*()
+        {
+            // Get site
+            const site = (siteQuery instanceof Site) ? siteQuery : yield scope._sitesRepository.findBy(Site.ANY, siteQuery);
+            if (!site)
+            {
+                return false;
+            }
+
+            // Get entities
+            const entities = yield scope._entitiesRepository.getBySite(site);
+
+            // Find macro
+            let macro;
+            for (const entity of entities)
+            {
+                if (!macro)
+                {
+                    macro = entity.documentation.find((doc) =>
+                    {
+                        return doc.contentType === ContentType.JINJA &&
+                               doc.name === macroQuery;
+                    });
+                }
+            }
+            if (!macro)
+            {
+                return false;
+            }
+
+            return macro;
         });
         return promise;
     }
