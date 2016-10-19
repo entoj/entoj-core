@@ -7,6 +7,8 @@
 const BaseCommand = require('../BaseCommand.js').BaseCommand;
 const Context = require('../../application/Context.js').Context;
 const CoreMediaCompiler = require('./CoreMediaCompiler.js').CoreMediaCompiler;
+const Transformer = require('../../transformer/Transformer.js').Transformer;
+const CoreMediaTransformer = require('../../transformer/CoreMediaTransformer.js').CoreMediaTransformer;
 
 
 /**
@@ -23,7 +25,7 @@ class CoreMediaCommand extends BaseCommand
 
         // Assign options
         this._name = 'coremedia';
-        this._options = options || '';
+        this._options = options || {};
     }
 
 
@@ -72,7 +74,9 @@ class CoreMediaCommand extends BaseCommand
      */
     compile(parameters)
     {
-        const compiler = this.context.di.create(CoreMediaCompiler);
+        const mappings = new Map();
+        mappings.set(Transformer, CoreMediaTransformer);
+        const compiler = this.context.di.create(CoreMediaCompiler, mappings);
         const options =
         {
             query: parameters._[2] || '*',
