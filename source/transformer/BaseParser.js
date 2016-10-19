@@ -8,7 +8,7 @@ const Base = require('../Base.js').Base;
 
 
 /**
- * Template Renderer
+ * Template Parser
  */
 class BaseParser extends Base
 {
