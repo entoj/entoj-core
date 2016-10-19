@@ -65,6 +65,11 @@ describe(CoreMediaRenderer.className, function()
             return testFixture('set');
         });
 
+        it('should render filters', function()
+        {
+            return testFixture('filter');
+        });
+
         it('should render macro calls', function()
         {
             return testFixture('calls');

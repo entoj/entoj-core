@@ -70,25 +70,49 @@ class CoreMediaRenderer extends BaseRenderer
     /**
      *
      */
-    renderFilter(node)
+    renderOutput(node)
     {
-        let result = '';
-
-        // handle cm:include for markup fields
-        if (node.name === 'markup')
+        let result = '${ ';
+        const render = (node) =>
         {
-            result+= '<cm:include';
-            result+= ' self="${ ' + this.renderExpression(node.value) + ' }"';
-            result+= ' />';
-        }
-        else
-        {
-            result = '<!-- failed rendering filter -->';
-            console.log('renderFilter: Not Implemented', node);
-        }
+            let result = '';
+            switch(node.type)
+            {
+                case 'FilterNode':
+                    result+= this.renderExpression(node);
+                    break;
 
+                case 'NodeList':
+                case 'OutputNode':
+                    for (const child of node.children)
+                    {
+                        result+= render(child);
+                    }
+                    break;
+
+                case 'LiteralNode':
+                    result+= this.getLiteral(node);
+                    break;
+
+                case 'VariableNode':
+                    result+= this.getVariable(node);
+                    break;
+
+                case 'YieldNode':
+                    result+= this.renderYield(node);
+                    break;
+
+                default:
+                    this.logger.error('renderOutput: Not Implemented', node);
+            }
+
+            return result;
+        }
+        result+= render(node);
+        result+= ' }';
         return result;
     }
+
 
 
     /**
@@ -105,6 +129,11 @@ class CoreMediaRenderer extends BaseRenderer
      */
     renderCondition(node)
     {
+        if (!node)
+        {
+            throw new Error(this.className + '::renderCondition node is undefined');
+        }
+
         let result = '';
         switch(node.type)
         {
@@ -126,7 +155,6 @@ class CoreMediaRenderer extends BaseRenderer
                 break;
 
             case 'NodeList':
-            case 'OutputNode':
             case 'ConditionNode':
                 for (const child of node.children)
                 {
@@ -172,12 +200,12 @@ class CoreMediaRenderer extends BaseRenderer
         {
             throw new Error(this.className + '::renderExpression node is undefined');
         }
+
         let result = '';
         const type = Array.isArray(node) ? 'Array' : node.type;
         switch(type)
         {
             case 'NodeList':
-            case 'OutputNode':
                 for (const child of node.children)
                 {
                     result+= this.renderExpression(child);
@@ -189,6 +217,21 @@ class CoreMediaRenderer extends BaseRenderer
                 {
                     result+= this.renderExpression(child);
                 }
+                break;
+
+            case 'FilterNode':
+                result+= this.renderExpression(node.value);
+                result+= '.' + node.name + '(';
+                const parameters = [];
+                if (node.parameters)
+                {
+                    for (const parameter of node.parameters.children)
+                    {
+                        parameters.push(this.renderExpression(parameter.value));
+                    }
+                }
+                result+= parameters.join(', ');
+                result+= ')';
                 break;
 
             case 'ExpressionNode':
@@ -265,6 +308,17 @@ class CoreMediaRenderer extends BaseRenderer
             result+= '<cm:link';
             result+= ' var="' + this.getVariable(node.variable) + '"';
             result+= ' target="${ ' + this.renderExpression(node.value.children[0].value) + ' }"';
+            result+= ' />';
+        }
+        // handle markup fields
+        else if (node.type === 'SetNode' &&
+            node.value.type === 'ExpressionNode' &&
+            node.value.children.length &&
+            node.value.children[0].type === 'FilterNode' &&
+            node.value.children[0].name === 'markup')
+        {
+            result+= '<cm:include';
+            result+= ' self="${ ' + this.renderExpression(node.value) + ' }"';
             result+= ' />';
         }
         // Handle standard set
@@ -383,11 +437,14 @@ class CoreMediaRenderer extends BaseRenderer
         {
             case 'RootNode':
             case 'NodeList':
-            case 'OutputNode':
                 for (const child of node.children)
                 {
                     result+= this.renderNode(child);
                 }
+                break;
+
+            case 'OutputNode':
+                result+= this.renderOutput(node);
                 break;
 
             case 'TextNode':
@@ -409,10 +466,6 @@ class CoreMediaRenderer extends BaseRenderer
 
             case 'VariableNode':
                 result+= this.renderVariable(node);
-                break;
-
-            case 'FilterNode':
-                result+= this.renderFilter(node);
                 break;
 
             case 'ForNode':
