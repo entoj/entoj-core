@@ -6,7 +6,13 @@
  */
 const Base = require('../Base.js').Base;
 const BaseMap = require('../base/BaseMap.js').BaseMap;
+const BaseRenderer = require('./BaseRenderer.js').BaseRenderer;
+const BaseParser = require('./BaseParser.js').BaseParser;
+const MacroNode = require('./node/MacroNode.js').MacroNode;
+const GlobalRepository = require('../model/GlobalRepository.js').GlobalRepository;
 const assertParameter = require('../utils/assert.js').assertParameter;
+const co = require('co');
+const crypto = require('crypto');
 
 
 /**
@@ -17,18 +23,23 @@ class Transformer extends Base
     /**
      * @ignore
      */
-    constructor(parser, renderer, nodeTransformers)
+    constructor(globalRepository, parser, renderer, nodeTransformers)
     {
         super();
 
-        //Check params
+        // Check params
+        assertParameter(this, 'globalRepository', globalRepository, true, GlobalRepository);
         assertParameter(this, 'parser', parser, true, BaseParser);
         assertParameter(this, 'renderer', renderer, true, BaseRenderer);
 
         // Assign options
+        this._globalRepository = globalRepository;
         this._parser = parser;
         this._renderer = renderer;
         this._nodeTransformers = nodeTransformers || [];
+
+        // Setup cache
+        this._cache = new Map();
     }
 
 
@@ -37,7 +48,7 @@ class Transformer extends Base
      */
     static get injections()
     {
-        return { 'parameters': [BaseParser, BaseRenderer, 'transformer/Transformer.transformers'] };
+        return { 'parameters': [GlobalRepository, BaseParser, BaseRenderer, 'transformer/Transformer.nodeTransformers'] };
     }
 
 
@@ -51,16 +62,178 @@ class Transformer extends Base
 
 
     /**
-     *
+     * @returns {Promise<BaseNode>}
      */
-    transform(source, options)
+    parseString(source)
     {
-        let rootNode = this._parser.parse(source);
-        for (const nodeTransformer of this._nodeTransformers)
+        const scope = this;
+        const promise = co(function *()
         {
-            rootNode = nodeTransformer.transform(node, this, options);
-        }
-        const result = this._renderer.render(rootNode, options);
-        return result;
+            // Check cache
+            const id = crypto.createHash('md5').update(source).digest('hex');
+            if (!scope._cache.has(id))
+            {
+                // Generate cache
+                const parsed = yield scope._parser.parse(source);
+                scope._cache.set(id, parsed);
+            }
+
+            // Return cache
+            const parsed = scope._cache.get(id);
+            if (parsed && parsed.clone)
+            {
+                return parsed.clone();
+            }
+            return false;
+        });
+        return promise;
+    }
+
+
+    /**
+     * @returns {Promise<BaseNode>}
+     */
+    parseMacro(siteQuery, macroQuery)
+    {
+        const scope = this;
+        const promise = co(function *()
+        {
+            // Get macro
+            const macro = yield scope._globalRepository.resolveMacro(siteQuery, macroQuery);
+            if (!macro || !macro.file)
+            {
+                throw new Error(scope.className + '::parseMacro - could not find macro ' + macroQuery);
+            }
+
+            // Parse file
+            const rootNode = yield scope.parseString(macro.file.contents);
+            if (!rootNode)
+            {
+                throw new Error(scope.className + '::parseMacro - could not parse source for macro ' + macroQuery);
+            }
+
+            // Find macro node
+            let macroNode;
+            if (rootNode.children)
+            {
+                macroNode = rootNode.children.find((node) =>
+                {
+                    return node instanceof MacroNode && node.name === macro.name;
+                });
+            }
+            else if (rootNode instanceof MacroNode)
+            {
+                macroNode = rootNode;
+            }
+            if (!macroNode)
+            {
+                throw new Error(scope.className + ':parseMacro - could not find macro ' + macroQuery + ' in parsed source');
+            }
+
+            return macroNode;
+        });
+        return promise;
+    }
+
+
+    /**
+     * @returns {Promise<BaseNode>}
+     * @protected
+     */
+    transformNode(rootNode)
+    {
+        const scope = this;
+        const promise = co(function *()
+        {
+            let result = rootNode;
+            for (const nodeTransformer of scope._nodeTransformers)
+            {
+                result = yield nodeTransformer.transform(result, scope);
+            }
+            return result;
+        });
+        return promise;
+    }
+
+
+    /**
+     * @returns {Promise<BaseNode>}
+     */
+    renderNode(rootNode)
+    {
+        const scope = this;
+        const promise = co(function *()
+        {
+            const result = yield scope._renderer.render(rootNode);
+            return result;
+        });
+        return promise;
+    }
+
+
+    /**
+     * @returns {Promise<BaseNode>}
+     */
+    transform(source)
+    {
+        const scope = this;
+        const promise = co(function *()
+        {
+            // Parse source
+            const rootNode = yield scope.parseString(source);
+            if (rootNode === false)
+            {
+                throw new Error(scope.className + '::transform - could not parse source');
+            }
+
+            // Transform parsed nodes
+            const transformedRootNode = yield scope.transformNode(rootNode);
+            if (!transformedRootNode)
+            {
+                throw new Error(scope.className + ':transform - could not transform parsed node');
+            }
+
+            // Render transformed nodes
+            const result = yield scope.renderNode(transformedRootNode);
+            return result;
+        });
+        return promise;
+    }
+
+
+    /**
+     * @returns {Promise<BaseNode>}
+     */
+    transformMacro(siteQuery, macroQuery)
+    {
+        const scope = this;
+        const promise = co(function *()
+        {
+            // Parse macro
+            const rootNode = yield scope.parseMacro(siteQuery, macroQuery);
+            if (rootNode === false)
+            {
+                throw new Error(scope.className + '::transform - could not parse macro');
+            }
+
+            // Transform parsed nodes
+            const transformedRootNode = yield scope.transformNode(rootNode);
+            if (!transformedRootNode)
+            {
+                throw new Error(scope.className + ':transform - could not transform parsed node');
+            }
+
+            // Render transformed nodes
+            const result = yield scope.renderNode(transformedRootNode);
+            return result;
+        });
+        return promise;
     }
 }
+
+
+/**
+ * Exports
+ * @ignore
+ */
+module.exports.Transformer = Transformer;
