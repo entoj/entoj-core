@@ -96,7 +96,7 @@ class NodeIterator extends Base
         for (let offset = 0; offset < count; offset++)
         {
             const node = this.peek(offset);
-            if (node && node.isNode(type, properties))
+            if (node && node.is(type, properties))
             {
                 return node;
             }

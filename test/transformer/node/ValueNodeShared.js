@@ -45,20 +45,20 @@ function spec(type, className, fixture, prepareParameters)
 
     if (fixture.values && typeof fixture.values.value !== 'undefined')
     {
-        describe('#isNode()', function()
+        describe('#is()', function()
         {
             it('should allow to check the node value', function()
             {
                 const testee = createTestee();
-                expect(testee.isNode(undefined, { value: fixture.values.value })).to.be.ok;
-                expect(testee.isNode(undefined, { value: fixture.values.value + 'foo' })).to.be.not.ok;
+                expect(testee.is(undefined, { value: fixture.values.value })).to.be.ok;
+                expect(testee.is(undefined, { value: fixture.values.value + 'foo' })).to.be.not.ok;
             });
 
             it('should allow to check multiple node values', function()
             {
                 const testee = createTestee();
-                expect(testee.isNode(undefined, { value: [fixture.values.value, fixture.values.value + 'foo'] })).to.be.ok;
-                expect(testee.isNode(undefined, { value: [fixture.values.value + 'foo', fixture.values.value + 'bar'] })).to.be.not.ok;
+                expect(testee.is(undefined, { value: [fixture.values.value, fixture.values.value + 'foo'] })).to.be.ok;
+                expect(testee.is(undefined, { value: [fixture.values.value + 'foo', fixture.values.value + 'bar'] })).to.be.not.ok;
             });
         });
     }

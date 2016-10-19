@@ -32,7 +32,7 @@ function spec(type, className, fixture, prepareParameters)
     };
 
 
-    describe('#isNode()', function()
+    describe('#is()', function()
     {
         it('should return true when no type or properties are given', function()
         {
@@ -43,14 +43,14 @@ function spec(type, className, fixture, prepareParameters)
         it('should allow to check the node type', function()
         {
             const testee = createTestee();
-            expect(testee.isNode(testee.type)).to.be.ok;
-            expect(testee.isNode('foo')).to.be.not.ok;
+            expect(testee.is(testee.type)).to.be.ok;
+            expect(testee.is('foo')).to.be.not.ok;
         });
 
         it('should allow to check multiple node types', function()
         {
             const testee = createTestee();
-            expect(testee.isNode([testee.type, 'foo'])).to.be.ok;
+            expect(testee.is([testee.type, 'foo'])).to.be.ok;
         });
     });
 

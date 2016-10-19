@@ -33,6 +33,30 @@ class FilterNode extends BaseNode
     {
         return 'transformer.node/FilterNode';
     }
+
+
+    /**
+     * @inheritDoc
+     */
+    is(type, properties)
+    {
+        if (!super.is(type, properties))
+        {
+            return false;
+        }
+
+        // Check value
+        if (properties && typeof properties.name !== 'undefined')
+        {
+            const names = Array.isArray(properties.name) ? properties.name : [properties.name];
+            if (names.indexOf(this.name) === -1)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
 }
 
 

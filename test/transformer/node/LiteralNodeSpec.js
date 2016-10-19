@@ -42,16 +42,16 @@ describe(LiteralNode.className, function()
     });
 
 
-    describe('#isNode()', function()
+    describe('#is()', function()
     {
         it('should allow to check the node value type', function()
         {
             const testee1 = new LiteralNode('value');
             const testee2 = new LiteralNode(42);
-            expect(testee1.isNode(undefined, { valueType: 'string' })).to.be.ok;
-            expect(testee1.isNode(undefined, { valueType: 'number' })).to.be.not.ok;
-            expect(testee2.isNode(undefined, { valueType: 'string' })).to.be.not.ok;
-            expect(testee2.isNode(undefined, { valueType: 'number' })).to.be.ok;
+            expect(testee1.is(undefined, { valueType: 'string' })).to.be.ok;
+            expect(testee1.is(undefined, { valueType: 'number' })).to.be.not.ok;
+            expect(testee2.is(undefined, { valueType: 'string' })).to.be.not.ok;
+            expect(testee2.is(undefined, { valueType: 'number' })).to.be.ok;
         });
     });
 });
