@@ -1,0 +1,17 @@
+environment:
+  matrix:
+  - nodejs_version: "4.2"
+
+install:
+  # Get the latest stable version of Node.js or io.js
+  - ps: Install-Product node $env:nodejs_version
+
+# Post-install test scripts.
+test_script:
+  # Output useful info for debugging.
+  - node --version
+  # run tests
+  - npm run coveralls
+
+# Don't actually build.
+build: off
