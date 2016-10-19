@@ -41,6 +41,31 @@ describe(BaseArray.className, function()
         });
     });
 
+    describe('#insertBefore()', function()
+    {
+        it('should insert one element before another element', function()
+        {
+            const testee = new BaseArray();
+            testee.push('one','three');
+            expect(testee).to.have.length(2);
+            testee.insertBefore(testee[1],'two');
+            expect(testee).to.have.length(3);
+            expect(testee[1]).to.be.equal("two");
+        })
+    });
+
+    describe('#insertAfter()', function()
+    {
+        it('should insert one element after another element', function()
+        {
+            const testee = new BaseArray();
+            testee.push('one','two');
+            expect(testee).to.have.length(2);
+            testee.insertAfter(testee[1],'three');
+            expect(testee).to.have.length(3);
+            expect(testee[2]).to.be.equal("three");
+        })
+    });
 
     describe('#load', function()
     {
