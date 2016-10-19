@@ -1,3 +1,4 @@
 {% set link = model.link|link %}
-{{ model.text|markup }}
+{% set text = model.text|markup %}
 {{ model.text|default('#Lipsum') }}
+{{ model.text|concat('x')|concat('y')|concat('z') }}

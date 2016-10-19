@@ -84,13 +84,4 @@ describe(Parser.className, function()
             return testFixture('macro');
         });
     });
-
-
-    xdescribe('#parse()', function()
-    {
-        it('check', function()
-        {
-            return testFixture('macro');
-        })
-    });
 });
