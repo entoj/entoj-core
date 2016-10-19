@@ -5,8 +5,8 @@ environment:
 install:
   # Get the latest stable version of Node.js or io.js
   - ps: Install-Product node $env:nodejs_version
-  - npm cache clean
-  - appveyor-retry npm update
+  - npm install -g npm
+  - appveyor-retry npm install
 
 # Post-install test scripts.
 test_script:
