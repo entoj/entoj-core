@@ -25,7 +25,7 @@ class NodeTransformer extends Base
     /**
      *
      */
-    transformNode(node, options)
+    transformNode(node, transformer, options)
     {
         return node;
     }
@@ -57,12 +57,12 @@ class NodeTransformer extends Base
                 }
                 node[field].load(nodes, true);
             }
-            else if (node instanceof BaseNode)
+            else if (node instanceof BaseNode && node[field])
             {
                 node[field] = this.walk(node[field], transformer, options, level + 1);
             }
         }
-        return this.transformNode(node, options);
+        return this.transformNode(node, transformer, options);
     }
 
 
