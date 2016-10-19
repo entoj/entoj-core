@@ -52,6 +52,16 @@ describe(BaseArray.className, function()
             expect(testee).to.have.length(3);
             expect(testee[1]).to.be.equal("two");
         })
+
+        it('should allow to insert an element at the beginning of the list', function()
+        {
+            const testee = new BaseArray();
+            testee.push('two','three');
+            expect(testee).to.have.length(2);
+            testee.insertBefore(testee[0],'one');
+            expect(testee).to.have.length(3);
+            expect(testee[0]).to.be.equal("one");
+        })
     });
 
     describe('#insertAfter()', function()
@@ -65,6 +75,17 @@ describe(BaseArray.className, function()
             expect(testee).to.have.length(3);
             expect(testee[2]).to.be.equal("three");
         })
+
+        it('should allow to insert an element at the end of the list', function()
+        {
+            const testee = new BaseArray();
+            testee.push('one','two');
+            expect(testee).to.have.length(2);
+            testee.insertAfter(testee[1],'three');
+            expect(testee).to.have.length(3);
+            expect(testee[2]).to.be.equal("three");
+        })
+
     });
 
     describe('#load', function()
