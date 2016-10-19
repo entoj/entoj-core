@@ -7,6 +7,7 @@
 const Base = require('../../Base.js').Base;
 const CliLogger = require('../../cli/CliLogger.js').CliLogger;
 const GlobalRepository = require('../../model/GlobalRepository.js').GlobalRepository;
+const Transformer = require('../../transformer/Transformer.js').Transformer;
 const trimLeadingSlash = require('../../utils/pathes.js').trimLeadingSlash;
 const assertParameter = require('../../utils/assert.js').assertParameter;
 const co = require('co');
@@ -24,17 +25,20 @@ class CoreMediaCompiler extends Base
     /**
      *
      */
-    constructor(cliLogger, globalRepository)
+    constructor(cliLogger, globalRepository, transformer)
     {
         super();
 
         //Check params
         assertParameter(this, 'cliLogger', cliLogger, true, CliLogger);
         assertParameter(this, 'globalRepository', globalRepository, true, GlobalRepository);
+        assertParameter(this, 'transformer', transformer, true, Transformer);
+
 
         // Assign options
         this._cliLogger = cliLogger;
         this._globalRepository = globalRepository;
+        this._transformer = transformer;
     }
 
 
@@ -43,7 +47,7 @@ class CoreMediaCompiler extends Base
      */
     static get injections()
     {
-        return { 'parameters': [CliLogger, GlobalRepository, 'command.coremedia/CoreMediaCompiler.options'] };
+        return { 'parameters': [CliLogger, GlobalRepository, Transformer] };
     }
 
 
@@ -79,43 +83,48 @@ class CoreMediaCompiler extends Base
      */
     compileEntity(entity, settings)
     {
-        // Prepare
-        const macro = settings.macro || entity.idString.lodasherize();
-        const entityPath = entity.pathString + '/' + entity.idString;
-        let filename;
-        if (settings.filename)
+        const scope = this;
+        const promise = co(function *()
         {
-            filename = settings.filename;
-
-            // Add entity path if necessary
-            if (filename.indexOf('/') == '-1')
+            // Prepare
+            const macroName = settings.macro || entity.idString.lodasherize();
+            const entityPath = entity.pathString + '/' + entity.idString;
+            let filename;
+            if (settings.filename)
             {
-                filename = trimLeadingSlash(entity.pathString + '/' + filename);
+                filename = settings.filename;
+
+                // Add entity path if necessary
+                if (filename.indexOf('/') == '-1')
+                {
+                    filename = trimLeadingSlash(entity.pathString + '/' + filename);
+                }
+
+                // Add .jsp if necessary
+                if (!filename.endsWith('.jsp'))
+                {
+                    filename+= '.jsp';
+                }
+            }
+            else
+            {
+                filename = trimLeadingSlash(entityPath + '.jsp');
             }
 
-            // Add .jsp if necessary
-            if (!filename.endsWith('.jsp'))
-            {
-                filename+= '.jsp';
-            }
-        }
-        else
-        {
-            filename = trimLeadingSlash(entityPath + '.jsp');
-        }
+            // Compile
+            const work = scope._cliLogger.work('Compiling CoreMedia template for <' + entity.idString + '> as <' + filename + '>');
+            const contents = yield scope._transformer.transformMacro(entity.id.site, macroName);
+            scope._cliLogger.end(work);
 
-        // Compile
-        const work = this._cliLogger.work('Compiling CoreMedia template for <' + entity.idString + '> as <' + filename + '>');
-        const contents = 'Hello world';
-        this._cliLogger.end(work);
-
-        // Done
-        const file = new VinylFile(
-            {
-                path: filename,
-                contents: new Buffer(contents)
-            });
-        return Promise.resolve(file);
+            // Done
+            const file = new VinylFile(
+                {
+                    path: filename,
+                    contents: new Buffer(contents)
+                });
+            return file;
+        });
+        return promise;
     }
 
 

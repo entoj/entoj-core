@@ -7,6 +7,9 @@
 const CoreMediaCompiler = require(SOURCE_ROOT + '/command/coremedia/CoreMediaCompiler.js').CoreMediaCompiler;
 const GlobalRepository = require(SOURCE_ROOT + '/model/GlobalRepository.js').GlobalRepository;
 const CliLogger = require(SOURCE_ROOT + '/cli/CliLogger.js').CliLogger;
+const Transformer = require(SOURCE_ROOT + '/transformer/Transformer.js').Transformer;
+const BaseRenderer = require(SOURCE_ROOT + '/transformer/BaseRenderer.js').BaseRenderer;
+const Parser = require(SOURCE_ROOT + '/transformer/Parser.js').Parser;
 const pathes = require(SOURCE_ROOT + '/utils/pathes.js');
 const baseSpec = require(TEST_ROOT + '/BaseShared.js');
 const compact = require(FIXTURES_ROOT + '/Application/Compact.js');
@@ -25,6 +28,7 @@ describe(CoreMediaCompiler.className, function()
      */
     baseSpec(CoreMediaCompiler, 'command.coremedia/CoreMediaCompiler', function(parameters)
     {
+        parameters.unshift(fixtures.transformer);
         parameters.unshift(fixtures.globalRepository);
         parameters.unshift(fixtures.cliLogger);
         return parameters;
@@ -38,8 +42,11 @@ describe(CoreMediaCompiler.className, function()
     {
         fixtures = compact.createFixture();
         fixtures.cliLogger = fixtures.context.di.create(CliLogger);
-        fixtures.cliLogger.muted = false;
+        fixtures.cliLogger.muted = true;
         fixtures.globalRepository = fixtures.context.di.create(GlobalRepository);
+        fixtures.parser = new Parser();
+        fixtures.renderer = new BaseRenderer();
+        fixtures.transformer = new Transformer(fixtures.globalRepository, fixtures.parser, fixtures.renderer);
         fixtures.path = pathes.concat(FIXTURES_ROOT, '/Commands/CoreMediaCompiler');
         fs.emptyDirSync(fixtures.path);
     });
@@ -49,7 +56,7 @@ describe(CoreMediaCompiler.className, function()
     {
         it('should return a promise', function()
         {
-            const testee = new CoreMediaCompiler(fixtures.cliLogger, fixtures.globalRepository);
+            const testee = new CoreMediaCompiler(fixtures.cliLogger, fixtures.globalRepository, fixtures.transformer);
             const promise = testee.compile();
             expect(promise).to.be.instanceof(Promise);
             return promise;
@@ -57,7 +64,7 @@ describe(CoreMediaCompiler.className, function()
 
         it('should compile each configured coremedia release for each entity', function()
         {
-            const testee = new CoreMediaCompiler(fixtures.cliLogger, fixtures.globalRepository);
+            const testee = new CoreMediaCompiler(fixtures.cliLogger, fixtures.globalRepository, fixtures.transformer);
             sinon.spy(testee, 'compileEntities');
             sinon.spy(testee, 'compileEntity');
             const promise = co(function *()
@@ -71,7 +78,7 @@ describe(CoreMediaCompiler.className, function()
 
         it('should write all compiled entities to the filesystem when a path is configured', function()
         {
-            const testee = new CoreMediaCompiler(fixtures.cliLogger, fixtures.globalRepository);
+            const testee = new CoreMediaCompiler(fixtures.cliLogger, fixtures.globalRepository, fixtures.transformer);
             sinon.spy(testee, 'writeFiles');
             const promise = co(function *()
             {
