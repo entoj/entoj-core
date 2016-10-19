@@ -1,4 +1,1 @@
-{% if '' != model.headline %}{% endif %}
-{% if '' == model.headline %}{% endif %}
-{% if model.headline != ''  %}{% endif %}
-{% if model.headline == '' %}{% endif %}
+{% if model.headline and model.copy or not model.headline %}{% endif %}

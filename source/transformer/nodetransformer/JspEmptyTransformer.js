@@ -30,11 +30,13 @@ class JspEmptyTransformer extends NodeTransformer
     {
         if (node.type === 'ConditionNode')
         {
+            console.log(JSON.stringify(node.serialize(), null, 4));
+
             const it = new NodeIterator(node);
             while (it.next())
             {
-                // if variable then
-                // if not variable then
+                // if variable => if not empty variable
+                // if not variable => if empty variable
                 if ((!it.previousNode || !it.previousNode.is('OperandNode')) &&
                     it.currentNode.is('VariableNode') &&
                     (!it.nextNode || !it.nextNode.is('OperandNode')))
@@ -45,6 +47,7 @@ class JspEmptyTransformer extends NodeTransformer
 
                 // if '' == variable then
                 // if '' != variable then
+                /*
                 if (it.find('VariableNode', undefined, 3) &&
                     it.find('LiteralNode', { value: '' }, 3) &&
                     it.nextNode &&
@@ -70,10 +73,8 @@ class JspEmptyTransformer extends NodeTransformer
                     {
                         result.push(nodeList.peek(2));
                     }
-
-                    //
-                    it.refresh();
                 }
+                */
             }
         }
         return node;
