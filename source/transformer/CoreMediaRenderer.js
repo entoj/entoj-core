@@ -317,11 +317,17 @@ class CoreMediaRenderer extends BaseRenderer
             node.value.children[0].type === 'FilterNode' &&
             node.value.children[0].name === 'markup')
         {
+            result+= '<c:set';
+            result+= ' var="' + this.getVariable(node.variable) + '"';
+            result+= '>';
+
             result+= '<cm:include';
-            result+= ' self="${ ' + this.renderExpression(node.value) + ' }"';
+            result+= ' self="${ ' + this.renderExpression(node.value.children[0].value) + ' }"';
             result+= ' />';
+
+            result+= '</c:set>';
         }
-        // Handle standard set
+        // handle standard set
         else if (node.variable.type == 'VariableNode')
         {
             result+= '<c:set';
