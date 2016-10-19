@@ -8,7 +8,7 @@ install:
 
 # Post-install test scripts.
 test_script:
-  - bash -lc "npm run coveralls"
+  - bash -lc "/projects/entoj-core/scripts/coveralls"
 
 # Don't actually build.
 build: off
