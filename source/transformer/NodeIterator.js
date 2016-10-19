@@ -30,7 +30,6 @@ class NodeIterator extends Base
             this.nodes = nodes.children;
         }
         this._index = -1;
-        this._length = this.nodes.length;
     }
 
 
@@ -48,7 +47,7 @@ class NodeIterator extends Base
      */
     get length()
     {
-        return this._length;
+        return (this.nodes) ? this.nodes.length : 0;
     }
 
 
@@ -89,15 +88,6 @@ class NodeIterator extends Base
 
 
     /**
-     * @returns {Boolean}
-     */
-    refresh()
-    {
-        this._length = this.nodes.length;
-    }
-
-
-    /**
      * @returns {BaseNode|undefined}
      */
     find(type, properties, range)
@@ -112,6 +102,15 @@ class NodeIterator extends Base
             }
         }
         return undefined;
+    }
+
+
+    /**
+     * @returns {void}
+     */
+    reset()
+    {
+        this._index = -1;
     }
 
 

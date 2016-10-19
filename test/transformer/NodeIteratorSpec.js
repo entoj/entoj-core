@@ -65,6 +65,19 @@ describe(NodeIterator.className, function()
     });
 
 
+    describe('#reset()', function()
+    {
+        it('should reset the iteration', function()
+        {
+            const testee = new NodeIterator(fixtures.nodes);
+            testee.seek(2);
+            expect(testee.index).to.be.equal(2);
+            testee.reset(1);
+            expect(testee.index).to.be.equal(-1);
+        });
+    });
+
+
     describe('#seek()', function()
     {
         it('should allow to set the current iteration index', function()
