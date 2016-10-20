@@ -42,6 +42,7 @@
     "gulp-babel": "*",
     "gulp-cli": "*",
     "gulp-debug": "*",
+    "gulp-prettydiff": "*",
     "gulp-postcss": "*",
     "gulp-rename": "*",
     "gulp-sass": "*",

@@ -80,7 +80,8 @@ class CoreMediaCommand extends BaseCommand
         const options =
         {
             query: parameters._[2] || '*',
-            path: this._options.path || false
+            path: this._options.path || false,
+            beautify: this._options.beautify || true
         };
         return compiler.compile(options);
     }

@@ -10,11 +10,11 @@ const GlobalRepository = require('../../model/GlobalRepository.js').GlobalReposi
 const Transformer = require('../../transformer/Transformer.js').Transformer;
 const trimLeadingSlash = require('../../utils/pathes.js').trimLeadingSlash;
 const assertParameter = require('../../utils/assert.js').assertParameter;
+const prettyDiff = require("gulp-prettydiff");
 const co = require('co');
 const through2 = require('through2');
 const VinylFile = require('vinyl');
 const gulp = require('gulp');
-
 
 
 /**
@@ -169,6 +169,27 @@ class CoreMediaCompiler extends Base
      * @inheritDocs
      * @returns {Promise<Stream>}
      */
+    beautifyFiles(stream)
+    {
+        const work = this._cliLogger.work('Beautify CoreMedia templates');
+        const options =
+        {
+            lang: 'html',
+            mode: 'beautify',
+            commline: true,
+            force_indent: true,
+            wrap: 0
+        };
+        const result = stream.pipe(prettyDiff(options));
+        this._cliLogger.end(work);
+        return Promise.resolve(result);
+    }
+
+
+    /**
+     * @inheritDocs
+     * @returns {Promise<Stream>}
+     */
     writeFiles(stream, path)
     {
         const work = this._cliLogger.work('Writing CoreMedia templates to filesystem at <' + path + '>');
@@ -188,6 +209,10 @@ class CoreMediaCompiler extends Base
         const promise = co(function *()
         {
             let stream = yield scope.compileEntities(parameters);
+            if (parameters && parameters.beautify)
+            {
+                stream = yield scope.beautifyFiles(stream);
+            }
             if (parameters && parameters.path)
             {
                 stream = yield scope.writeFiles(stream, parameters.path);
