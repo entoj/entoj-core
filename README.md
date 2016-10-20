@@ -1,4 +1,5 @@
-[![Build Status](https://travis-ci.org/entoj/entoj-core.svg?branch=develop)](https://travis-ci.org/entoj/entoj-core)
+[![Build Status Linux](https://travis-ci.org/entoj/entoj-core.svg?branch=develop)](https://travis-ci.org/entoj/entoj-core)
+[![Build status Windows](https://ci.appveyor.com/api/projects/status/nu42c441bry4i0d4?svg=true)](https://ci.appveyor.com/project/ChristianAuth/entoj-core)
 [![Coverage Status](https://coveralls.io/repos/github/entoj/entoj-core/badge.svg?branch=develop)](https://coveralls.io/github/entoj/entoj-core?branch=develop)
 
 
