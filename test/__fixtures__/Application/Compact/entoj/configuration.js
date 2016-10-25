@@ -230,9 +230,23 @@ configuration.build.environments.development =
     sass:
     {
         sourceMaps: true,
-        comments: false,
+        urlRewrite: false,
+        browsers: ['ie >= 11', '> 2%'],
+        check: true,
         optimize: false,
         minimize: false
+    }
+};
+configuration.build.environments.production =
+{
+    sass:
+    {
+        sourceMaps: false,
+        check: true,
+        urlRewrite: false,
+        browsers: ['ie >= 11', '> 2%'],
+        optimize: true,
+        minimize: true
     }
 };
 
