@@ -112,9 +112,10 @@ class EntitiesRepository extends BaseRepository
 
         // Find
         const scope = this;
-        const promise = this.getItems().then(function(data)
+        const promise = co(function *()
         {
-            const result = data
+            const entities = yield scope.getItems();
+            const result = entities
                 .filter(item => (item.id.site === site || item.usedBy.indexOf(site) > -1))
                 .map(item => new EntityAspect(item, site, scope._entityIdTemplate));
             return result;
