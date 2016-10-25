@@ -11,10 +11,16 @@ const shortenLeft = require(SOURCE_ROOT + '/utils/string.js').shortenLeft;
 /**
  * Spec
  */
-describe('utils/String', function()
+describe('utils/string', function()
 {
     describe('#trimMultiline', function()
     {
+        it('should handle invalid strings', function()
+        {
+            expect(trimMultiline()).to.be.equal('');
+            expect(trimMultiline(false)).to.be.equal('');
+        });
+
         it('should trim multiple lines', function()
         {
             const input =
@@ -52,6 +58,12 @@ describe('utils/String', function()
 
     describe('#shortenMiddle', function()
     {
+        it('should handle invalid strings', function()
+        {
+            expect(shortenMiddle()).to.be.equal('');
+            expect(shortenMiddle(false)).to.be.equal('');
+        });
+
         it('should leave string as is when < length', function()
         {
             const input = 'Lorem Ipsum Dolorem';
@@ -88,6 +100,12 @@ describe('utils/String', function()
 
     describe('#shortenLeft', function()
     {
+        it('should handle invalid strings', function()
+        {
+            expect(shortenLeft()).to.be.equal('');
+            expect(shortenLeft(false)).to.be.equal('');
+        });
+
         it('should leave string as is when < length', function()
         {
             const input = 'Lorem Ipsum Dolorem';

@@ -8,6 +8,10 @@
  */
 function trimMultiline(content, skipSections)
 {
+    if (!content || typeof content !== 'string')
+    {
+        return '';
+    }
     const lines = content.replace(/\t/g, '    ').split('\n');
     let sectionStarted = false;
     const resultLines = lines.map(function(line)
@@ -54,6 +58,10 @@ function trimMultiline(content, skipSections)
  */
 function shortenMiddle(content, length)
 {
+    if (!content || typeof content !== 'string')
+    {
+        return '';
+    }
     let maxLength = length || 100;
     if (content.length < maxLength)
     {
@@ -80,6 +88,10 @@ function shortenMiddle(content, length)
  */
 function shortenLeft(content, length)
 {
+    if (!content || typeof content !== 'string')
+    {
+        return '';
+    }
     const maxLength = length || 100;
     if (content.length < maxLength)
     {
