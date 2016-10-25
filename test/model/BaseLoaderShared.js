@@ -4,7 +4,8 @@
  * Requirements
  * @ignore
  */
-let create = require(SOURCE_ROOT + '/utils/objects.js').create;
+const create = require(SOURCE_ROOT + '/utils/objects.js').create;
+const baseSpec = require(TEST_ROOT + '/BaseShared.js');
 
 
 /**
@@ -12,7 +13,16 @@ let create = require(SOURCE_ROOT + '/utils/objects.js').create;
  */
 function spec(type, className, prepareParameters)
 {
-    let createTestee = function()
+    /**
+     * Base Test
+     */
+    baseSpec(type, className, prepareParameters);
+
+
+    /**
+     * BaseLoader Test
+     */
+    const createTestee = function()
     {
         let parameters = Array.from(arguments);
         if (prepareParameters)
@@ -21,16 +31,6 @@ function spec(type, className, prepareParameters)
         }
         return create(type, parameters);
     };
-
-
-    describe('#className', function()
-    {
-        it('should return the namespaced class name', function()
-        {
-            let testee = createTestee();
-            expect(testee.className).to.be.equal(className);
-        });
-    });
 
 
     describe('#load', function()
@@ -48,4 +48,5 @@ function spec(type, className, prepareParameters)
 /**
  * Exports
  */
+module.exports = spec;
 module.exports.spec = spec;

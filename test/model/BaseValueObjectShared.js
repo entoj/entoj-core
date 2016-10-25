@@ -4,17 +4,26 @@
  * Requirements
  * @ignore
  */
-let create = require(SOURCE_ROOT + '/utils/objects.js').create;
-let baseSpec = require('../BaseShared.js').spec;
-let co = require('co');
+const create = require(SOURCE_ROOT + '/utils/objects.js').create;
+const baseSpec = require('../BaseShared.js').spec;
+const co = require('co');
 
 
 /**
- * Shared BaseLoader spec
+ * Shared BaseValueObject spec
  */
 function spec(type, className, prepareParameters)
 {
-    let createTestee = function()
+    /**
+     * Base Test
+     */
+    baseSpec(type, className, prepareParameters);
+
+
+    /**
+     * BaseValueObject Test
+     */
+    const createTestee = function()
     {
         let parameters = Array.from(arguments);
         if (prepareParameters)
@@ -25,22 +34,13 @@ function spec(type, className, prepareParameters)
     };
 
 
-    baseSpec(type, className, prepareParameters);
-
-
-    beforeEach(function()
-    {
-        fixtures = {};
-    });
-
-
     describe('#update', function()
     {
         it('should allow to update properties, documentation and files with a object', function()
         {
-            let promise = co(function *()
+            const promise = co(function *()
             {
-                let data =
+                const data =
                 {
                     properties:
                     {
@@ -55,7 +55,7 @@ function spec(type, className, prepareParameters)
                         'bar'
                     ]
                 }
-                let testee = createTestee();
+                const testee = createTestee();
 
                 yield testee.update(data);
                 expect(testee.properties.getByPath('foo')).to.be.equal('bar');
@@ -67,13 +67,13 @@ function spec(type, className, prepareParameters)
 
         it('should allow to update properties, documentation and files with another BaseValueObject', function()
         {
-            let promise = co(function *()
+            const promise = co(function *()
             {
-                let data = createTestee();
+                const data = createTestee();
                 data.properties.set('foo', 'bar');
                 data.documentation.push('foo');
                 data.files.push('bar');
-                let testee = createTestee();
+                const testee = createTestee();
 
                 yield testee.update(data);
                 expect(testee.properties.getByPath('foo')).to.be.equal('bar');
@@ -88,4 +88,5 @@ function spec(type, className, prepareParameters)
 /**
  * Exports
  */
+module.exports = spec;
 module.exports.spec = spec;

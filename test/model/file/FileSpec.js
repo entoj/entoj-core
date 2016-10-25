@@ -9,6 +9,7 @@ const ContentKind = require(SOURCE_ROOT + '/model/ContentKind.js');
 const MissingArgumentError = require(SOURCE_ROOT + '/error/MissingArgumentError.js').MissingArgumentError;
 const PATH_SEPERATOR = require('path').sep;
 const isWin32 = (process.platform == 'win32');
+const baseSpec = require('../../BaseShared.js');
 
 
 /**
@@ -16,12 +17,15 @@ const isWin32 = (process.platform == 'win32');
  */
 describe(File.className, function()
 {
-    beforeEach(function()
-    {
-        fixtures = {};
-    });
+    /**
+     * Base Test
+     */
+    baseSpec(File, 'model.file/File');
 
 
+    /**
+     * File Test
+     */
     describe('#constructor()', function()
     {
         it('should allow to configure a filename', function()
@@ -44,31 +48,11 @@ describe(File.className, function()
     });
 
 
-    describe('#className', function()
-    {
-        it('should return the namespaced class name', function()
-        {
-            const testee = new File();
-            expect(testee.className).to.be.equal('model.file/File');
-        });
-    });
-
-
-    describe('#toString()', function()
-    {
-        it('should return a string representation that reflects its state', function()
-        {
-            const testee = new File(__filename);
-            expect(testee.toString()).to.be.equal('[model.file/File ' + __filename + ']');
-        });
-    });
-
-
     describe('#contentKind', function()
     {
         it('should have ContentKind.UNKNOWN as a default', function()
         {
-            let testee = new File();
+            const testee = new File();
             expect(testee.contentKind).to.equal(ContentKind.UNKNOWN);
         });
 

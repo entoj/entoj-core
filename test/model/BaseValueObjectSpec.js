@@ -3,8 +3,8 @@
 /**
  * Requirements
  */
-let BaseValueObject = require(SOURCE_ROOT + '/model/BaseValueObject.js').BaseValueObject;
-let baseValueObjectSpec = require('./BaseValueObjectShared.js').spec;
+const BaseValueObject = require(SOURCE_ROOT + '/model/BaseValueObject.js').BaseValueObject;
+const baseValueObjectSpec = require('./BaseValueObjectShared.js');
 
 
 /**
@@ -12,14 +12,20 @@ let baseValueObjectSpec = require('./BaseValueObjectShared.js').spec;
  */
 describe(BaseValueObject.className, function()
 {
+    /**
+     * BaseValueObject Test
+     */
     baseValueObjectSpec(BaseValueObject, 'model/BaseValueObject');
 
 
+    /**
+     * BaseValueObject Local Test
+     */
     describe('#uniqueId', function()
     {
         it('should return the object instance per default', function()
         {
-            let testee = new BaseValueObject();
+            const testee = new BaseValueObject();
             expect(testee.uniqueId).to.be.equal(testee);
         });
     });
@@ -27,17 +33,18 @@ describe(BaseValueObject.className, function()
 
     describe('#isEqualTo', function()
     {
-        it('should return true when both objects are the same instance', function()
+        it('should return true when both objects are equal', function()
         {
-            let testee = new BaseValueObject();
+            const testee = new BaseValueObject();
             expect(testee.isEqualTo(testee)).to.be.ok;
         });
 
         it('should return false when both objects are not the same instance', function()
         {
-            let testee = new BaseValueObject();
-            let other = new BaseValueObject();
+            const testee = new BaseValueObject();
+            const other = new BaseValueObject();
             expect(testee.isEqualTo(other)).to.be.not.ok;
         });
     });
+
 });

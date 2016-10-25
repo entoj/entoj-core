@@ -3,8 +3,8 @@
 /**
  * Requirements
  */
-let BaseLoader = require(SOURCE_ROOT + '/model/BaseLoader.js').BaseLoader;
-let baseLoaderSpec = require('./BaseLoaderShared.js').spec;
+const BaseLoader = require(SOURCE_ROOT + '/model/BaseLoader.js').BaseLoader;
+const baseLoaderSpec = require('./BaseLoaderShared.js').spec;
 
 /**
  * Spec
