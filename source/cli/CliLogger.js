@@ -10,7 +10,6 @@ const columnify = require('columnify');
 const chalk = require('chalk');
 const strip = require('strip-ansi');
 const shorten = require('../utils/string.js').shortenLeft;
-
 require('date-format-lite');
 
 
@@ -31,7 +30,7 @@ class CliLogger extends Base
         super();
 
         const opts = options || {};
-        this._prefix = prefix;
+        this._prefix = prefix || '';
         this._state = new Map();
         this._showTimestamp = opts.showTimestamp || true;
         this._showPrefix = opts.showPrefix || true;
@@ -144,7 +143,7 @@ class CliLogger extends Base
      */
     formatSection(message, isDone, hasError)
     {
-        const dashes = '-'.repeat(Math.max(0, 80 - strip(message).length));
+        const dashes = '-'.repeat(Math.max(0, 80 - strip(message).replace(/\<|\>/g, '').length));
         let prefix = '○ ';
         if (isDone)
         {
