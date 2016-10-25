@@ -44,7 +44,7 @@ describe(GlobalRepository.className, function()
     });
 
 
-    xdescribe('#resolve', function()
+    describe('#resolve', function()
     {
         it('should resolve "*" to all Sites', function()
         {
@@ -122,7 +122,7 @@ describe(GlobalRepository.className, function()
         });
     });
 
-    xdescribe('#resolveEntities', function()
+    describe('#resolveEntities', function()
     {
         it('should resolve "*" to all Entities', function()
         {
