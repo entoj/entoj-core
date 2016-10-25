@@ -98,6 +98,10 @@ class Runner extends Base
         this.cliLogger.info('Usage:');
         this.cliLogger.info('  entoj command [action] [options]');
         this.cliLogger.info('');
+        this.cliLogger.info('Options:');
+        this.cliLogger.info('  --environment=[development]');
+        this.cliLogger.info('    Use the build settings from the given environment');
+        this.cliLogger.info('');
         this.cliLogger.info('Commands:');
 
         const data = [];
