@@ -73,7 +73,7 @@ describe('utils/pathes', function()
     });
 
 
-    xdescribe('#shift', function()
+    describe('#shift', function()
     {
         it('should return a path minus the first directory', function()
         {
