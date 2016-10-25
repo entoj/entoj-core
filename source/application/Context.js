@@ -18,6 +18,7 @@ const IdParser = require('../parser/entity/IdParser.js').IdParser;
 const CompactIdParser = require('../parser/entity/CompactIdParser.js').CompactIdParser;
 const SitesRepository = require('../model/site/SitesRepository.js').SitesRepository;
 const SitesLoader = require('../model/site/SitesLoader.js').SitesLoader;
+const FilesRepository = require('../model/file/FilesRepository.js').FilesRepository;
 const ModelSynchronizer = require('../watch/ModelSynchronizer.js').ModelSynchronizer;
 
 
@@ -194,24 +195,22 @@ class Context extends Base
         const intel = require('intel');
         const logger = intel.getLogger('entoj');
 
-        let level = intel.ERROR;
         if (this.parameters.v)
         {
-            level = intel.WARN;
+            logger.setLevel(intel.WARN);
         }
         if (this.parameters.vv)
         {
-            level = intel.INFO;
+            logger.setLevel(intel.INFO);
         }
         if (this.parameters.vvv)
         {
-            level = intel.DEBUG;
+            logger.setLevel(intel.DEBUG);
         }
         if (this.parameters.vvvv)
         {
-            level = intel.TRACE;
+            logger.setLevel(intel.TRACE);
         }
-        logger.setLevel(level);
     }
 
 
@@ -245,11 +244,23 @@ class Context extends Base
         }
         this._di.map(BuildConfiguration, BuildConfiguration, true);
 
+        // Global mappings
+        /*
+        if (this._configuration.mappings && this._configuration.mappings.length)
+        {
+            for (const mapping of this._configuration.mappings)
+            {
+                const type = (typeof mapping === 'function') ? mapping : mapping.type;
+            }
+        }
+        */
+
         // Repositories
         this.logger.debug('Setup repositories');
         this._di.map(SitesRepository, SitesRepository, true);
         this._di.map(EntityCategoriesRepository, EntityCategoriesRepository, true);
         this._di.map(EntitiesRepository, EntitiesRepository, true);
+        this._di.map(FilesRepository, FilesRepository, true);
 
         // Sites
         this.logger.debug('Setup sites');
