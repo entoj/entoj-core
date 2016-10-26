@@ -1,1 +1,1 @@
---recursive --growl --timeout 5000 --full-trace --require test/configuration.js
+--recursive --growl --timeout 8000 --full-trace --require test/configuration.js
