@@ -122,7 +122,7 @@ describe(EntitiesLoader.className, function()
             {
                 const items = yield testee.load();
                 const common = items.find(item => item.id.category.longName == 'Common');
-                expect(common.files.filter(file => file.site.name === 'Base')).has.length(6);
+                expect(common.files.filter(file => file.site.name === 'Base')).has.length(7);
                 expect(common.files.filter(file => file.site.name === 'Extended')).has.length(1);
             });
             return promise;

@@ -68,7 +68,8 @@ describe(JsRepository.className, function()
             let promise = testee.getBundlesBySite(fixtures.siteBase).then(function(bundles)
             {
                 // Common
-                expect(bundles.common.include).to.have.length(1);
+                expect(bundles.common.include).to.have.length(2);
+                expect(bundles.common.include.find(file => file === 'base' + PATH_SEPERATOR + 'common' + PATH_SEPERATOR + 'js' + PATH_SEPERATOR + 'component.js')).to.be.ok;
                 expect(bundles.common.include.find(file => file === 'base' + PATH_SEPERATOR + 'common' + PATH_SEPERATOR + 'js' + PATH_SEPERATOR + 'bootstrap.js')).to.be.ok;
                 expect(bundles.common.exclude).to.have.length(1);
                 expect(bundles.common.exclude.find(file => file === 'base' + PATH_SEPERATOR + 'modules' + PATH_SEPERATOR + 'm001-gallery' + PATH_SEPERATOR + 'js' + PATH_SEPERATOR + 'm001-gallery.js')).to.be.ok;
@@ -76,7 +77,8 @@ describe(JsRepository.className, function()
                 // Core
                 expect(bundles.core.include).to.have.length(1);
                 expect(bundles.core.include.find(file => file === 'base' + PATH_SEPERATOR + 'modules' + PATH_SEPERATOR + 'm001-gallery' + PATH_SEPERATOR + 'js' + PATH_SEPERATOR + 'm001-gallery.js')).to.be.ok;
-                expect(bundles.core.exclude).to.have.length(1);
+                expect(bundles.core.exclude).to.have.length(2);
+                expect(bundles.core.exclude.find(file => file === 'base' + PATH_SEPERATOR + 'common' + PATH_SEPERATOR + 'js' + PATH_SEPERATOR + 'component.js')).to.be.ok;
                 expect(bundles.core.exclude.find(file => file === 'base' + PATH_SEPERATOR + 'common' + PATH_SEPERATOR + 'js' + PATH_SEPERATOR + 'bootstrap.js')).to.be.ok;
             });
             return promise;

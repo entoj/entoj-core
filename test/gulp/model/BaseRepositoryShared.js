@@ -112,10 +112,11 @@ function spec(type, className, prepareParameters)
             {
                 // Common
                 expect(files.common).to.be.ok;
-                expect(files.common.length).to.be.equal(2);
+                expect(files.common.length).to.be.equal(3);
 
                 // Files
                 expect(files.common.find(file => file.basename == 'bootstrap.js')).to.be.ok;
+                expect(files.common.find(file => file.basename == 'component.js')).to.be.ok;
                 expect(files.common.find(file => file.basename == 'm001-gallery.js')).to.be.ok;
             });
             return promise;
@@ -129,8 +130,9 @@ function spec(type, className, prepareParameters)
             {
                 // Common
                 expect(files.common).to.be.ok;
-                expect(files.common.length).to.be.equal(1);
+                expect(files.common.length).to.be.equal(2);
                 expect(files.common.find(file => file.basename == 'bootstrap.js')).to.be.ok;
+                expect(files.common.find(file => file.basename == 'component.js')).to.be.ok;
 
                 // Core
                 expect(files.core).to.be.ok;
