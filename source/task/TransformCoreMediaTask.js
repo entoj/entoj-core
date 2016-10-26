@@ -16,6 +16,15 @@ const co = require('co');
 
 
 /**
+ * Parameters:
+ *     query - Restricts the source entities to the given query (see GlobalRepository.resolve)
+ *     flatten - writes files in a flat structure like siteName/filename
+ *
+ * Properties:
+ *     release.coremedia
+ *         filename
+ *         macro
+ *
  * @memberOf task
  */
 class TransformCoreMediaTask extends BaseTask
@@ -59,7 +68,7 @@ class TransformCoreMediaTask extends BaseTask
     /**
      * @returns {Promise<VinylFile>}
      */
-    transformEntity(entity, settings)
+    transformEntity(entity, settings, buildConfiguration, parameters)
     {
         if (!entity)
         {
@@ -73,7 +82,7 @@ class TransformCoreMediaTask extends BaseTask
             // Prepare
             const options = settings || {};
             const macroName = options.macro || entity.idString.lodasherize();
-            const basePath = options.flatten ? entity.site.name.urlify() : entity.pathString;
+            const basePath = options.flatten === true ? entity.site.name.urlify() : entity.pathString;
             const entityPath = basePath + '/' + entity.idString;
             let filename;
             if (options.filename)
@@ -114,23 +123,29 @@ class TransformCoreMediaTask extends BaseTask
     }
 
 
-
     /**
      * @inheritDocs
-     * @returns {Promise<Stream>}
+     * @returns {Promise<Array>}
      */
-    transformEntities(parameters)
+    transformEntities(buildConfiguration, parameters)
     {
         const scope = this;
         const promise = co(function *()
         {
+            // Prepare
             const params = parameters || {};
-            const stream = through2({ objectMode: true });
-            const entitiesQuery = params.query || '*';
-            const work = scope._cliLogger.work('Compiling CoreMedia templates for query <' + entitiesQuery + '>');
+            const flatten = params.flatten || false;
+            const query = params.query || '*';
+            const work = scope._cliLogger.section('Transforming templates to CoreMedia templates for query <' + query + '>');
+            scope._cliLogger.options(
+            {
+                query: query,
+                flatten: flatten
+            });
 
             // Compile each entity
-            const entities = yield scope._globalRepository.resolveEntities(entitiesQuery);
+            const result = [];
+            const entities = yield scope._globalRepository.resolveEntities(query);
             for (const entity of entities)
             {
                 // Render each configured release
@@ -141,18 +156,45 @@ class TransformCoreMediaTask extends BaseTask
                     setting.flatten = params.flatten;
 
                     // Compile entity
-                    const file = yield scope.compileEntity(entity, setting);
-                    stream.write(file);
+                    const file = yield scope.transformEntity(entity, setting, buildConfiguration, parameters);
+                    result.push(file);
                 }
             }
 
-            // Close stream
-            stream.end();
+            // Done
             scope._cliLogger.end(work);
-
-            return stream;
+            return result;
         });
         return promise;
+    }
+
+
+    /**
+     * @returns {Stream}
+     */
+    stream(stream, buildConfiguration, parameters)
+    {
+        let resultStream = stream;
+        if (!resultStream)
+        {
+            resultStream = through2(
+            {
+                objectMode: true
+            });
+            const scope = this;
+            const promise = co(function *()
+            {
+                const files = yield scope.transformEntities(buildConfiguration, parameters);
+                const work = scope._cliLogger.section('Transforming template files');
+                for (const file of files)
+                {
+                    resultStream.write(file);
+                }
+                resultStream.end();
+                scope._cliLogger.end(work);
+            });
+        }
+        return resultStream;
     }
 }
 
