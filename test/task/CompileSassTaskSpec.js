@@ -256,6 +256,22 @@ describe(CompileSassTask.className, function()
             });
             return promise;
         });
+
+        it('should allow to customize file pathes', function()
+        {
+            const promise = co(function *()
+            {
+                const testee = createTestee();
+                const data = yield baseTaskSpec.readStream(testee.compileFiles(undefined, { filenameTemplate: '${site.name.urlify()}/${group}.scss' }));
+                for (const file of data)
+                {
+                    expect(file.contents.toString()).to.not.contain('@import \'');
+                    expect(file.path).to.be.oneOf(['base/common.css', 'base/core.css',
+                                                   'extended/common.css', 'extended/core.css']);
+                }
+            });
+            return promise;
+        });
     });
 
 

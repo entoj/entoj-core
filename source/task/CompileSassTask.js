@@ -20,6 +20,8 @@ const VinylFile = require('vinyl');
 const co = require('co');
 const intel = require('intel');
 const sass = require('node-sass');
+const templateString = require('es6-template-strings');
+
 
 
 /**
@@ -33,7 +35,6 @@ class CompileSassTask extends BaseTask
     constructor(cliLogger, filesRepository, sitesRepository, pathesConfiguration)
     {
         super(cliLogger);
-
 
         //Check params
         assertParameter(this, 'filesRepository', filesRepository, true, FilesRepository);
@@ -69,22 +70,35 @@ class CompileSassTask extends BaseTask
      * @protected
      * @returns {Promise<Array>}
      */
+    prepareParameters(buildConfiguration, parameters)
+    {
+        const result = super.prepareParameters(buildConfiguration, parameters);
+        result.query = result.query || '*';
+        result.filenameTemplate = result.filenameTemplate || '${site.name.urlify()}/css/${group}.scss';
+        return result;
+    }
+
+
+    /**
+     * @protected
+     * @returns {Promise<Array>}
+     */
     generateFiles(buildConfiguration, parameters)
     {
         const scope = this;
         const promise = co(function *()
         {
             // Prepare
-            const query = parameters ? parameters.query || '*' : '*';
+            const params = scope.prepareParameters(buildConfiguration, parameters);
 
             // Start
-            const work = scope._cliLogger.section('Generating sass files for <' + query + '>');
+            const work = scope._cliLogger.section('Generating sass files for <' + params.query + '>');
 
             // Get Sites
             let sites = [];
-            if (query !== '*')
+            if (params.query !== '*')
             {
-                const site = yield scope._sitesRepository.findBy(Site.ANY, query);
+                const site = yield scope._sitesRepository.findBy(Site.ANY, params.query);
                 sites.push(site);
             }
             else
@@ -107,7 +121,8 @@ class CompileSassTask extends BaseTask
                 // Create sass files
                 for (const group in sourceFiles)
                 {
-                    const workGroup = scope._cliLogger.work('Generating <' + site.name.toLowerCase() + '/css/' + group + '.scss> for site <' + site.name + '> and group <' + group + '>');
+                    const filename = templateString(params.filenameTemplate, { site: site, group: group });
+                    const workGroup = scope._cliLogger.work('Generating <' + filename + '> for site <' + site.name + '> and group <' + group + '>');
 
                     let content = '';
                     for (const file of sourceFiles[group])
@@ -119,7 +134,7 @@ class CompileSassTask extends BaseTask
                     }
                     const vinylFile = new VinylFile(
                         {
-                            path: site.name.toLowerCase() + '/css/' + group + '.scss',
+                            path: filename,
                             contents: new Buffer(content)
                         });
                     files.push(vinylFile);
@@ -219,6 +234,7 @@ class CompileSassTask extends BaseTask
         {
             const sourceFiles = yield scope.generateFiles(buildConfiguration, parameters);
             const work = scope._cliLogger.section('Compiling sass files');
+            scope._cliLogger.options(scope.prepareParameters(buildConfiguration, parameters));
             for (const sourceFile of sourceFiles)
             {
                 const compiledFile = yield scope.compileFile(sourceFile, buildConfiguration, parameters);

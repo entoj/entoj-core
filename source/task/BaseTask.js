@@ -85,6 +85,16 @@ class BaseTask extends Base
 
 
     /**
+     * @protected
+     * @returns {Object}
+     */
+    prepareParameters(buildConfiguration, parameters)
+    {
+        return parameters || {};
+    }
+
+
+    /**
      * @returns {Stream}
      */
     pipe(task)
