@@ -44,7 +44,7 @@ class DecorateTask extends BaseTask
      */
     stream(stream, buildConfiguration, parameters)
     {
-        if (!stream || !parameters || !parameters.path)
+        if (!stream)
         {
             return super.stream(stream, buildConfiguration, parameters);
         }

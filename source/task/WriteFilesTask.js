@@ -27,13 +27,14 @@ class WriteFilesTask extends BaseTask
      */
     stream(stream, buildConfiguration, parameters)
     {
-        if (!stream || !parameters || !parameters.path)
+        if (!stream || !parameters || (!parameters.path && !parameters.writePath))
         {
             return super.stream(stream, buildConfiguration, parameters);
         }
 
-        const work = this._cliLogger.work('Writing files to filesystem at <' + parameters.path + '>');
-        const resultStream = stream.pipe(gulp.dest(parameters.path));
+        const path = parameters.path || parameters.writePath;
+        const work = this._cliLogger.work('Writing files to filesystem at <' + path + '>');
+        const resultStream = stream.pipe(gulp.dest(path));
         resultStream.on('finish', () =>
         {
             this._cliLogger.end(work);

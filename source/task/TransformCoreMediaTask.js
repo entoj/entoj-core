@@ -66,6 +66,19 @@ class TransformCoreMediaTask extends BaseTask
 
 
     /**
+     * @protected
+     * @returns {Promise<Array>}
+     */
+    prepareParameters(buildConfiguration, parameters)
+    {
+        const result = super.prepareParameters(buildConfiguration, parameters);
+        result.flatten = result.flatten || false;
+        result.query = result.query || '*';
+        return result;
+    }
+
+
+    /**
      * @returns {Promise<VinylFile>}
      */
     transformEntity(entity, settings, buildConfiguration, parameters)
@@ -133,19 +146,11 @@ class TransformCoreMediaTask extends BaseTask
         const promise = co(function *()
         {
             // Prepare
-            const params = parameters || {};
-            const flatten = params.flatten || false;
-            const query = params.query || '*';
-            const work = scope._cliLogger.section('Transforming templates to CoreMedia templates for query <' + query + '>');
-            scope._cliLogger.options(
-            {
-                query: query,
-                flatten: flatten
-            });
+            const params = scope.prepareParameters(buildConfiguration, parameters);
 
             // Compile each entity
             const result = [];
-            const entities = yield scope._globalRepository.resolveEntities(query);
+            const entities = yield scope._globalRepository.resolveEntities(params.query);
             for (const entity of entities)
             {
                 // Render each configured release
@@ -162,7 +167,6 @@ class TransformCoreMediaTask extends BaseTask
             }
 
             // Done
-            scope._cliLogger.end(work);
             return result;
         });
         return promise;
@@ -184,8 +188,9 @@ class TransformCoreMediaTask extends BaseTask
             const scope = this;
             const promise = co(function *()
             {
-                const files = yield scope.transformEntities(buildConfiguration, parameters);
                 const work = scope._cliLogger.section('Transforming template files');
+                scope._cliLogger.options(scope.prepareParameters(buildConfiguration, parameters));
+                const files = yield scope.transformEntities(buildConfiguration, parameters);
                 for (const file of files)
                 {
                     resultStream.write(file);

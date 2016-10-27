@@ -29,6 +29,18 @@ class EnvironmentTask extends BaseTask
 
 
     /**
+     * @protected
+     * @returns {Promise<Array>}
+     */
+    prepareParameters(buildConfiguration, parameters)
+    {
+        const result = super.prepareParameters(buildConfiguration, parameters);
+        result.environment = result.environment || '';
+        return result;
+    }
+
+
+    /**
      * @returns {Stream}
      */
     stream(stream, buildConfiguration, parameters)
@@ -39,8 +51,10 @@ class EnvironmentTask extends BaseTask
         }
 
         // Render stream
-        const environment = parameters ? parameters.environment || false : false;
-        const regex = new RegExp('\\/\\*\\s*\\+environment\\s*:\\s*' + environment + '\\s*\\*\\/([^\\/]*)\\/\\*\\s+\\-environment\\s\\*\\/', 'igm');
+        const params = this.prepareParameters(buildConfiguration, parameters);
+        this._cliLogger.info('Processing environments');
+        this._cliLogger.options(params);
+        const regex = new RegExp('\\/\\*\\s*\\+environment\\s*:\\s*' + params.environment + '\\s*\\*\\/([^\\/]*)\\/\\*\\s+\\-environment\\s\\*\\/', 'igm');
         const resultStream = new Stream.Transform({ objectMode: true });
         resultStream._transform = (file, encoding, callback) =>
         {
@@ -51,14 +65,18 @@ class EnvironmentTask extends BaseTask
                 return;
             }
 
-            const work = this._cliLogger.work('Processing environments for file <' + file.path + '>');
+            const work = this._cliLogger.work('Processing environment for file <' + file.path + '>');
             let contents = file.contents.toString();
-            if (environment)
+            if (params.environment)
             {
                 contents = contents.replace(regex, '$1');
             }
             contents = contents.replace(/\/\*\s*\+environment\s*:\s*\w+\s*\*\/[^\/]*\/\*\s+\-environment\s\*\//igm, '');
-            const resultFile = new VinylFile({ path: file.path, contents: new Buffer(contents) });
+            const resultFile = new VinylFile(
+                {
+                    path: file.path,
+                    contents: new Buffer(contents)
+                });
             resultStream.push(resultFile);
             this._cliLogger.end(work);
             callback();
