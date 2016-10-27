@@ -151,7 +151,7 @@ describe(TransformCoreMediaTask.className, function()
             return promise;
         });
 
-        it('should yield a array of transformed VinylFiles that reflect the entity path', function()
+        it('should yield a array of transformed VinylFiles', function()
         {
             const promise = co(function *()
             {
@@ -163,23 +163,6 @@ describe(TransformCoreMediaTask.className, function()
                     expect(file).to.be.instanceof(VinylFile);
                     expect(file.contents.toString()).to.be.contain('<%@ include');
                     expect(file.path).to.match(/^([^\/]*)\/([^\/]*\/)+([^\/]*)$/ig);
-                }
-            });
-            return promise;
-        });
-
-        it('should yield a array of transformed VinylFiles in a flat structure when flatten = true', function()
-        {
-            const promise = co(function *()
-            {
-                const testee = createTestee();
-                const files = yield testee.transformEntities(undefined, { flatten: true });
-                expect(files).to.be.instanceof(Array);
-                for (const file of files)
-                {
-                    expect(file).to.be.instanceof(VinylFile);
-                    expect(file.contents.toString()).to.be.contain('<%@ include');
-                    expect(file.path).to.match(/^([^\/]*)\/([^\/]*)$/ig);
                 }
             });
             return promise;
@@ -201,6 +184,34 @@ describe(TransformCoreMediaTask.className, function()
                         'base/modules/m001-gallery/CMCollection.m-gallery.jsp',
                         'extended/modules/m001-gallery/m001-gallery.jsp',
                         'extended/modules/m001-gallery/CMCollection.m-gallery.jsp']);
+                }
+            });
+            return promise;
+        });
+
+        it('should allow to configure the file path', function()
+        {
+            const promise = co(function *()
+            {
+                const testee = createTestee();
+                const data = yield baseTaskSpec.readStream(testee.stream(undefined, undefined, { filepathTemplate: 'foo' }));
+                for (const file of data)
+                {
+                    expect(file.path).to.be.oneOf(['foo/m001-gallery.jsp', 'foo/CMCollection.m-gallery.jsp']);
+                }
+            });
+            return promise;
+        });
+
+        it('should allow to remove the file path', function()
+        {
+            const promise = co(function *()
+            {
+                const testee = createTestee();
+                const data = yield baseTaskSpec.readStream(testee.stream(undefined, undefined, { filepathTemplate: '' }));
+                for (const file of data)
+                {
+                    expect(file.path).to.be.oneOf(['m001-gallery.jsp', 'CMCollection.m-gallery.jsp']);
                 }
             });
             return promise;

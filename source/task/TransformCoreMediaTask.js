@@ -10,6 +10,7 @@ const CoreMediaTransformer = require('../transformer/CoreMediaTransformer.js').C
 const CliLogger = require('../cli/CliLogger.js').CliLogger;
 const assertParameter = require('../utils/assert.js').assertParameter;
 const trimLeadingSlash = require('../utils/pathes.js').trimLeadingSlash;
+const templateString = require('es6-template-strings');
 const through2 = require('through2');
 const VinylFile = require('vinyl');
 const co = require('co');
@@ -72,8 +73,8 @@ class TransformCoreMediaTask extends BaseTask
     prepareParameters(buildConfiguration, parameters)
     {
         const result = super.prepareParameters(buildConfiguration, parameters);
-        result.flatten = result.flatten || false;
         result.query = result.query || '*';
+        result.filepathTemplate = typeof result.filepathTemplate === 'string' ? result.filepathTemplate : '${entity.pathString}';
         return result;
     }
 
@@ -81,7 +82,7 @@ class TransformCoreMediaTask extends BaseTask
     /**
      * @returns {Promise<VinylFile>}
      */
-    transformEntity(entity, settings, buildConfiguration, parameters)
+    transformEntity(entity, entitySettings, buildConfiguration, parameters)
     {
         if (!entity)
         {
@@ -93,19 +94,27 @@ class TransformCoreMediaTask extends BaseTask
         const promise = co(function *()
         {
             // Prepare
-            const options = settings || {};
-            const macroName = options.macro || entity.idString.lodasherize();
-            const basePath = options.flatten === true ? entity.site.name.urlify() : entity.pathString;
-            const entityPath = basePath + '/' + entity.idString;
+            const settings = entitySettings || {};
+            const params = scope.prepareParameters(buildConfiguration, parameters);
+            const macroName = settings.macro || entity.idString.lodasherize();
+            const filepath = templateString(params.filepathTemplate,
+                {
+                    entity: entity,
+                    entityId: entity.id,
+                    site: entity.id.site,
+                    entityCategory: entity.id.category
+                });
+
+            // Generate filename
             let filename;
-            if (options.filename)
+            if (settings.filename)
             {
-                filename = options.filename;
+                filename = settings.filename;
 
                 // Add entity path if necessary
                 if (filename.indexOf('/') == '-1')
                 {
-                    filename = trimLeadingSlash(basePath + '/' + filename);
+                    filename = trimLeadingSlash(filepath + '/' + filename);
                 }
 
                 // Add .jsp if necessary
@@ -116,7 +125,7 @@ class TransformCoreMediaTask extends BaseTask
             }
             else
             {
-                filename = trimLeadingSlash(entityPath + '.jsp');
+                filename = trimLeadingSlash(filepath + '/' + entity.idString + '.jsp');
             }
 
             // Compile
@@ -157,9 +166,6 @@ class TransformCoreMediaTask extends BaseTask
                 const settings = entity.properties.getByPath('release.coremedia', []);
                 for (const setting of settings)
                 {
-                    // Update settings with global parameters
-                    setting.flatten = params.flatten;
-
                     // Compile entity
                     const file = yield scope.transformEntity(entity, setting, buildConfiguration, parameters);
                     result.push(file);
