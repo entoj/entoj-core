@@ -16,6 +16,7 @@ const co = require('co');
 const VinylFile = require('vinyl');
 const fs = require('fs-extra');
 const sinon = require('sinon');
+const normalize = pathes.normalizePathSeperators;
 
 
 
@@ -103,10 +104,10 @@ describe(CompileSassTask.className, function()
                 // Groups common & core
                 expect(files).to.be.instanceof(Array);
                 expect(files).to.have.length(4);
-                expect(files.find(item => item.path == 'base/css/common.scss')).to.be.ok;
-                expect(files.find(item => item.path == 'base/css/core.scss')).to.be.ok;
-                expect(files.find(item => item.path == 'extended/css/common.scss')).to.be.ok;
-                expect(files.find(item => item.path == 'extended/css/core.scss')).to.be.ok;
+                expect(files.find(item => item.path == normalize('base/css/common.scss'))).to.be.ok;
+                expect(files.find(item => item.path == normalize('base/css/core.scss'))).to.be.ok;
+                expect(files.find(item => item.path == normalize('extended/css/common.scss'))).to.be.ok;
+                expect(files.find(item => item.path == normalize('extended/css/core.scss'))).to.be.ok;              
             });
             return promise;
         });
@@ -121,8 +122,8 @@ describe(CompileSassTask.className, function()
                 // Groups common & core
                 expect(files).to.be.instanceof(Array);
                 expect(files).to.have.length(2);
-                expect(files.find(item => item.path == 'base/css/common.scss')).to.be.ok;
-                expect(files.find(item => item.path == 'base/css/core.scss')).to.be.ok;
+                expect(files.find(item => item.path == normalize('base/css/common.scss'))).to.be.ok;
+                expect(files.find(item => item.path == normalize('base/css/core.scss'))).to.be.ok;
             });
             return promise;
         });
@@ -133,7 +134,7 @@ describe(CompileSassTask.className, function()
             {
                 const testee = createTestee();
                 const files = yield testee.generateFiles();
-                const source = files.find(item => item.path == 'base/css/core.scss');
+                const source = files.find(item => item.path == normalize('base/css/core.scss'));
                 expect(source.contents.toString()).to.contain('@import \'base/modules/m001-gallery/sass/m001-gallery.scss\';');
             });
             return promise;
@@ -145,7 +146,7 @@ describe(CompileSassTask.className, function()
             {
                 const testee = createTestee();
                 const files = yield testee.generateFiles();
-                const source = files.find(item => item.path == 'extended/css/core.scss');
+                const source = files.find(item => item.path == normalize('extended/css/core.scss'));
                 expect(source.contents.toString()).to.contain('@import \'base/modules/m001-gallery/sass/m001-gallery.scss\';');
                 expect(source.contents.toString()).to.contain('@import \'extended/modules/m001-gallery/sass/m001-gallery.scss\';');
             });
@@ -250,8 +251,8 @@ describe(CompileSassTask.className, function()
                 for (const file of data)
                 {
                     expect(file.contents.toString()).to.not.contain('@import \'');
-                    expect(file.path).to.be.oneOf(['base/css/common.css', 'base/css/core.css',
-                                                   'extended/css/common.css', 'extended/css/core.css']);
+                    expect(file.path).to.be.oneOf([normalize('base/css/common.css'), normalize('base/css/core.css'),
+                                                   normalize('extended/css/common.css'), normalize('extended/css/core.css')]);
                 }
             });
             return promise;
@@ -266,8 +267,8 @@ describe(CompileSassTask.className, function()
                 for (const file of data)
                 {
                     expect(file.contents.toString()).to.not.contain('@import \'');
-                    expect(file.path).to.be.oneOf(['base/common.css', 'base/core.css',
-                                                   'extended/common.css', 'extended/core.css']);
+                    expect(file.path).to.be.oneOf([normalize('base/common.css'), normalize('base/core.css'),
+                                                   normalize('extended/common.css'), normalize('extended/core.css')]);                    
                 }
             });
             return promise;
@@ -285,8 +286,8 @@ describe(CompileSassTask.className, function()
                 const data = yield baseTaskSpec.readStream(testee.stream());
                 for (const file of data)
                 {
-                    expect(file.path).to.be.oneOf(['base/css/common.css', 'base/css/core.css',
-                                                   'extended/css/common.css', 'extended/css/core.css']);
+                    expect(file.path).to.be.oneOf([normalize('base/css/common.css'), normalize('base/css/core.css'),
+                                                   normalize('extended/css/common.css'), normalize('extended/css/core.css')]);
                 }
             });
             return promise;
