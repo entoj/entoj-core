@@ -229,19 +229,25 @@ class CoreMediaRenderer extends BaseRenderer
                 break;
 
             case 'FilterNode':
-                result+= this.renderExpression(node.value);
-                result+= '.' + node.name + '(';
-                const parameters = [];
-                if (node.parameters)
+                if (node.name == 'translate')
                 {
-                    for (const parameter of node.parameters.children)
-                    {
-                        parameters.push(this.renderExpression(parameter.value));
-                    }
+                    result+= this.renderExpression(node.parameters.children[0].value);
                 }
-                result+= parameters.join(', ');
-                result+= ')';
-
+                else
+                {
+                    result+= this.renderExpression(node.value);
+                    result+= '.' + node.name + '(';
+                    const parameters = [];
+                    if (node.parameters)
+                    {
+                        for (const parameter of node.parameters.children)
+                        {
+                            parameters.push(this.renderExpression(parameter.value));
+                        }
+                    }
+                    result+= parameters.join(', ');
+                    result+= ')';
+                }
                 break;
 
             case 'ExpressionNode':
@@ -409,6 +415,10 @@ class CoreMediaRenderer extends BaseRenderer
         if (modelParameter && modelParameter.value)
         {
             result+= 'self="${ ' + this.renderExpression(modelParameter.value) + ' }" ';
+        }
+        else
+        {
+            result+= 'self="${ self }" ';
         }
 
         // Determine view

@@ -5,6 +5,6 @@
   <c:set var="classes" value="${ 'foo' }" />
 </c:if>
 
-    <cm:include view="macro"></cm:include>
+    <cm:include self="${ self }" view="macro"></cm:include>
     <cm:include self="${ self }"/>
 <!-- /Macro macro -->
