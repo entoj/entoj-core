@@ -11,7 +11,7 @@ engines:
 
 ratings:
    paths:
-   - "**.js"
+   - "source/**/*.js"
 
 exclude_paths:
 - ".eslintrc.js"
