@@ -17,6 +17,7 @@ const LinkTypeFilter = require('./filter/LinkTypeFilter.js').LinkTypeFilter;
 const EmptyFilter = require('./filter/EmptyFilter.js').EmptyFilter;
 const NotEmptyFilter = require('./filter/NotEmptyFilter.js').NotEmptyFilter;
 const MarkupFilter = require('./filter/MarkupFilter.js').MarkupFilter;
+const TranslateFilter = require('./filter/TranslateFilter.js').TranslateFilter;
 const GlobalConfiguration = require('../model/configuration/GlobalConfiguration.js').GlobalConfiguration;
 const BuildConfiguration = require('../model/configuration/BuildConfiguration.js').BuildConfiguration;
 const PathesConfiguration = require('../model/configuration/PathesConfiguration.js').PathesConfiguration;
@@ -69,6 +70,7 @@ class Environment extends nunjucks.Environment
         new EmptyFilter(this);
         new NotEmptyFilter(this);
         new MarkupFilter(this);
+        new TranslateFilter(this);
 
         // Add globals
         this.addGlobal('environment', this._buildConfiguration);
