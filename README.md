@@ -35,7 +35,7 @@ npm run lint
 ---
 
 ### Licence
-[Apache License 2.0](LICENSE)
+[Apache License 2.0](LICENCE)
 
 [travis-image]: https://img.shields.io/travis/entoj/entoj-core/master.svg?label=linux
 [travis-url]: https://travis-ci.org/entoj/entoj-core
