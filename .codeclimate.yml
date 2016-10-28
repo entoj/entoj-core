@@ -1,6 +1,6 @@
 engines:
   nodesecurity:
-    enabled: true
+    enabled: false
   scss-lint:
     enabled: true
 exclude_paths:
