@@ -43,6 +43,7 @@ describe(TranspileJsTask.className, function()
 
     describe('#stream()', function()
     {
+        this.timeout(15000);
         it('should transpile all streamed files', function()
         {
             const promise = co(function *()

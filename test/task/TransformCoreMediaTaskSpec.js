@@ -17,7 +17,7 @@ const co = require('co');
 const VinylFile = require('vinyl');
 const fs = require('fs-extra');
 const sinon = require('sinon');
-
+const PATH_SEPERATOR = require('path').sep;
 
 
 /**
@@ -98,7 +98,7 @@ describe(TransformCoreMediaTask.className, function()
                 const testee = createTestee();
                 const entities = yield fixtures.globalRepository.resolveEntities('base/modules/m001-gallery');
                 const file = yield testee.transformEntity(entities[0]);
-                expect(file.path).to.be.equal('base/modules/m001-gallery/m001-gallery.jsp');
+                expect(file.path).to.be.equal('base' + PATH_SEPERATOR + 'modules' + PATH_SEPERATOR + 'm001-gallery' + PATH_SEPERATOR + 'm001-gallery.jsp');
             });
             return promise;
         });
@@ -110,7 +110,7 @@ describe(TransformCoreMediaTask.className, function()
                 const testee = createTestee();
                 const entities = yield fixtures.globalRepository.resolveEntities('base/modules/m001-gallery');
                 const file = yield testee.transformEntity(entities[0], { filename: '/foo/bars.jsp' });
-                expect(file.path).to.be.equal('/foo/bars.jsp');
+                expect(file.path).to.be.equal(PATH_SEPERATOR + 'foo' + PATH_SEPERATOR + 'bars.jsp');
             });
             return promise;
         });
@@ -122,7 +122,7 @@ describe(TransformCoreMediaTask.className, function()
                 const testee = createTestee();
                 const entities = yield fixtures.globalRepository.resolveEntities('base/modules/m001-gallery');
                 const file = yield testee.transformEntity(entities[0], { filename: 'CMCollection.asHeader' });
-                expect(file.path).to.be.equal('base/modules/m001-gallery/CMCollection.asHeader.jsp');
+                expect(file.path).to.be.equal('base' + PATH_SEPERATOR + 'modules' + PATH_SEPERATOR + 'm001-gallery' + PATH_SEPERATOR + 'CMCollection.asHeader.jsp');
             });
             return promise;
         });
@@ -134,7 +134,7 @@ describe(TransformCoreMediaTask.className, function()
                 const testee = createTestee();
                 const entities = yield fixtures.globalRepository.resolveEntities('base/modules/m001-gallery');
                 const file = yield testee.transformEntity(entities[0], { filename: 'foo/bars' });
-                expect(file.path).to.be.equal('foo/bars.jsp');
+                expect(file.path).to.be.equal('foo' + PATH_SEPERATOR + 'bars.jsp');
             });
             return promise;
         });
@@ -162,7 +162,7 @@ describe(TransformCoreMediaTask.className, function()
                 {
                     expect(file).to.be.instanceof(VinylFile);
                     expect(file.contents.toString()).to.be.contain('<%@ include');
-                    expect(file.path).to.match(/^([^\/]*)\/([^\/]*\/)+([^\/]*)$/ig);
+                    expect(file.path).to.match(/^([^\/\\]*)(\/|\\)([^\/\\]*(\/|\\))+([^\/\\]*)$/ig);
                 }
             });
             return promise;
@@ -180,10 +180,10 @@ describe(TransformCoreMediaTask.className, function()
                 const data = yield baseTaskSpec.readStream(testee.stream());
                 for (const file of data)
                 {
-                    expect(file.path).to.be.oneOf(['base/modules/m001-gallery/m001-gallery.jsp',
-                        'base/modules/m001-gallery/CMCollection.m-gallery.jsp',
-                        'extended/modules/m001-gallery/m001-gallery.jsp',
-                        'extended/modules/m001-gallery/CMCollection.m-gallery.jsp']);
+                    expect(file.path).to.be.oneOf(['base' + PATH_SEPERATOR + 'modules' + PATH_SEPERATOR + 'm001-gallery' + PATH_SEPERATOR + 'm001-gallery.jsp',
+                        'base' + PATH_SEPERATOR + 'modules' + PATH_SEPERATOR + 'm001-gallery' + PATH_SEPERATOR + 'CMCollection.m-gallery.jsp',
+                        'extended' + PATH_SEPERATOR + 'modules' + PATH_SEPERATOR + 'm001-gallery' + PATH_SEPERATOR + 'm001-gallery.jsp',
+                        'extended' + PATH_SEPERATOR + 'modules' + PATH_SEPERATOR + 'm001-gallery' + PATH_SEPERATOR + 'CMCollection.m-gallery.jsp']);
                 }
             });
             return promise;
@@ -197,7 +197,7 @@ describe(TransformCoreMediaTask.className, function()
                 const data = yield baseTaskSpec.readStream(testee.stream(undefined, undefined, { filepathTemplate: 'foo' }));
                 for (const file of data)
                 {
-                    expect(file.path).to.be.oneOf(['foo/m001-gallery.jsp', 'foo/CMCollection.m-gallery.jsp']);
+                    expect(file.path).to.be.oneOf(['foo' + PATH_SEPERATOR + 'm001-gallery.jsp', 'foo' + PATH_SEPERATOR + 'CMCollection.m-gallery.jsp']);
                 }
             });
             return promise;

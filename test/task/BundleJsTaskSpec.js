@@ -16,7 +16,7 @@ const co = require('co');
 const VinylFile = require('vinyl');
 const fs = require('fs-extra');
 const sinon = require('sinon');
-
+const PATH_SEPERATOR = require('path').sep;
 
 
 /**
@@ -116,15 +116,15 @@ describe(BundleJsTask.className, function()
                 const bundles = yield testee.generateConfiguration();
                 const baseBundle = bundles[0];
                 expect(baseBundle.common.include).to.have.length(2);
-                expect(baseBundle.common.include).to.contain('base/common/js/bootstrap.js');
-                expect(baseBundle.common.include).to.contain('base/common/js/component.js');
+                expect(baseBundle.common.include).to.contain('base' + PATH_SEPERATOR + 'common' + PATH_SEPERATOR + 'js' + PATH_SEPERATOR + 'bootstrap.js');
+                expect(baseBundle.common.include).to.contain('base' + PATH_SEPERATOR + 'common' + PATH_SEPERATOR + 'js' + PATH_SEPERATOR + 'component.js');
                 expect(baseBundle.common.exclude).to.have.length(1);
-                expect(baseBundle.common.exclude).to.contain('base/modules/m001-gallery/js/m001-gallery.js');
+                expect(baseBundle.common.exclude).to.contain('base' + PATH_SEPERATOR + 'modules' + PATH_SEPERATOR + 'm001-gallery' + PATH_SEPERATOR + 'js' + PATH_SEPERATOR + 'm001-gallery.js');
                 expect(baseBundle.core.include).to.have.length(1);
-                expect(baseBundle.core.include).to.contain('base/modules/m001-gallery/js/m001-gallery.js');
+                expect(baseBundle.core.include).to.contain('base' + PATH_SEPERATOR + 'modules' + PATH_SEPERATOR + 'm001-gallery' + PATH_SEPERATOR + 'js' + PATH_SEPERATOR + 'm001-gallery.js');
                 expect(baseBundle.core.exclude).to.have.length(2);
-                expect(baseBundle.core.exclude).to.contain('base/common/js/bootstrap.js');
-                expect(baseBundle.core.exclude).to.contain('base/common/js/component.js');
+                expect(baseBundle.core.exclude).to.contain('base' + PATH_SEPERATOR + 'common' + PATH_SEPERATOR + 'js' + PATH_SEPERATOR + 'bootstrap.js');
+                expect(baseBundle.core.exclude).to.contain('base' + PATH_SEPERATOR + 'common' + PATH_SEPERATOR + 'js' + PATH_SEPERATOR + 'component.js');
             });
             return promise;
         });
@@ -137,17 +137,17 @@ describe(BundleJsTask.className, function()
                 const bundles = yield testee.generateConfiguration();
                 const extendedBundle = bundles[1];
                 expect(extendedBundle.common.include).to.have.length(2);
-                expect(extendedBundle.common.include).to.contain('base/common/js/bootstrap.js');
-                expect(extendedBundle.common.include).to.contain('base/common/js/component.js');
+                expect(extendedBundle.common.include).to.contain('base' + PATH_SEPERATOR + 'common' + PATH_SEPERATOR + 'js' + PATH_SEPERATOR + 'bootstrap.js');
+                expect(extendedBundle.common.include).to.contain('base' + PATH_SEPERATOR + 'common' + PATH_SEPERATOR + 'js' + PATH_SEPERATOR + 'component.js');
                 expect(extendedBundle.common.exclude).to.have.length(2);
-                expect(extendedBundle.common.exclude).to.contain('base/modules/m001-gallery/js/m001-gallery.js');
-                expect(extendedBundle.common.exclude).to.contain('extended/modules/m001-gallery/js/m001-gallery.js');
+                expect(extendedBundle.common.exclude).to.contain('base' + PATH_SEPERATOR + 'modules' + PATH_SEPERATOR + 'm001-gallery' + PATH_SEPERATOR + 'js' + PATH_SEPERATOR + 'm001-gallery.js');
+                expect(extendedBundle.common.exclude).to.contain('extended' + PATH_SEPERATOR + 'modules' + PATH_SEPERATOR + 'm001-gallery' + PATH_SEPERATOR + 'js' + PATH_SEPERATOR + 'm001-gallery.js');
                 expect(extendedBundle.extended.include).to.have.length(2);
-                expect(extendedBundle.extended.include).to.contain('base/modules/m001-gallery/js/m001-gallery.js');
-                expect(extendedBundle.extended.include).to.contain('extended/modules/m001-gallery/js/m001-gallery.js');
+                expect(extendedBundle.extended.include).to.contain('base' + PATH_SEPERATOR + 'modules' + PATH_SEPERATOR + 'm001-gallery' + PATH_SEPERATOR + 'js' + PATH_SEPERATOR + 'm001-gallery.js');
+                expect(extendedBundle.extended.include).to.contain('extended' + PATH_SEPERATOR + 'modules' + PATH_SEPERATOR + 'm001-gallery' + PATH_SEPERATOR + 'js' + PATH_SEPERATOR + 'm001-gallery.js');
                 expect(extendedBundle.extended.exclude).to.have.length(2);
-                expect(extendedBundle.extended.exclude).to.contain('base/common/js/bootstrap.js');
-                expect(extendedBundle.extended.exclude).to.contain('base/common/js/component.js');
+                expect(extendedBundle.extended.exclude).to.contain('base' + PATH_SEPERATOR + 'common' + PATH_SEPERATOR + 'js' + PATH_SEPERATOR + 'bootstrap.js');
+                expect(extendedBundle.extended.exclude).to.contain('base' + PATH_SEPERATOR + 'common' + PATH_SEPERATOR + 'js' + PATH_SEPERATOR + 'component.js');
             });
             return promise;
         });

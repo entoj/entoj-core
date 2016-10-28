@@ -427,7 +427,6 @@ describe(FileWatcher.className, function()
     {
         it('should watch files starting at the sites root', function(cb)
         {
-            this.timeout(5000);
             let testee = new FileWatcher(fixtures.cliLogger, fixtures.pathes, fixtures.categoriesRepository, fixtures.entityIdParser, { debounce: 50 });
             let expected =
             {
@@ -497,7 +496,6 @@ describe(FileWatcher.className, function()
 
         it('kaboom', function(cb)
         {
-            this.timeout(5000);
             let testee = new FileWatcher(fixtures.cliLogger, fixtures.pathes, fixtures.categoriesRepository, fixtures.entityIdParser, { debounce: 50 });
             testee.signals.changed.add(function(watcher, changes)
             {

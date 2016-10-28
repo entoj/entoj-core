@@ -9,11 +9,12 @@ const GlobalRepository = require('../model/GlobalRepository.js').GlobalRepositor
 const CoreMediaTransformer = require('../transformer/CoreMediaTransformer.js').CoreMediaTransformer;
 const CliLogger = require('../cli/CliLogger.js').CliLogger;
 const assertParameter = require('../utils/assert.js').assertParameter;
-const trimLeadingSlash = require('../utils/pathes.js').trimLeadingSlash;
+const pathes = require('../utils/pathes.js');
 const templateString = require('es6-template-strings');
 const through2 = require('through2');
 const VinylFile = require('vinyl');
 const co = require('co');
+const PATH_SEPERATOR = require('path').sep;
 
 
 /**
@@ -97,24 +98,24 @@ class TransformCoreMediaTask extends BaseTask
             const settings = entitySettings || {};
             const params = scope.prepareParameters(buildConfiguration, parameters);
             const macroName = settings.macro || entity.idString.lodasherize();
-            const filepath = templateString(params.filepathTemplate,
+            const filepath = pathes.normalizePathSeperators(templateString(params.filepathTemplate,
                 {
                     entity: entity,
                     entityId: entity.id,
                     site: entity.id.site,
                     entityCategory: entity.id.category
-                });
+                }));
 
             // Generate filename
             let filename;
             if (settings.filename)
             {
-                filename = settings.filename;
+                filename = pathes.normalizePathSeperators(settings.filename);
 
                 // Add entity path if necessary
-                if (filename.indexOf('/') == '-1')
+                if (filename.indexOf(PATH_SEPERATOR) == '-1')
                 {
-                    filename = trimLeadingSlash(filepath + '/' + filename);
+                    filename = pathes.trimLeadingSlash(filepath + PATH_SEPERATOR + filename);
                 }
 
                 // Add .jsp if necessary
@@ -125,7 +126,7 @@ class TransformCoreMediaTask extends BaseTask
             }
             else
             {
-                filename = trimLeadingSlash(filepath + '/' + entity.idString + '.jsp');
+                filename = pathes.trimLeadingSlash(filepath + PATH_SEPERATOR + entity.idString + '.jsp');
             }
 
             // Compile
