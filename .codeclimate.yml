@@ -2,6 +2,6 @@ engines:
   nodesecurity:
     enabled: false
   scss-lint:
-    enabled: true
+    enabled: false
 exclude_paths:
 - ".eslintrc.js"
