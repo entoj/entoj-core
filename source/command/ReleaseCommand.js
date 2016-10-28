@@ -6,7 +6,7 @@
  */
 const BaseCommand = require('./BaseCommand.js').BaseCommand;
 const Context = require('../application/Context.js').Context;
-const gulp = require('gulp');
+const co = require('co');
 
 
 /**
@@ -28,7 +28,7 @@ class ReleaseCommand extends BaseCommand
         // Load task
         if (opts.task)
         {
-            this._release = require(opts.task)(gulp);
+            this._build = require(opts.task)(context, options);
         }
     }
 
@@ -79,18 +79,14 @@ class ReleaseCommand extends BaseCommand
     build(parameters)
     {
         const scope = this;
-        return new Promise(function(resolve, reject)
+        const promise = co(function *()
         {
             const logger = scope.createLogger('command.release.build');
-
-            // Run gulp task
             const section = logger.section('release.build');
-            gulp.parallel(['release.build'])(function(error)
-            {
-                logger.end(section, !!error);
-                resolve();
-            });
+            yield scope._build(parameters);
+            logger.end(section);
         });
+        return promise;
     }
 
 

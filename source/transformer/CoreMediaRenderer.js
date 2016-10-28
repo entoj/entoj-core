@@ -107,7 +107,7 @@ class CoreMediaRenderer extends BaseRenderer
             }
 
             return result;
-        }
+        };
         result+= render(node);
         result+= ' }';
         return result;
@@ -138,14 +138,14 @@ class CoreMediaRenderer extends BaseRenderer
         switch(node.type)
         {
             case 'FilterNode':
-                if (node.name == "empty")
+                if (node.name == 'empty')
                 {
-                    result+= "empty ";
+                    result+= 'empty ';
                     result+= this.renderExpression(node.value);
                 }
-                else if (node.name == "notempty")
+                else if (node.name == 'notempty')
                 {
-                    result+= " not empty ";
+                    result+= ' not empty ';
                     result+= this.renderExpression(node.value);
                 }
                 else

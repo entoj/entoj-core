@@ -69,6 +69,7 @@ class ImageResizer extends Base
         const raw = child_process.spawnSync('gm', ['identify', '-format', '%wx%h', filename]);
         if (!raw.stdout)
         {
+            this.logger.error('getImageSize - failed, is GraphicsMagic installed?');
             return Promise.resolve(false);
         }
         const split = raw.stdout.toString().trim().split('x');
@@ -93,13 +94,12 @@ class ImageResizer extends Base
         const promise = co(function*()
         {
             const result = yield scope.getImageSize(filename);
-			
-			if(!result)
-			{
-				// TODO log ('getImageSize failed propably install GraphicsMagic');
-				return result;
-			}
-			
+
+            if (!result)
+            {
+                return result;
+            }
+
             const settingsFile = filename.substr(0, filename.length - 3) + 'json';
             const settingsFileExists = yield fs.exists(settingsFile);
             if (settingsFileExists)

@@ -48,7 +48,6 @@ class LinkTypeFilter extends Filter
      */
     execute()
     {
-        const scope = this;
         return function (value)
         {
             return (value.type && value.type === 'com.coremedia.blueprint.cae.contentbeans.CMExternalLinkImpl$$') ? 'external' : 'internal';

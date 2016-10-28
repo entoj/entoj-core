@@ -43,7 +43,7 @@ class JspConcatTransformer extends NodeTransformer
                     it.nextNode &&
                     it.nextNode.is('OperandNode', { value: ['+']}))
                 {
-                    this.logger.debug('transformNode - changing string + x to concat filter')
+                    this.logger.debug('transformNode - changing string + x to concat filter');
 
                     // Get nodes
                     const leftNode = it.currentNode;

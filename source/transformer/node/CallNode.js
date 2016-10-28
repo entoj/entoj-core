@@ -5,7 +5,6 @@
  * @ignore
  */
 const NodeList = require('./NodeList.js').NodeList;
-const ParametersNode = require('./ParametersNode.js').ParametersNode;
 
 
 /**

@@ -35,7 +35,6 @@ class TranslateFilter extends Filter
      */
     execute()
     {
-        const scope = this;
         return function (value, name)
         {
             const strings =
@@ -44,7 +43,7 @@ class TranslateFilter extends Filter
                 'navigation.search': 'Suche',
                 'navigation.login': 'Login',
                 'navigation.meinetk': 'Meine TK'
-            }
+            };
             return strings[name] || name;
         };
     }

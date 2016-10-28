@@ -5,7 +5,6 @@
  * @ignore
  */
 const Base = require('../Base.js').Base;
-const BaseMap = require('../base/BaseMap.js').BaseMap;
 const BaseRenderer = require('./BaseRenderer.js').BaseRenderer;
 const BaseParser = require('./BaseParser.js').BaseParser;
 const MacroNode = require('./node/MacroNode.js').MacroNode;

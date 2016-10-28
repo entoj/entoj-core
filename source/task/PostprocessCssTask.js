@@ -5,7 +5,6 @@
  * @ignore
  */
 const BaseTask = require('./BaseTask.js').BaseTask;
-const gulp = require('gulp');
 const gutil = require('gulp-util');
 const sourcemaps = require('gulp-sourcemaps');
 const postcss = require('gulp-postcss');
@@ -46,7 +45,10 @@ class PostprocessCssTask extends BaseTask
         }
 
         // Disable gulp logging
-        gutil.log = function() { return this; };
+        gutil.log = function()
+        {
+            return this;
+        };
 
         // Prepare
         const scope = this;

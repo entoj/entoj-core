@@ -11,7 +11,6 @@ const JspConcatTransformer = require('./nodetransformer/JspConcatTransformer.js'
 const JspEmptyTransformer = require('./nodetransformer/JspEmptyTransformer.js').JspEmptyTransformer;
 const JspSelfTransformer = require('./nodetransformer/JspSelfTransformer.js').JspSelfTransformer;
 const GlobalRepository = require('../model/GlobalRepository.js').GlobalRepository;
-const co = require('co');
 
 
 /**

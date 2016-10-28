@@ -6,7 +6,6 @@
  */
 const BaseParser = require('./BaseParser.js').BaseParser;
 const nunjucks = require('nunjucks');
-const nodes = require('nunjucks/src/nodes.js');
 const unique = require('lodash.uniq');
 const TextNode = require('./node/TextNode.js').TextNode;
 const SetNode = require('./node/SetNode.js').SetNode;
@@ -76,10 +75,10 @@ class Parser extends BaseParser
 
                 /* istanbul ignore next */
                 default:
-                    scope.logger.error('parseVariable: Not Implemented', type, JSON.stringify(node, null, 4));
+                    this.logger.error('parseVariable: Not Implemented', type, JSON.stringify(node, null, 4));
             }
             return result;
-        }
+        };
 
         return new VariableNode(parse(node));
     }
@@ -110,7 +109,8 @@ class Parser extends BaseParser
                 result = this.parseNode(node);
             }
             return result;
-        }
+        };
+
         return parse(node);
     }
 
@@ -183,6 +183,7 @@ class Parser extends BaseParser
                     break;
             }
         };
+
         parse(node);
         return result;
     }
@@ -260,7 +261,7 @@ class Parser extends BaseParser
             }
 
             return result;
-        }
+        };
 
         return new ConditionNode(parse(node));
     }
@@ -301,7 +302,7 @@ class Parser extends BaseParser
                     this.logger.error('parseExpression: Not Implemented', type, JSON.stringify(node, null, 4));
             }
             return result;
-        }
+        };
 
         return new ExpressionNode(parse(node));
     }

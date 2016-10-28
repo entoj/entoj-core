@@ -48,7 +48,6 @@ class LinkFilter extends Filter
      */
     execute()
     {
-        const scope = this;
         return function (value)
         {
             return value && value.selfLink ? value.selfLink : 'JavaScript:;';

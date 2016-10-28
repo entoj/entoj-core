@@ -5,11 +5,8 @@
  * @ignore
  */
 const BaseTask = require('./BaseTask.js').BaseTask;
-const CliLogger = require('../cli/CliLogger.js').CliLogger;
-const assertParameter = require('../utils/assert.js').assertParameter;
 const VinylFile = require('vinyl');
 const Stream = require('stream');
-const templateString = require('es6-template-strings');
 
 
 /**

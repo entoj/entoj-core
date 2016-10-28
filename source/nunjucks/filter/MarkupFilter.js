@@ -45,7 +45,6 @@ class MarkupFilter extends Filter
      */
     execute()
     {
-        const scope = this;
         return function (value)
         {
             return '<p>' + value + '</p>';

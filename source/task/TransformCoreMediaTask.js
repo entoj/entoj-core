@@ -189,11 +189,11 @@ class TransformCoreMediaTask extends BaseTask
         if (!resultStream)
         {
             resultStream = through2(
-            {
-                objectMode: true
-            });
+                {
+                    objectMode: true
+                });
             const scope = this;
-            const promise = co(function *()
+            co(function *()
             {
                 const work = scope._cliLogger.section('Transforming template files');
                 scope._cliLogger.options(scope.prepareParameters(buildConfiguration, parameters));

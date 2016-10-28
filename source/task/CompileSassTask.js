@@ -14,11 +14,9 @@ const CliLogger = require('../cli/CliLogger.js').CliLogger;
 const assertParameter = require('../utils/assert.js').assertParameter;
 const pathes = require('../utils/pathes.js');
 const urls = require('../utils/urls.js');
-const gulp = require('gulp');
 const through2 = require('through2');
 const VinylFile = require('vinyl');
 const co = require('co');
-const intel = require('intel');
 const sass = require('node-sass');
 const templateString = require('es6-template-strings');
 
@@ -173,10 +171,10 @@ class CompileSassTask extends BaseTask
             includePathes.push(this._pathesConfiguration.bower);
         }
         const compiledFile = new VinylFile(
-        {
-            path: file.path ? file.path.replace(/\.scss/, '.css') : '',
-            contents: false
-        });
+            {
+                path: file.path ? file.path.replace(/\.scss/, '.css') : '',
+                contents: false
+            });
         const options =
         {
             data: file.contents.toString(),
@@ -226,11 +224,11 @@ class CompileSassTask extends BaseTask
     compileFiles(buildConfiguration, parameters)
     {
         const stream = through2(
-        {
-            objectMode: true
-        });
+            {
+                objectMode: true
+            });
         const scope = this;
-        const promise = co(function *()
+        co(function *()
         {
             const sourceFiles = yield scope.generateFiles(buildConfiguration, parameters);
             const work = scope._cliLogger.section('Compiling sass files');

@@ -5,7 +5,6 @@
  * @ignore
  */
 const NodeTransformer = require('../NodeTransformer.js').NodeTransformer;
-const NodeIterator = require('../NodeIterator.js').NodeIterator;
 
 
 /**

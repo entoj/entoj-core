@@ -45,7 +45,6 @@ class EmptyFilter extends Filter
      */
     execute()
     {
-        const scope = this;
         return function (value)
         {
             return !value;

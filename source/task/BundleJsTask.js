@@ -18,7 +18,6 @@ const through2 = require('through2');
 const VinylFile = require('vinyl');
 const difference = require('lodash.difference');
 const co = require('co');
-const babel = require('babel-core');
 const PATH_SEPERATOR = require('path').sep;
 const fs = require('co-fs-extra');
 
@@ -186,11 +185,11 @@ class BundleJsTask extends BaseTask
                 {
                     'jspm_packages/*': scope._pathesConfiguration.entoj + '/jspm_packages/*'
                 }
-            }
+            };
             const sites = yield scope._sitesRepository.getItems();
             for (const site of sites)
             {
-                builderConfig.paths[site.name.urlify() + '/*'] = scope._pathesConfiguration.sites + '/' + site.name.urlify() + '/*'
+                builderConfig.paths[site.name.urlify() + '/*'] = scope._pathesConfiguration.sites + '/' + site.name.urlify() + '/*';
             }
             const builder = new Builder(scope._pathesConfiguration.entoj, scope._pathesConfiguration.entoj + '/jspm.js');
             builder.config(builderConfig);
@@ -261,7 +260,7 @@ class BundleJsTask extends BaseTask
 
             return result;
         })
-        .catch((e) => console.log(e) );
+        .catch((e) => this.logger.error(e) );
         return promise;
     }
 
@@ -275,11 +274,11 @@ class BundleJsTask extends BaseTask
         if (!resultStream)
         {
             resultStream = through2(
-            {
-                objectMode: true
-            });
+                {
+                    objectMode: true
+                });
             const scope = this;
-            const promise = co(function *()
+            co(function *()
             {
                 const siteBundles = yield scope.generateConfiguration(buildConfiguration, parameters);
                 const work = scope._cliLogger.section('Bundling js files');

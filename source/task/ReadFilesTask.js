@@ -33,7 +33,7 @@ class ReadFilesTask extends BaseTask
         }
 
         const path = parameters.path || parameters.readPath;
-        const work = this._cliLogger.info('Reading files from <' + path + '>');
+        this._cliLogger.info('Reading files from <' + path + '>');
         return gulp.src(path);
     }
 }

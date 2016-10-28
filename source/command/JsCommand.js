@@ -6,9 +6,12 @@
  */
 const BaseCommand = require('./BaseCommand.js').BaseCommand;
 const Context = require('../application/Context.js').Context;
+const BundleJsTask = require('../task/BundleJsTask.js').BundleJsTask;
+const WriteFilesTask = require('../task/WriteFilesTask.js').WriteFilesTask;
 const PathesConfiguration = require('../model/configuration/PathesConfiguration.js').PathesConfiguration;
-const js = require('../gulp/task/js.js');
-const utils = require('./utils.js');
+const BuildConfiguration = require('../model/configuration/BuildConfiguration.js').BuildConfiguration;
+const CliLogger = require('../cli/CliLogger.js').CliLogger;
+const co = require('co');
 
 
 /**
@@ -73,11 +76,19 @@ class JsCommand extends BaseCommand
      */
     compile(parameters)
     {
-        const logger = this.createLogger('command.js.compile');
-        const query = parameters._[0] || '*';
-        const section = logger.section('js.compile');
-        const promise = utils.runTask(js.compile, query)
-            .then(() => logger.end(section));
+        const scope = this;
+        const promise = co(function *()
+        {
+            const logger = scope.createLogger('command.js.compile');
+            const mapping = new Map();
+            mapping.set(CliLogger, logger);
+            const pathesConfiguration = scope.context.di.create(PathesConfiguration);
+            const path = yield pathesConfiguration.resolveCache('/js');
+            const buildConfiguration = scope.context.di.create(BuildConfiguration);
+            yield scope.context.di.create(BundleJsTask, mapping)
+                .pipe(scope.context.di.create(WriteFilesTask, mapping))
+                .run(buildConfiguration, { path: path });
+        });
         return promise;
     }
 

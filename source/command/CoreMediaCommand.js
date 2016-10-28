@@ -102,7 +102,7 @@ class CoreMediaCommand extends BaseCommand
             {
                 task = task.pipe(scope.context.di.create(BeautifyHtmlTask, mapping));
             }
-            task = task.pipe(scope.context.di.create(WriteFilesTask, mapping))
+            task = task.pipe(scope.context.di.create(WriteFilesTask, mapping));
             yield task.run(buildConfiguration, options);
         });
         return promise;

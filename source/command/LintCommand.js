@@ -145,7 +145,8 @@ class LintCommand extends BaseCommand
                 // exit with non-zero for git hooks
                 logger.end(section, true);
                 process.exit(1);
-            } else
+            }
+            else
             {
                 // exit with zero
                 logger.end(section, false);

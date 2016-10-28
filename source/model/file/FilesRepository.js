@@ -6,8 +6,6 @@
  */
 const Base = require('../../Base.js').Base;
 const EntitiesRepository = require('../entity/EntitiesRepository.js').EntitiesRepository;
-const Site = require('../site/Site.js').Site;
-const ContentType = require('../ContentType.js');
 const assertParameter = require('../../utils/assert.js').assertParameter;
 const co = require('co');
 

@@ -11,7 +11,6 @@ const EntitiesRepository = require('./entity/EntitiesRepository.js').EntitiesRep
 const EntityCategory = require('./entity/EntityCategory.js').EntityCategory;
 const Site = require('./site/Site.js').Site;
 const ContentType = require('./ContentType.js');
-const DocumentationCallable = require('./documentation/DocumentationCallable.js').DocumentationCallable;
 const assertParameter = require('../utils/assert.js').assertParameter;
 const co = require('co');
 

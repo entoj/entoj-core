@@ -5,10 +5,15 @@
  * @ignore
  */
 const BaseCommand = require('./BaseCommand.js').BaseCommand;
+const CompileSassTask = require('../task/CompileSassTask.js').CompileSassTask;
+const PostprocessCssTask = require('../task/PostprocessCssTask.js').PostprocessCssTask;
+const WriteFilesTask = require('../task/WriteFilesTask.js').WriteFilesTask;
+const PathesConfiguration = require('../model/configuration/PathesConfiguration.js').PathesConfiguration;
+const BuildConfiguration = require('../model/configuration/BuildConfiguration.js').BuildConfiguration;
+const ModelSynchronizer = require('../watch/ModelSynchronizer.js').ModelSynchronizer;
+const CliLogger = require('../cli/CliLogger.js').CliLogger;
 const Context = require('../application/Context.js').Context;
-const gulp = require('gulp');
-const sass = require('../gulp/task/sass.js');
-const utils = require('./utils.js');
+const co = require('co');
 
 
 /**
@@ -57,28 +62,21 @@ class SassCommand extends BaseCommand
             actions:
             [
                 {
-                    name: 'compile',
+                    name: 'compile [query]',
                     description: 'Compiles all scss files',
                     options:
                     [
                         {
                             name: 'query',
                             type: 'optional',
-                            defaultValue: 'all',
+                            defaultValue: '*',
                             description: 'Compiles scss for the given site'
-                        },
-                        {
-                            name: 'environment',
-                            value: 'env',
-                            type: 'named',
-                            defaultValue: 'development',
-                            description: 'Use the build settings from the given environment'
                         }
                     ]
                 },
                 {
                     name: 'watch',
-                    description: 'Watches for changes and compiles all scss files when necessary'
+                    description: 'Watches for changes and compiles scss files when necessary'
                 }
             ]
         };
@@ -88,38 +86,51 @@ class SassCommand extends BaseCommand
 
     /**
      * @inheritDocs
-     * @returns {Promise<Server>}
+     * @returns {Promise}
      */
     compile(parameters)
     {
-        const logger = this.createLogger('command.sass.compile');
-        const query = parameters._[2] || '*';
-        const section = logger.section('sass.compile');
-        const promise = utils.runTask(sass.compile, query)
-            .then(() => logger.end(section));
+        const scope = this;
+        const promise = co(function *()
+        {
+            const logger = scope.createLogger('command.sass.compile');
+            const mapping = new Map();
+            mapping.set(CliLogger, logger);
+            const pathesConfiguration = scope.context.di.create(PathesConfiguration);
+            const path = yield pathesConfiguration.resolveCache('/css');
+            const buildConfiguration = scope.context.di.create(BuildConfiguration);
+            yield scope.context.di.create(CompileSassTask, mapping)
+                .pipe(scope.context.di.create(PostprocessCssTask, mapping))
+                .pipe(scope.context.di.create(WriteFilesTask, mapping))
+                .run(buildConfiguration, { path: path });
+        });
         return promise;
     }
 
 
     /**
      * @inheritDocs
-     * @returns {Promise<Server>}
+     * @returns {Promise}
      */
     watch(parameters)
     {
         const scope = this;
-        return new Promise(function(resolve, reject)
+        const promise = co(function *()
         {
             const logger = scope.createLogger('command.sass.watch');
-
-            // Run gulp task
-            const section = logger.section('sass.watch');
-            gulp.parallel([sass.watchTask])(function(error)
+            const modelSynchronizer = scope.context.di.create(ModelSynchronizer);
+            yield scope.compile(parameters);
+            yield modelSynchronizer.start();
+            modelSynchronizer.signals.invalidated.add((synchronizer, invalidations) =>
             {
-                logger.end(section, !!error);
-                resolve();
+                if (invalidations.extensions.indexOf('.scss') > -1)
+                {
+                    logger.info('Detected change in <Sass Files>');
+                    scope.compile(parameters);
+                }
             });
         });
+        return promise;
     }
 
 

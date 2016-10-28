@@ -89,23 +89,12 @@ function src(query, cliLogger)
                 }
 
                 // Create options
-                let size = 0;
                 const options =
                 {
                     runtime: false,
                     minify: false,
                     sourceMaps: false,
-                    lowResSourceMaps: false,
-                    _fetch: function (load, fetch)
-                    {
-                        const filename = synchronize.execute(pathesConfiguration, 'shorten', [load.name]);
-                        const work = cliLogger.work(filename);
-                        const stat = fs_.statSync(load.name.replace('file://', ''));
-                        size+= stat.size;
-                        const result = fetch(load);
-                        cliLogger.end(work, false, 'Added ' + filename + ' (' + filesize(stat.size) + ')');
-                        return result;
-                    }
+                    lowResSourceMaps: false
                 };
 
                 // Configure bundler
@@ -114,9 +103,9 @@ function src(query, cliLogger)
                     {
                         babelOptions:
                         {
-                            "optional":
+                            'optional':
                             [
-                                "runtime"
+                                'runtime'
                             ]
                         },
                         paths:
@@ -161,7 +150,6 @@ function src(query, cliLogger)
                 {
                     const work = cliLogger.work(filename);
                     const stat = fs_.statSync(filename);
-                    size+= stat.size;
                     const fileContent = yield fs.readFile(filename, { encoding: 'utf8' });
                     contents+= fileContent;
                     cliLogger.end(work, false, 'Prepended ' + filename + ' (' + filesize(stat.size) + ')');
