@@ -32,6 +32,11 @@ Lints all source files
 npm run lint
 ```
 
+---
+
+### Licence
+[Apache License 2.0](LICENSE)
+
 [travis-image]: https://img.shields.io/travis/entoj/entoj-core/master.svg?label=linux
 [travis-url]: https://travis-ci.org/entoj/entoj-core
 [appveyor-image]: https://img.shields.io/appveyor/ci/ChristianAuth/entoj-core/master.svg?label=windows
