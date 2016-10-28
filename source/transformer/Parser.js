@@ -455,6 +455,10 @@ class Parser extends BaseParser
                 result = this.parseText(node);
                 break;
 
+            case 'Literal':
+                result = new LiteralNode(node.value);
+                break;
+
             case 'Set':
                 result = this.parseSet(node);
                 break;
