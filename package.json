@@ -107,6 +107,10 @@
     "jsdoc": "*",
     "mocha": "*",
     "sinon": "*",
-    "supertest": "*"
+    "supertest": "*",
+    "babel-core": "*",
+    "babel-preset-es2015": "*",
+    "babel-plugin-transform-runtime": "*",
+    "babel-runtime": "*"
   }
 }
