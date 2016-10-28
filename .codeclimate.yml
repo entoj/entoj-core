@@ -1,7 +1,2 @@
-engines:
-  nodesecurity:
-    enabled: false
-  scss-lint:
-    enabled: false
 exclude_paths:
 - ".eslintrc.js"
