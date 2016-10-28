@@ -1,9 +1,11 @@
-[![Build Status Linux](https://travis-ci.org/entoj/entoj-core.svg?branch=develop)](https://travis-ci.org/entoj/entoj-core)
-[![Build status Windows](https://ci.appveyor.com/api/projects/status/nu42c441bry4i0d4?svg=true)](https://ci.appveyor.com/project/ChristianAuth/entoj-core)
-[![Coverage Status](https://coveralls.io/repos/github/entoj/entoj-core/badge.svg?branch=develop)](https://coveralls.io/github/entoj/entoj-core?branch=develop)
 
+[![Linux Build][travis-image]][travis-url]
+[![Windows Build][appveyor-image]][appveyor-url]
+[![Test Coverage][coveralls-image]][coveralls-url]
 
-# Running tests
+#Entoj
+
+## Running tests
 
 Runs all test specs at once
 ```
@@ -29,3 +31,10 @@ Lints all source files
 ```
 npm run lint
 ```
+
+[travis-image]: https://img.shields.io/travis/entoj/entoj-core/master.svg?label=linux
+[travis-url]: https://travis-ci.org/entoj/entoj-core
+[appveyor-image]: https://img.shields.io/appveyor/ci/ChristianAuth/entoj-core/master.svg?label=windows
+[appveyor-url]: https://ci.appveyor.com/project/ChristianAuth/entoj-core
+[coveralls-image]: https://img.shields.io/coveralls/entoj/entoj-core/master.svg
+[coveralls-url]: https://coveralls.io/r/entoj/entoj-core?branch=master
