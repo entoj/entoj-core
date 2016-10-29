@@ -48,8 +48,8 @@ describe('nunjucks.loader/FileLoader', function()
         it('should auto generate includes', function()
         {
             const testee = new FileLoader(fixtures.pathes.sites, fixtures.entitiesRepository);
-            expect(testee.getSource('base/modules/m001-gallery/m001-gallery.j2').src).to.contain('include "/base/elements/e005-button/e005-button.j2"');
-            expect(testee.getSource('base/modules/m001-gallery/m001-gallery.j2').src).to.not.contain('include "/base/modules/m001-gallery/m001-gallery.j2"');
+            expect(testee.getSource('base/modules/m001-gallery/m001-gallery.j2').src).to.contain('from "/base/elements/e005-button/e005-button.j2"');
+            expect(testee.getSource('base/modules/m001-gallery/m001-gallery.j2').src).to.not.contain('from "/base/modules/m001-gallery/m001-gallery.j2"');
         });
     });
 });

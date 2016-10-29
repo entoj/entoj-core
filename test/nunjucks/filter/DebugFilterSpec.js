@@ -15,7 +15,7 @@ describe(DebugFilter.className, function()
     beforeEach(function()
     {
         fixtures = {};
-        fixtures.environment = new nunjucks.Environment();
+        fixtures.environment = new nunjucks.Environment(undefined, { autoescape: false });
         fixtures.filter = new DebugFilter(fixtures.environment);
     });
 

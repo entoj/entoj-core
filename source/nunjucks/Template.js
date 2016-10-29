@@ -77,7 +77,7 @@ class Template extends Base
                 if (macro.name === name)
                 {
                     stopWatch.stop(this.className + '.getInclude');
-                    return '{% include "' + urls.normalize(macro.file.filename.replace(this._basePath, '')) + '" %}';
+                    return '{% from "' + urls.normalize(macro.file.filename.replace(this._basePath, '')) + '" import ' + macro.name + ' %}';
                 }
             }
         }

@@ -42,6 +42,7 @@ class Environment extends nunjucks.Environment
     {
         const opts = options || {};
         const rootPath = opts.rootPath || '';
+        opts.autoescape = false;
         super(new FileLoader(rootPath, entitiesRepository), options);
 
         // Check params

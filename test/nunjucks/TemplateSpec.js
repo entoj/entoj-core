@@ -46,11 +46,11 @@ describe(Template.className, function()
             expect(include).to.be.not.ok;
         });
 
-        it('should return a jinja include for a existing macro', function()
+        it('should return a jinja import for a existing macro', function()
         {
             const testee = new Template(fixtures.entitiesRepository, fixtures.pathesConfiguration.sites);
             const include = testee.getInclude('m001_gallery');
-            expect(include).to.be.equal('{% include "/base/modules/m001-gallery/m001-gallery.j2" %}');
+            expect(include).to.be.equal('{% from "/base/modules/m001-gallery/m001-gallery.j2" import m001_gallery %}');
         });
     });
 
@@ -62,7 +62,7 @@ describe(Template.className, function()
             const testee = new Template(fixtures.entitiesRepository, fixtures.pathesConfiguration.sites);
             const input = `{{ e005_button() }}`;
             const source = testee.prepare(input);
-            expect(source).to.include('{% include "/base/elements/e005-button/e005-button.j2" %}');
+            expect(source).to.include('{% from "/base/elements/e005-button/e005-button.j2" import e005_button %}');
         });
 
         it('should not create cyclic dependencies', function()
@@ -70,9 +70,8 @@ describe(Template.className, function()
             const testee = new Template(fixtures.entitiesRepository, fixtures.pathesConfiguration.sites);
             const input = `{% macro e005_button() %}{% endmacro %}{{ m001_gallery() }}{{ e005_button() }}`;
             const source = testee.prepare(input);
-            expect(source).to.not.include('{% include "/base/elements/e005-button/e005-button.j2" %}');
+            expect(source).to.include('{% from "/base/modules/m001-gallery/m001-gallery.j2" import m001_gallery %}');
+            expect(source).to.not.include('{% from "/base/elements/e005-button/e005-button.j2" import e005_button %}');
         });
-
     });
-
 });
