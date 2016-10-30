@@ -3,17 +3,17 @@ engines:
     enabled: true
     config:
       languages:
-      - javascript
+        - javascript
   eslint:
     enabled: true
     channel: "eslint-3"
   fixme:
     enabled: true
 
-ratings:
-   paths:
-   - "source/**/*.js"
+  ratings:
+    paths:
+      - "source/**/*.js"
 
 exclude_paths:
-- ".eslintrc.js"
-- "test/**"
+  - ".eslintrc.js"
+  - "test/**"
