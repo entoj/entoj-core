@@ -220,7 +220,7 @@ class PagesRoute extends BaseRoute
         this._nunjucks.isStatic = (typeof request.query.static !== 'undefined');
         const work = this._cliLogger.work('Serving ' + (this._nunjucks.isStatic ? '<static>' : ' ') + 'template <' + route.template + '> as <' + request.url + '>');
         const tpl = fs.readFileSync(this._templateRoot + '/' + route.template, { encoding: 'utf8' });
-        const html = this._nunjucks.renderString(tpl, model);
+        const html = this._nunjucks.renderString(tpl, { global: model });
         response.send(html);
         this._cliLogger.end(work);
     }
