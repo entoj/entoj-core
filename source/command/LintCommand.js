@@ -129,13 +129,26 @@ class LintCommand extends BaseCommand
                 }
                 else
                 {
-                    logger.end(work, true, 'Linting <' + entity.id.asString('path') + '> failed with <' + result.errorCount + '> errors and <' + result.warningCount + '> warnings.');
+                    logger.end(work, true, 'Linting <' + entity.id.asString('path') + '> failed with ' +
+                        chalk.yellow(result.errorCount) + ' errors and ' +
+                        chalk.yellow(result.warningCount) + ' warnings.');
 
                     //Show messages
+                    const messagesByFile = {};
                     for (const message of result.messages)
                     {
-                        logger.info(message.filename.replace(scope._pathesConfiguration.root, '') + '@' + message.line);
-                        logger.info(message.message + chalk.dim(' (' + message.ruleId + ')'));
+                        messagesByFile[message.filename] = messagesByFile[message.filename] || [];
+                        messagesByFile[message.filename].push(message);
+                    }
+                    for (const file in messagesByFile)
+                    {
+                        const messages = messagesByFile[file];
+                        logger.info('   ' + messages[0].filename.replace(scope._pathesConfiguration.root, '') + '');
+                        for (const message of messages)
+                        {
+                            logger.info(chalk.magenta('     @' + message.line) + ' ' + message.message + chalk.dim(' (' + message.ruleId + ')'));
+                        }
+                        logger.info();
                     }
                 }
             }
