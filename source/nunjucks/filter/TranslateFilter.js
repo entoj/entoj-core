@@ -35,6 +35,7 @@ class TranslateFilter extends Filter
      */
     execute()
     {
+        const scope = this;
         return function (value, name)
         {
             const strings =
@@ -42,8 +43,15 @@ class TranslateFilter extends Filter
                 'navigation.menu': 'Menü',
                 'navigation.search': 'Suche',
                 'navigation.login': 'Login',
-                'navigation.meinetk': 'Meine TK'
+                'navigation.meinetk': 'Meine TK',
+                'navigation.back': 'Zurück',
+                'navigation.close': 'Schließen',
+                'navigation.welcome': 'Willkommen'
             };
+            if (!strings[name])
+            {
+                scope.logger.error('Missing translation for ' + name);
+            }
             return strings[name] || name;
         };
     }
