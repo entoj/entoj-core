@@ -204,6 +204,9 @@ class TransformCoreMediaTask extends BaseTask
                 }
                 resultStream.end();
                 scope._cliLogger.end(work);
+            }).catch((e) =>
+            {
+                this.logger.error(e);
             });
         }
         return resultStream;

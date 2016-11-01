@@ -25,6 +25,12 @@ describe(IfNode.className, function()
             {
                 type: 'transformer.node/BaseNode'
             },
+            elseChildren:
+            [
+                {
+                    type: 'transformer.node/BaseNode'
+                }
+            ],
             children:
             [
                 {
@@ -38,6 +44,7 @@ describe(IfNode.className, function()
     function prepareParameters(parameters)
     {
         parameters.push(new BaseNode());
+        parameters.push([new BaseNode()]);
         parameters.push([new BaseNode()]);
         return parameters;
     }

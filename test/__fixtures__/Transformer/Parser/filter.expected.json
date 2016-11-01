@@ -186,41 +186,6 @@
         {
             "type": "transformer.node/TextNode",
             "value": "\n"
-        },
-        {
-            "type": "transformer.node/OutputNode",
-            "children": [
-                {
-                    "type": "transformer.node/FilterNode",
-                    "name": "translate",
-                    "parameters": {
-                        "type": "transformer.node/ParametersNode",
-                        "children": [
-                            {
-                                "type": "transformer.node/ParameterNode",
-                                "name": "",
-                                "value": {
-                                    "type": "transformer.node/ExpressionNode",
-                                    "children": [
-                                        {
-                                            "type": "transformer.node/LiteralNode",
-                                            "value": "navigation.menu"
-                                        }
-                                    ]
-                                }
-                            }
-                        ]
-                    },
-                    "value": {
-                        "type": "transformer.node/LiteralNode",
-                        "value": false
-                    }
-                }
-            ]
-        },
-        {
-            "type": "transformer.node/TextNode",
-            "value": "\n"
         }
     ]
 }
