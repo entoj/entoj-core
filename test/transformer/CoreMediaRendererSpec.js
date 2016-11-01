@@ -53,7 +53,7 @@ describe(CoreMediaRenderer.className, function()
     }
 
 
-    xdescribe('#render()', function()
+    describe('#render()', function()
     {
         it('should render embedded variables', function()
         {
