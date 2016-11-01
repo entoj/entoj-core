@@ -51,7 +51,17 @@ class EnvironmentTask extends BaseTask
         const params = this.prepareParameters(buildConfiguration, parameters);
         this._cliLogger.info('Processing environments');
         this._cliLogger.options(params);
-        const regex = new RegExp('\\/\\*\\s*\\+environment\\s*:\\s*' + params.environment + '\\s*\\*\\/([^\\/]*)\\/\\*\\s+\\-environment\\s\\*\\/', 'igm');
+        const environmentRegex =
+        [
+            new RegExp('\\/\\*\\s*\\+environment\\s*:\\s*' + params.environment + '\\s*\\*\\/([^\\/]*)\\/\\*\\s+\\-environment\\s\\*\\/', 'igm'),
+            new RegExp('\\{#\\s*\\+environment\\s*:\\s*' + params.environment + '\\s*#\\}([^\\{}]*)\\{#\\s+\\-environment\\s#\\}', 'igm')
+        ];
+        const removeRegex =
+        [
+            new RegExp('\\/\\*\\s*\\+environment\\s*:\\s*\\w+\\s*\\*\\/[^\\/]*\\/\\*\\s+\\-environment\\s\\*\\/', 'igm'),
+            new RegExp('\\{#\\s*\\+environment\\s*:\\s*\\w+\\s*#\\}[^\\{]*\\{#\\s+\\-environment\\s#\\}', 'igm')
+        ]
+
         const resultStream = new Stream.Transform({ objectMode: true });
         resultStream._transform = (file, encoding, callback) =>
         {
@@ -66,9 +76,15 @@ class EnvironmentTask extends BaseTask
             let contents = file.contents.toString();
             if (params.environment)
             {
-                contents = contents.replace(regex, '$1');
+                for (const regex of environmentRegex)
+                {
+                    contents = contents.replace(regex, '$1');
+                }
             }
-            contents = contents.replace(/\/\*\s*\+environment\s*:\s*\w+\s*\*\/[^\/]*\/\*\s+\-environment\s\*\//igm, '');
+            for (const regex of removeRegex)
+            {
+                contents = contents.replace(regex, '');
+            }
             const resultFile = new VinylFile(
                 {
                     path: file.path,
