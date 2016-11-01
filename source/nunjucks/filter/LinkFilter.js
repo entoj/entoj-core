@@ -50,7 +50,15 @@ class LinkFilter extends Filter
     {
         return function (value)
         {
-            return value && value.selfLink ? value.selfLink : 'JavaScript:;';
+            if (value && value.selfLink)
+            {
+                return value.selfLink;
+            }
+            if (value && value.dataUrlBlob)
+            {
+                return value.dataUrlBlob;
+            }
+            return 'JavaScript:;';
         };
     }
 }
