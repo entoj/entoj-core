@@ -72,44 +72,64 @@ class CoreMediaRenderer extends BaseRenderer
      */
     renderOutput(node)
     {
-        let result = '${ ';
-        const render = (node) =>
+        let result = '';
+
+        // Check translation filters
+        if (node.children.length &&
+            node.children[0].type === 'FilterNode' &&
+            node.children[0].name === 'translate')
         {
-            let result = '';
-            switch(node.type)
+            let key = '';
+            if (node.children[0].parameters.children.length)
             {
-                case 'FilterNode':
-                    result+= this.renderExpression(node);
-                    break;
-
-                case 'NodeList':
-                case 'OutputNode':
-                    for (const child of node.children)
-                    {
-                        result+= render(child);
-                    }
-                    break;
-
-                case 'LiteralNode':
-                    result+= this.getLiteral(node);
-                    break;
-
-                case 'VariableNode':
-                    result+= this.getVariable(node);
-                    break;
-
-                case 'YieldNode':
-                    result+= this.renderYield(node);
-                    break;
-
-                default:
-                    this.logger.error('renderOutput: Not Implemented', node);
+                key = node.children[0].parameters.children[0].value.children[0].value;
             }
+            result+= '<fmt:message';
+            result+= ' key="' + key + '"';
+            result+= ' />';
+        }
+        // Just straight output
+        else
+        {
+            result+= '${ ';
+            const render = (node) =>
+            {
+                let result = '';
+                switch(node.type)
+                {
+                    case 'FilterNode':
+                        result+= this.renderExpression(node);
+                        break;
 
-            return result;
-        };
-        result+= render(node);
-        result+= ' }';
+                    case 'NodeList':
+                    case 'OutputNode':
+                        for (const child of node.children)
+                        {
+                            result+= render(child);
+                        }
+                        break;
+
+                    case 'LiteralNode':
+                        result+= this.getLiteral(node);
+                        break;
+
+                    case 'VariableNode':
+                        result+= this.getVariable(node);
+                        break;
+
+                    case 'YieldNode':
+                        result+= this.renderYield(node);
+                        break;
+
+                    default:
+                        this.logger.error('renderOutput: Not Implemented', node);
+                }
+
+                return result;
+            };
+            result+= render(node);
+            result+= ' }';
+        }
         return result;
     }
 
@@ -229,25 +249,18 @@ class CoreMediaRenderer extends BaseRenderer
                 break;
 
             case 'FilterNode':
-                if (node.name == 'translate')
+                result+= this.renderExpression(node.value);
+                result+= '.' + node.name + '(';
+                const parameters = [];
+                if (node.parameters)
                 {
-                    result+= this.renderExpression(node.parameters.children[0].value);
-                }
-                else
-                {
-                    result+= this.renderExpression(node.value);
-                    result+= '.' + node.name + '(';
-                    const parameters = [];
-                    if (node.parameters)
+                    for (const parameter of node.parameters.children)
                     {
-                        for (const parameter of node.parameters.children)
-                        {
-                            parameters.push(this.renderExpression(parameter.value));
-                        }
+                        parameters.push(this.renderExpression(parameter.value));
                     }
-                    result+= parameters.join(', ');
-                    result+= ')';
                 }
+                result+= parameters.join(', ');
+                result+= ')';
                 break;
 
             case 'ExpressionNode':
@@ -342,6 +355,23 @@ class CoreMediaRenderer extends BaseRenderer
             result+= ' />';
 
             result+= '</c:set>';
+        }
+        // handle translate
+        else if (node.type === 'SetNode' &&
+            node.value.type === 'ExpressionNode' &&
+            node.value.children.length &&
+            node.value.children[0].type === 'FilterNode' &&
+            node.value.children[0].name === 'translate')
+        {
+            let key = '';
+            if (node.value.children[0] && node.value.children[0].parameters.children.length)
+            {
+                key = node.value.children[0].parameters.children[0].value.children[0].value;
+            }
+            result+= '<fmt:message';
+            result+= ' var="' + this.getVariable(node.variable) + '"';
+            result+= ' key="' + key + '"';
+            result+= ' />';
         }
         // handle standard set
         else if (node.variable.type == 'VariableNode')

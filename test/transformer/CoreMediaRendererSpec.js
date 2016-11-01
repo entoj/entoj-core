@@ -53,7 +53,7 @@ describe(CoreMediaRenderer.className, function()
     }
 
 
-    describe('#render()', function()
+    xdescribe('#render()', function()
     {
         it('should render embedded variables', function()
         {
@@ -88,6 +88,11 @@ describe(CoreMediaRenderer.className, function()
         it('should render macros', function()
         {
             return testFixture('macro');
+        });
+
+        it('should render translate filters', function()
+        {
+            return testFixture('translate');
         });
     });
 });
