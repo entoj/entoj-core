@@ -7,4 +7,5 @@ test/__fixtures__/Application/Compact/entoj/cache/images
 crash.log
 /npm-debug.log
 /test/__fixtures__/Commands
-/test/__fixtures__/Tasks/*
+/test/__fixtures__/Tasks/ChainingTasks
+/test/__fixtures__/Tasks/WriteFilesTask
