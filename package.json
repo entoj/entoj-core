@@ -35,6 +35,7 @@
     "gulp": "gulpjs/gulp.git#4.0",
     "gulp-postcss": "https://github.com/ChristianAuth/gulp-postcss",
     "gulp-sourcemaps": "*",
+    "gulp-svg-sprite": "*",
     "gulp-uglify": "*",
     "gulp-util": "*",
     "htmlparser2": "*",
