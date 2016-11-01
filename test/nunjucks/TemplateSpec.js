@@ -73,5 +73,13 @@ describe(Template.className, function()
             expect(source).to.include('{% from "/base/modules/m001-gallery/m001-gallery.j2" import m001_gallery %}');
             expect(source).to.not.include('{% from "/base/elements/e005-button/e005-button.j2" import e005_button %}');
         });
+
+        it('should support environments', function()
+        {
+            const testee = new Template(fixtures.entitiesRepository, fixtures.pathesConfiguration.sites);
+            const input = `All{# +environment: development #}-Development{# -environment #}`;
+            expect(testee.prepare(input)).to.be.equal('All');
+            expect(testee.prepare(input, 'development')).to.be.equal('All-Development');
+        });
     });
 });

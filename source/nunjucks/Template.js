@@ -12,6 +12,7 @@ const DocumentationCallable = require('../model/documentation/DocumentationCalla
 const synchronize = require('../utils/synchronize.js');
 const stopWatch = require('../utils/StopWatch.js').stopWatch;
 const urls = require('../utils/urls.js');
+const activateEnvironment = require('../utils/string.js').activateEnvironment;
 const unique = require('lodash.uniq');
 const assertParameter = require('../utils/assert.js').assertParameter;
 
@@ -89,7 +90,7 @@ class Template extends Base
     /**
      * Prepares a template for rendering
      */
-    prepare(content)
+    prepare(content, environment)
     {
         stopWatch.start(this.className + '.prepare');
 
@@ -114,6 +115,9 @@ class Template extends Base
         {
             result = include + '\n' + result;
         }
+
+        // Activate environments
+        result = activateEnvironment(result, environment);
 
         stopWatch.stop(this.className + '.prepare');
         this.logger.verbose('Prepared Template\n', result);
