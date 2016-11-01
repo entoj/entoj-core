@@ -6,6 +6,7 @@
 const trimMultiline = require(SOURCE_ROOT + '/utils/string.js').trimMultiline;
 const shortenMiddle = require(SOURCE_ROOT + '/utils/string.js').shortenMiddle;
 const shortenLeft = require(SOURCE_ROOT + '/utils/string.js').shortenLeft;
+const activateEnvironment = require(SOURCE_ROOT + '/utils/string.js').activateEnvironment;
 
 
 /**
@@ -13,7 +14,7 @@ const shortenLeft = require(SOURCE_ROOT + '/utils/string.js').shortenLeft;
  */
 describe('utils/string', function()
 {
-    describe('#trimMultiline', function()
+    describe('#trimMultiline()', function()
     {
         it('should handle invalid strings', function()
         {
@@ -56,7 +57,8 @@ describe('utils/string', function()
         });
     });
 
-    describe('#shortenMiddle', function()
+
+    describe('#shortenMiddle()', function()
     {
         it('should handle invalid strings', function()
         {
@@ -98,7 +100,7 @@ describe('utils/string', function()
     });
 
 
-    describe('#shortenLeft', function()
+    describe('#shortenLeft()', function()
     {
         it('should handle invalid strings', function()
         {
@@ -136,6 +138,45 @@ describe('utils/string', function()
             const expected = '0';
             const testee = shortenLeft(input, 1);
             expect(testee).to.be.equal(expected);
+        });
+    });
+
+
+    describe('#activateEnvironment()', function()
+    {
+        describe('c-style comments', function()
+        {
+            it('should remove all environments when no environment is given', function()
+            {
+                const input = `All/* +environment: development */-Development/* -environment *//* +environment: production */-Production/* -environment */`;
+                const expected = `All`;
+                expect(activateEnvironment(input)).to.be.equal(expected);
+            });
+
+            it('should remove all environments except the given one', function()
+            {
+                const input = `All/* +environment: development */-Development/* -environment *//* +environment: production */-Production/* -environment */`;
+                const expected = `All-Production`;
+                expect(activateEnvironment(input, 'production')).to.be.equal(expected);
+            });
+        });
+
+
+        describe('jinja-style comments', function()
+        {
+            it('should remove all environments when no environment is given', function()
+            {
+                const input = `All{# +environment: development #}-Development{# -environment #}{# +environment: production #}-Production{# -environment #}`;
+                const expected = `All`;
+                expect(activateEnvironment(input)).to.be.equal(expected);
+            });
+
+            it('should remove all environments except the given one', function()
+            {
+                const input = `All{# +environment: development #}-Development{# -environment #}{# +environment: production #}-Production{# -environment #}`;
+                const expected = `All-Production`;
+                expect(activateEnvironment(input, 'production')).to.be.equal(expected);
+            });
         });
     });
 });

@@ -7,6 +7,7 @@
 const BaseTask = require('./BaseTask.js').BaseTask;
 const VinylFile = require('vinyl');
 const Stream = require('stream');
+const activateEnvironment = require('../utils/string.js').activateEnvironment;
 
 
 /**
@@ -51,17 +52,6 @@ class EnvironmentTask extends BaseTask
         const params = this.prepareParameters(buildConfiguration, parameters);
         this._cliLogger.info('Processing environments');
         this._cliLogger.options(params);
-        const environmentRegex =
-        [
-            new RegExp('\\/\\*\\s*\\+environment\\s*:\\s*' + params.environment + '\\s*\\*\\/([^\\/]*)\\/\\*\\s+\\-environment\\s\\*\\/', 'igm'),
-            new RegExp('\\{#\\s*\\+environment\\s*:\\s*' + params.environment + '\\s*#\\}([^\\{}]*)\\{#\\s+\\-environment\\s#\\}', 'igm')
-        ];
-        const removeRegex =
-        [
-            new RegExp('\\/\\*\\s*\\+environment\\s*:\\s*\\w+\\s*\\*\\/[^\\/]*\\/\\*\\s+\\-environment\\s\\*\\/', 'igm'),
-            new RegExp('\\{#\\s*\\+environment\\s*:\\s*\\w+\\s*#\\}[^\\{]*\\{#\\s+\\-environment\\s#\\}', 'igm')
-        ]
-
         const resultStream = new Stream.Transform({ objectMode: true });
         resultStream._transform = (file, encoding, callback) =>
         {
@@ -71,20 +61,8 @@ class EnvironmentTask extends BaseTask
                 callback();
                 return;
             }
-
             const work = this._cliLogger.work('Processing environment for file <' + file.path + '>');
-            let contents = file.contents.toString();
-            if (params.environment)
-            {
-                for (const regex of environmentRegex)
-                {
-                    contents = contents.replace(regex, '$1');
-                }
-            }
-            for (const regex of removeRegex)
-            {
-                contents = contents.replace(regex, '');
-            }
+            const contents = activateEnvironment(file.contents.toString(), params.environment);
             const resultFile = new VinylFile(
                 {
                     path: file.path,

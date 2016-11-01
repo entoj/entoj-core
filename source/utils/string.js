@@ -111,9 +111,46 @@ function shortenLeft(content, length)
  * @memberOf utils
  * @param {String} content
  */
-function uppercaseFirst (content)
+function uppercaseFirst(content)
 {
     return content.charAt(0).toUpperCase() + content.substr(1);
+}
+
+
+/**
+ * Uppercases the frist character of a string
+ *
+ * @memberOf utils
+ * @param {String} content
+ * @param {String} environment
+ */
+function activateEnvironment(content, environment)
+{
+    let result = content;
+    const env = environment || '';
+    const environmentRegex =
+    [
+        new RegExp('\\/\\*\\s*\\+environment\\s*:\\s*' + env + '\\s*\\*\\/([^\\/]*)\\/\\*\\s+\\-environment\\s\\*\\/', 'igm'),
+        new RegExp('\\{#\\s*\\+environment\\s*:\\s*' + env + '\\s*#\\}([^\\{}]*)\\{#\\s+\\-environment\\s#\\}', 'igm')
+    ];
+    const removeRegex =
+    [
+        new RegExp('\\/\\*\\s*\\+environment\\s*:\\s*\\w+\\s*\\*\\/[^\\/]*\\/\\*\\s+\\-environment\\s\\*\\/', 'igm'),
+        new RegExp('\\{#\\s*\\+environment\\s*:\\s*\\w+\\s*#\\}[^\\{]*\\{#\\s+\\-environment\\s#\\}', 'igm')
+    ]
+
+    if (environment)
+    {
+        for (const regex of environmentRegex)
+        {
+            result = result.replace(regex, '$1');
+        }
+    }
+    for (const regex of removeRegex)
+    {
+        result = result.replace(regex, '');
+    }
+    return result;
 }
 
 
@@ -125,3 +162,5 @@ module.exports.trimMultiline = trimMultiline;
 module.exports.shortenMiddle = shortenMiddle;
 module.exports.shortenLeft = shortenLeft;
 module.exports.uppercaseFirst = uppercaseFirst;
+module.exports.activateEnvironment = activateEnvironment;
+
