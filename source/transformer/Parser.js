@@ -354,11 +354,19 @@ class Parser extends BaseParser
         //console.log(JSON.stringify(node, null, 4));
         const condition = this.parseCondition(node.cond);
         const children = [];
+        const elseChildren = [];
         for (const child of node.body.children)
         {
             children.push(this.parseNode(child));
         }
-        return new IfNode(condition, children);
+        if (node.else_)
+        {
+            for (const child of node.else_.children)
+            {
+                elseChildren.push(this.parseNode(child));
+            }
+        }
+        return new IfNode(condition, children, elseChildren);
     }
 
 

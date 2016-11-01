@@ -70,7 +70,8 @@
                         ]
                     }
                 ]
-            }
+            },
+            "elseChildren": []
         },
         {
             "type": "transformer.node/TextNode",

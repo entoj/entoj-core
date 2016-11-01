@@ -361,14 +361,38 @@ class CoreMediaRenderer extends BaseRenderer
     renderIf(node)
     {
         let result = '';
-        result+= '<c:if test="${ ';
-        result+= this.renderCondition(node.condition).trim();
-        result+= ' }">';
-        for (const child of node.children)
+
+        // If
+        if (!node.elseChildren.length)
         {
-            result+= this.renderNode(child);
+            result+= '<c:if test="${ ';
+            result+= this.renderCondition(node.condition).trim();
+            result+= ' }">';
+            for (const child of node.children)
+            {
+                result+= this.renderNode(child);
+            }
+            result+= '</c:if>';
         }
-        result+= '</c:if>';
+        // If .. else
+        else
+        {
+            result+= '<c:choose><c:when test="${ ';
+            result+= this.renderCondition(node.condition).trim();
+            result+= ' }">';
+            for (const child of node.children)
+            {
+                result+= this.renderNode(child);
+            }
+            result+= '</c:when>';
+            result+= '<c:otherwise>';
+            for (const child of node.elseChildren)
+            {
+                result+= this.renderNode(child);
+            }
+            result+= '</c:otherwise></c:choose>';
+        }
+
         return result;
     }
 

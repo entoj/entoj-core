@@ -1,2 +1,3 @@
 {% if model.copy or model.headline == '' %}COPY{% endif %}
+{% if model.copy %}COPY{% else %}NOCOPY{% endif %}
 {% for item in model.items %}COPY{% endfor %}
