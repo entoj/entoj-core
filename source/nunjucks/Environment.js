@@ -43,7 +43,7 @@ class Environment extends nunjucks.Environment
         const opts = options || {};
         const rootPath = opts.rootPath || '';
         opts.autoescape = false;
-        super(new FileLoader(rootPath, entitiesRepository), options);
+        super(new FileLoader(rootPath, entitiesRepository, buildConfiguration), options);
 
         // Check params
         assertParameter(this, 'globalConfiguration', globalConfiguration, true, GlobalConfiguration);
@@ -57,7 +57,7 @@ class Environment extends nunjucks.Environment
         this._pathesConfiguration = pathesConfiguration;
         this._buildConfiguration = buildConfiguration;
         this._static = this._buildConfiguration.get('nunjucks.static', false);
-        this._template = new Template(this._entitiesRepository, rootPath);
+        this._template = new Template(this._entitiesRepository, rootPath, this._buildConfiguration.environment);
 
         // Register filters
         new DebugFilter(this);
@@ -150,7 +150,7 @@ class Environment extends nunjucks.Environment
      */
     renderString(content, context, callback)
     {
-        const template = this._template.prepare(content);
+        const template = this._template.prepare(content, this._buildConfiguration.environment);
         const result = super.renderString(template, context, callback);
         this.logger.verbose('renderString\n', result);
         return result;

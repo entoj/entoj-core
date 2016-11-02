@@ -76,10 +76,9 @@ describe(Template.className, function()
 
         it('should support environments', function()
         {
-            const testee = new Template(fixtures.entitiesRepository, fixtures.pathesConfiguration.sites);
+            const testee = new Template(fixtures.entitiesRepository, fixtures.pathesConfiguration.sites, 'development');
             const input = `All{# +environment: development #}-Development{# -environment #}`;
-            expect(testee.prepare(input)).to.be.equal('All');
-            expect(testee.prepare(input, 'development')).to.be.equal('All-Development');
+            expect(testee.prepare(input)).to.be.equal('All-Development');
         });
     });
 });

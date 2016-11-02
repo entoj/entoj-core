@@ -26,7 +26,7 @@ class Template extends Base
      * @param {EntitiesRepository} entitiesRepository
      * @param {Object} options
      */
-    constructor(entitiesRepository, basePath)
+    constructor(entitiesRepository, basePath, environment)
     {
         super();
 
@@ -35,6 +35,7 @@ class Template extends Base
 
         // Add options
         this._basePath = basePath || '';
+        this._environment = environment || '';
         this._entitiesRepository = entitiesRepository;
         this._callParser = new CallParser();
     }
@@ -90,7 +91,7 @@ class Template extends Base
     /**
      * Prepares a template for rendering
      */
-    prepare(content, environment)
+    prepare(content)
     {
         stopWatch.start(this.className + '.prepare');
 
@@ -117,7 +118,7 @@ class Template extends Base
         }
 
         // Activate environments
-        result = activateEnvironment(result, environment);
+        result = activateEnvironment(result, this._environment);
 
         stopWatch.stop(this.className + '.prepare');
         this.logger.verbose('Prepared Template\n', result);

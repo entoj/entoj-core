@@ -7,6 +7,7 @@
 const BaseCommand = require('./BaseCommand.js').BaseCommand;
 const Context = require('../application/Context.js').Context;
 const TransformCoreMediaTask = require('../task/TransformCoreMediaTask.js').TransformCoreMediaTask;
+const EnvironmentTask = require('../task/EnvironmentTask.js').EnvironmentTask;
 const BeautifyHtmlTask = require('../task/BeautifyHtmlTask.js').BeautifyHtmlTask;
 const WriteFilesTask = require('../task/WriteFilesTask.js').WriteFilesTask;
 const PathesConfiguration = require('../model/configuration/PathesConfiguration.js').PathesConfiguration;
@@ -83,13 +84,14 @@ class CoreMediaCommand extends BaseCommand
             // Prepare configs
             const pathesConfiguration = scope.context.di.create(PathesConfiguration);
             const path = yield pathesConfiguration.resolveCache('/coremedia');
+            const buildConfiguration = scope.context.di.create(BuildConfiguration);
             const options =
             {
                 query: parameters && parameters._[2] || '*',
                 path: path,
-                flatten: scope._options.flatten || true
+                flatten: scope._options.flatten || true,
+                environment: buildConfiguration.environment
             };
-            const buildConfiguration = scope.context.di.create(BuildConfiguration);
 
             // Prepare logger
             const logger = scope.createLogger('command.coremedia.compile');
@@ -98,6 +100,7 @@ class CoreMediaCommand extends BaseCommand
 
             // Run tasks
             let task = scope.context.di.create(TransformCoreMediaTask, mapping);
+            task = task.pipe(scope.context.di.create(EnvironmentTask, mapping));
             if (typeof scope._options.beautify == 'undefined' || scope._options.beautify === true)
             {
                 task = task.pipe(scope.context.di.create(BeautifyHtmlTask, mapping));

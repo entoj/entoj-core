@@ -8,6 +8,7 @@ const fs = require('fs');
 const path = require('path');
 const Loader = require('nunjucks').Loader;
 const EntitiesRepository = require('../../model/entity/EntitiesRepository.js').EntitiesRepository;
+const BuildConfiguration = require('../../model/configuration/BuildConfiguration.js').BuildConfiguration;
 const Template = require('../Template.js').Template;
 const assertParameter = require('../../utils/assert.js').assertParameter;
 const pathes = require('../../utils/pathes.js');
@@ -25,10 +26,11 @@ const FileLoader = Loader.extend(
         /**
          * @inheritDocs
          */
-        init: function(searchPaths, entitiesRepository, noWatch)
+        init: function(searchPaths, entitiesRepository, buildConfiguration)
         {
             // Check params
             assertParameter(this, 'entitiesRepository', entitiesRepository, true, EntitiesRepository);
+            assertParameter(this, 'buildConfiguration', buildConfiguration, true, BuildConfiguration);
 
             // Assign
             this.noCache = true;
@@ -43,7 +45,8 @@ const FileLoader = Loader.extend(
                 this.searchPaths = ['.'];
             }
             this._entitiesRepository = entitiesRepository;
-            this._template = new Template(this._entitiesRepository, this.searchPaths[0]);
+            this._buildConfiguration = buildConfiguration;
+            this._template = new Template(this._entitiesRepository, this.searchPaths[0], this._buildConfiguration.environment);
         },
 
 
@@ -116,15 +119,6 @@ const FileLoader = Loader.extend(
             template.src = this._template.prepare(template.src);
 
             return template;
-        },
-
-
-        /**
-         * @inheritDocs
-         */
-        prepareSource: function(content)
-        {
-            return this._template.prepare(content);
         }
     });
 

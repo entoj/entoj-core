@@ -32,8 +32,11 @@ class EnvironmentTask extends BaseTask
      */
     prepareParameters(buildConfiguration, parameters)
     {
-        const result = super.prepareParameters(buildConfiguration, parameters);
-        result.environment = result.environment || '';
+        const params = parameters || {};
+        const result =
+        {
+            environment: params.environment || ''
+        };
         return result;
     }
 
@@ -50,7 +53,7 @@ class EnvironmentTask extends BaseTask
 
         // Render stream
         const params = this.prepareParameters(buildConfiguration, parameters);
-        this._cliLogger.info('Processing environments');
+        const section = this._cliLogger.section('Processing environment specific code');
         this._cliLogger.options(params);
         const resultStream = new Stream.Transform({ objectMode: true });
         resultStream._transform = (file, encoding, callback) =>
@@ -72,6 +75,12 @@ class EnvironmentTask extends BaseTask
             this._cliLogger.end(work);
             callback();
         };
+
+        // Wait for stream
+        resultStream.on('finish', () =>
+        {
+            this._cliLogger.end(section);
+        });
 
         return stream.pipe(resultStream);
     }

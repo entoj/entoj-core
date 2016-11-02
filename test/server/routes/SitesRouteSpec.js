@@ -3,11 +3,12 @@
 /**
  * Requirements
  */
-let Server = require(SOURCE_ROOT + '/server/Server.js').Server;
-let SitesRoute = require(SOURCE_ROOT + '/server/routes/SitesRoute.js').SitesRoute;
-let CliLogger = require(SOURCE_ROOT + '/cli/CliLogger.js').CliLogger;
-let request = require('supertest');
-let compact = require(FIXTURES_ROOT + '/Entities/Compact.js');
+const Server = require(SOURCE_ROOT + '/server/Server.js').Server;
+const SitesRoute = require(SOURCE_ROOT + '/server/routes/SitesRoute.js').SitesRoute;
+const CliLogger = require(SOURCE_ROOT + '/cli/CliLogger.js').CliLogger;
+const request = require('supertest');
+const compact = require(FIXTURES_ROOT + '/Entities/Compact.js');
+
 
 /**
  * Spec
@@ -39,7 +40,7 @@ describe(SitesRoute.className, function()
     {
         it('should return the namespaced class name', function()
         {
-            let testee = new SitesRoute(fixtures.cliLogger, fixtures.entitiesRepository,
+            const testee = new SitesRoute(fixtures.cliLogger, fixtures.entitiesRepository,
                 fixtures.globalConfiguration, fixtures.pathesConfiguration,
                 fixtures.urlsConfiguration, fixtures.buildConfiguration);
             expect(testee.className).to.be.equal('server.routes/SitesRoute');
@@ -65,7 +66,7 @@ describe(SitesRoute.className, function()
 
         it('should have no access to unconfigured static file types', function(done)
         {
-            let options =
+            const options =
             {
                 staticFileExtensions: []
             };
@@ -110,9 +111,25 @@ describe(SitesRoute.className, function()
             });
         });
 
+        it('should allow to use environment specific template code', function(done)
+        {
+            fixtures.buildConfiguration.environment = 'development';
+            fixtures.server.addRoute(new SitesRoute(fixtures.cliLogger, fixtures.entitiesRepository,
+                fixtures.globalConfiguration, fixtures.pathesConfiguration, fixtures.urlsConfiguration,
+                fixtures.buildConfiguration));
+            fixtures.server.start().then(function(server)
+            {
+                request(server)
+                    .get('/default/common/macros/environment.j2')
+                    .expect(200)
+                    .expect(/All-Development/i)
+                    .expect('Content-Type', /html/, done);
+            });
+        });
+
         it('should allow to configure a custom root path for specific file types', function(done)
         {
-            let options =
+            const options =
             {
                 staticFileExtensions: [],
                 staticRoutes:
