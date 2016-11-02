@@ -5,6 +5,7 @@
  */
 const CliLogger = require(SOURCE_ROOT + '/cli/CliLogger.js').CliLogger;
 const create = require(SOURCE_ROOT + '/utils/objects.js').create;
+const BaseTask = require(SOURCE_ROOT + '/task/BaseTask.js').BaseTask;
 const baseSpec = require(TEST_ROOT + '/BaseShared.js');
 const sinon = require('sinon');
 const co = require('co');
@@ -14,8 +15,10 @@ const memoryStream = require('memory-streams');
 /**
  * Shared BaseTask spec
  */
-function spec(type, className, prepareParameters)
+function spec(type, className, prepareParameters, options)
 {
+    const opts = options || {};
+
     /**
      * Base Test
      */
@@ -119,21 +122,24 @@ function spec(type, className, prepareParameters)
             return result;
         });
 
-        it('should delegate to the root task', function()
+        if (!opts.skipDelegateTest)
         {
-            const promise = co(function *()
+            it('should delegate to the root task', function()
             {
-                const testee = createTestee();
-                const pipedTestee = createTestee();
-                sinon.spy(testee, 'run');
-                sinon.spy(pipedTestee, 'run');
-                testee.pipe(pipedTestee);
-                yield pipedTestee.run();
-                expect(testee.run.calledOnce).to.be.ok;
-                expect(pipedTestee.run.calledOnce).to.be.ok;
+                const promise = co(function *()
+                {
+                    const testee = createTestee();
+                    const pipedTestee = createTestee();
+                    sinon.spy(testee, 'run');
+                    sinon.spy(pipedTestee, 'run');
+                    testee.pipe(pipedTestee);
+                    yield pipedTestee.run();
+                    expect(testee.run.calledOnce).to.be.ok;
+                    expect(pipedTestee.run.calledOnce).to.be.ok;
+                }).catch((e) => console.log(e));
+                return promise;
             });
-            return promise;
-        });
+        }
     });
 
 };
