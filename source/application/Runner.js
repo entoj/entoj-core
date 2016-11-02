@@ -43,6 +43,7 @@ class Runner extends Base
         }
     }
 
+
     /**
      * @inheritDoc
      */
@@ -121,63 +122,66 @@ class Runner extends Base
                 });
 
             let isFirstAction = true;
-            for (const action of command.help.actions)
+            if (command.help.actions && command.help.actions.length)
             {
-                if (!isFirstAction)
+                for (const action of command.help.actions)
                 {
-                    data.push({});
-                }
-                isFirstAction = false;
-
-                /*
-                let parameters = '';
-                if (action.options)
-                {
-                    for (const option of action.options)
+                    if (!isFirstAction)
                     {
-                        if (option.type == 'optional' || option.type == 'named')
-                        {
-                            parameters+= chalk.dim('[');
-                        }
-                        if (option.type == 'named')
-                        {
-                            parameters+= chalk.yellow('--');
-                        }
-                        parameters+= chalk.yellow(option.name);
-                        if (option.type == 'named')
-                        {
-                            parameters+= chalk.yellow('=' + (option.value || option.name));
-                        }
-                        if (option.type == 'optional' || option.type == 'named')
-                        {
-                            parameters+= chalk.dim(']');
-                        }
-                        parameters+= ' ';
+                        data.push({});
                     }
-                }
-                */
+                    isFirstAction = false;
 
-                data.push(
+                    /*
+                    let parameters = '';
+                    if (action.options)
                     {
-                        command: String.fromCharCode(6) + '      ' + action.name,
-                        description: chalk.white(action.description)
-                    });
-
-                if (action.options)
-                {
-                    for (const option of action.options)
-                    {
-                        let command = String.fromCharCode(6) + '        ';
-                        if (option.type == 'named')
+                        for (const option of action.options)
                         {
-                            command+= chalk.yellow('--');
-                        }
-                        command+= chalk.yellow(option.name);
-                        data.push(
+                            if (option.type == 'optional' || option.type == 'named')
                             {
-                                command: command,
-                                description: chalk.white(option.description)
-                            });
+                                parameters+= chalk.dim('[');
+                            }
+                            if (option.type == 'named')
+                            {
+                                parameters+= chalk.yellow('--');
+                            }
+                            parameters+= chalk.yellow(option.name);
+                            if (option.type == 'named')
+                            {
+                                parameters+= chalk.yellow('=' + (option.value || option.name));
+                            }
+                            if (option.type == 'optional' || option.type == 'named')
+                            {
+                                parameters+= chalk.dim(']');
+                            }
+                            parameters+= ' ';
+                        }
+                    }
+                    */
+
+                    data.push(
+                        {
+                            command: String.fromCharCode(6) + '      ' + action.name,
+                            description: chalk.white(action.description)
+                        });
+
+                    if (action.options)
+                    {
+                        for (const option of action.options)
+                        {
+                            let command = String.fromCharCode(6) + '        ';
+                            if (option.type == 'named')
+                            {
+                                command+= chalk.yellow('--');
+                            }
+                            command+= chalk.yellow(option.name);
+                            data.push(
+                                {
+                                    command: command,
+                                    description: chalk.white(option.description)
+                                });
+                        }
                     }
                 }
             }
