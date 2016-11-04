@@ -4,7 +4,7 @@
  * Requirements
  * @ignore
  */
-const Filter = require('./Filter.js').Filter;
+const BaseFilter = require('./BaseFilter.js').BaseFilter;
 const DocumentationTextSection = require('../../model/documentation/DocumentationTextSection.js').DocumentationTextSection;
 const marked = require('marked');
 
@@ -12,8 +12,18 @@ const marked = require('marked');
 /**
  * @memberOf nunjucks.filter
  */
-class MarkdownFilter extends Filter
+class MarkdownFilter extends BaseFilter
 {
+    /**
+     * @inheritDoc
+     */
+    constructor()
+    {
+        super();
+        this._name = 'markdown';
+    }
+
+
     /**
      * @inheritDoc
      */
@@ -26,16 +36,7 @@ class MarkdownFilter extends Filter
     /**
      * @inheritDoc
      */
-    get name()
-    {
-        return 'markdown';
-    }
-
-
-    /**
-     * @param {*} value
-     */
-    execute()
+    filter()
     {
         return function (value, headlineOffset)
         {

@@ -6,18 +6,6 @@
  */
 const nunjucks = require('nunjucks');
 const FileLoader = require('./loader/FileLoader.js').FileLoader;
-const DebugFilter = require('./filter/DebugFilter.js').DebugFilter;
-const MarkdownFilter = require('./filter/MarkdownFilter.js').MarkdownFilter;
-const LoadFilter = require('./filter/LoadFilter.js').LoadFilter;
-const ImageUrlFilter = require('./filter/ImageUrlFilter.js').ImageUrlFilter;
-const BreakpointFilter = require('./filter/BreakpointFilter.js').BreakpointFilter;
-const MediaQueryFilter = require('./filter/MediaQueryFilter.js').MediaQueryFilter;
-const LinkFilter = require('./filter/LinkFilter.js').LinkFilter;
-const LinkTypeFilter = require('./filter/LinkTypeFilter.js').LinkTypeFilter;
-const EmptyFilter = require('./filter/EmptyFilter.js').EmptyFilter;
-const NotEmptyFilter = require('./filter/NotEmptyFilter.js').NotEmptyFilter;
-const MarkupFilter = require('./filter/MarkupFilter.js').MarkupFilter;
-const TranslateFilter = require('./filter/TranslateFilter.js').TranslateFilter;
 const GlobalConfiguration = require('../model/configuration/GlobalConfiguration.js').GlobalConfiguration;
 const BuildConfiguration = require('../model/configuration/BuildConfiguration.js').BuildConfiguration;
 const PathesConfiguration = require('../model/configuration/PathesConfiguration.js').PathesConfiguration;
@@ -33,12 +21,14 @@ const intel = require('intel');
 class Environment extends nunjucks.Environment
 {
     /**
-     * @param {GlobalConfiguration} globalConfiguration
      * @param {EntitiesRepository} entitiesRepository
+     * @param {GlobalConfiguration} globalConfiguration
      * @param {PathesConfiguration} pathesConfiguration
+     * @param {BuildConfiguration} buildConfiguration
+     * @param {Array} filters
      * @param {Object} options
      */
-    constructor(entitiesRepository, globalConfiguration, pathesConfiguration, buildConfiguration, options)
+    constructor(entitiesRepository, globalConfiguration, pathesConfiguration, buildConfiguration, filters, options)
     {
         const opts = options || {};
         const rootPath = opts.rootPath || '';
@@ -56,25 +46,18 @@ class Environment extends nunjucks.Environment
         this._entitiesRepository = entitiesRepository;
         this._pathesConfiguration = pathesConfiguration;
         this._buildConfiguration = buildConfiguration;
+        this._filters = filters || [];
         this._static = this._buildConfiguration.get('nunjucks.static', false);
         this._template = new Template(this._entitiesRepository, rootPath, this._buildConfiguration.environment);
 
-        // Register filters
-        new DebugFilter(this);
-        new MarkdownFilter(this);
-        new LoadFilter(this, this._entitiesRepository, this._pathesConfiguration, rootPath);
-        new ImageUrlFilter(this, this._buildConfiguration.get('nunjucks.imageUrl', 'internal'));
-        new BreakpointFilter(this, this._globalConfiguration.get('breakpoints'));
-        new MediaQueryFilter(this, this._globalConfiguration.get('breakpoints'));
-        new LinkFilter(this);
-        new LinkTypeFilter(this);
-        new EmptyFilter(this);
-        new NotEmptyFilter(this);
-        new MarkupFilter(this);
-        new TranslateFilter(this);
-
         // Add globals
         this.addGlobal('environment', this._buildConfiguration);
+
+        // Add filters
+        for (const filter of this._filters)
+        {
+            filter.register(this);
+        }
     }
 
 
@@ -83,7 +66,8 @@ class Environment extends nunjucks.Environment
      */
     static get injections()
     {
-        return { 'parameters': [EntitiesRepository, GlobalConfiguration, PathesConfiguration, BuildConfiguration, 'nunjucks/Environment.options'] };
+        return { 'parameters': [EntitiesRepository, GlobalConfiguration, PathesConfiguration,
+            BuildConfiguration, 'nunjucks/Environment.filters', 'nunjucks/Environment.options'] };
     }
 
 

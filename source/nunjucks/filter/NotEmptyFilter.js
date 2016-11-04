@@ -4,21 +4,22 @@
  * Requirements
  * @ignore
  */
-const Filter = require('./Filter.js').Filter;
+const BaseFilter = require('./BaseFilter.js').BaseFilter;
+const isEmpty = require('../../utils/objects.js').isEmpty;
 
 
 /**
  * @memberOf nunjucks.filter
  */
-class NotEmptyFilter extends Filter
+class NotEmptyFilter extends BaseFilter
 {
     /**
-     * @param {nunjucks.Environment} environment
-     * @param {String} mode
+     * @inheritDoc
      */
-    constructor(environment, mode)
+    constructor()
     {
-        super(environment);
+        super();
+        this._name = 'notempty';
     }
 
 
@@ -32,23 +33,14 @@ class NotEmptyFilter extends Filter
 
 
     /**
-     * @inheritDoc
-     */
-    get name()
-    {
-        return 'notempty';
-    }
-
-
-    /**
      * @param {*} value
      */
-    execute()
+    filter(value)
     {
-        return function (value)
+        return function(value)
         {
-            return value;
-        };
+            return !isEmpty(value);
+        }
     }
 }
 

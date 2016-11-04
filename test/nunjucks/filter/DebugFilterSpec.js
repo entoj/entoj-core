@@ -1,10 +1,11 @@
 "use strict";
 
+
 /**
  * Requirements
  */
-let DebugFilter = require(SOURCE_ROOT + '/nunjucks/filter/DebugFilter.js').DebugFilter;
-let nunjucks = require('nunjucks');
+const DebugFilter = require(SOURCE_ROOT + '/nunjucks/filter/DebugFilter.js').DebugFilter;
+const baseFilterSpec = require(TEST_ROOT + '/nunjucks/filter/BaseFilterShared.js');
 
 
 /**
@@ -12,32 +13,29 @@ let nunjucks = require('nunjucks');
  */
 describe(DebugFilter.className, function()
 {
-    beforeEach(function()
-    {
-        fixtures = {};
-        fixtures.environment = new nunjucks.Environment(undefined, { autoescape: false });
-        fixtures.filter = new DebugFilter(fixtures.environment);
-    });
+    /**
+     * BaseFilter Test
+     */
+    baseFilterSpec(DebugFilter, 'nunjucks.filter/DebugFilter');
 
-
-    describe('#className', function()
+    /**
+     * DebugFilter Test
+     */
+    describe('#filter()', function()
     {
-        it('should return the namespaced class name', function()
+        it('should return a detailed dump of the given variable', function()
         {
-            let testee = fixtures.filter;
-            expect(testee.className).to.be.equal('nunjucks.filter/DebugFilter');
-        });
-    });
-
-
-    describe('{{ variable|debug }}', function()
-    {
-        it('should show a detailed dump of the given variable', function()
-        {
-            let data = { data: { foo: 'bar', baz: 10 }};
-            let testee = fixtures.environment.renderString("{{ data|debug }}", data);
-            expect(testee).to.contain('"foo": "bar"');
-            expect(testee).to.contain('"baz": 10');
+            const data =
+            {
+                data:
+                {
+                    foo: 'bar',
+                    baz: 10
+                }
+            };
+            const testee = new DebugFilter();
+            expect(testee.filter()(data)).to.contain('"foo": "bar"');
+            expect(testee.filter()(data)).to.contain('"baz": 10');
         });
     });
 });

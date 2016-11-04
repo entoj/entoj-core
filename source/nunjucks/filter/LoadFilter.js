@@ -4,7 +4,7 @@
  * Requirements
  * @ignore
  */
-const Filter = require('./Filter.js').Filter;
+const BaseFilter = require('./BaseFilter.js').BaseFilter;
 const PathesConfiguration = require('../../model/configuration/PathesConfiguration.js').PathesConfiguration;
 const EntitiesRepository = require('../../model/entity/EntitiesRepository.js').EntitiesRepository;
 const assertParameter = require('../../utils/assert.js').assertParameter;
@@ -21,26 +21,36 @@ const lorem = require('lorem-ipsum');
 /**
  * @memberOf nunjucks.filter
  */
-class LoadFilter extends Filter
+class LoadFilter extends BaseFilter
 {
     /**
      * @param {nunjucks.Environment} environment
      * @param {EntitiesRepository} entitiesRepository
      * @param {PathesConfiguration} pathesConfiguration
-     * @param {String} rootPath
+     * @param {Object} options
      */
-    constructor(environment, entitiesRepository, pathesConfiguration, rootPath)
+    constructor(entitiesRepository, pathesConfiguration, options)
     {
-        super(environment);
+        super();
+        this._name = 'load';
 
         // Check params
         assertParameter(this, 'entitiesRepository', entitiesRepository, true, EntitiesRepository);
         assertParameter(this, 'pathesConfiguration', pathesConfiguration, true, PathesConfiguration);
 
         // Assign options
-        this._rootPath = rootPath;
+        this._options = options || {};
         this._entitiesRepository = entitiesRepository;
         this._pathesConfiguration = pathesConfiguration;
+    }
+
+
+    /**
+     * @inheritDoc
+     */
+    static get injections()
+    {
+        return { 'parameters': [EntitiesRepository, PathesConfiguration, 'nunjucks.filter/LoadFilter.options'] };
     }
 
 
@@ -50,15 +60,6 @@ class LoadFilter extends Filter
     static get className()
     {
         return 'nunjucks.filter/LoadFilter';
-    }
-
-
-    /**
-     * @inheritDoc
-     */
-    get name()
-    {
-        return 'load';
     }
 
 
@@ -176,7 +177,7 @@ class LoadFilter extends Filter
         if (isString(value))
         {
             // Check straight path
-            let filename = path.resolve(this._rootPath + value);
+            let filename = path.resolve((this._options.path || '') + value);
             if (!fs.existsSync(filename))
             {
                 // Check missing .json
@@ -225,9 +226,9 @@ class LoadFilter extends Filter
 
 
     /**
-     * @param {*} value
+     * @inheritDoc
      */
-    execute()
+    filter()
     {
         const scope = this;
         return function (value)

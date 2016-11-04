@@ -3,9 +3,8 @@
 /**
  * Requirements
  */
-let MediaQueryFilter = require(SOURCE_ROOT + '/nunjucks/filter/MediaQueryFilter.js').MediaQueryFilter;
-let nunjucks = require('nunjucks');
-let baseSpec = require('../../BaseShared.js').spec;
+const MediaQueryFilter = require(SOURCE_ROOT + '/nunjucks/filter/MediaQueryFilter.js').MediaQueryFilter;
+const baseFilterSpec = require(TEST_ROOT + '/nunjucks/filter/BaseFilterShared.js');
 
 
 /**
@@ -13,55 +12,58 @@ let baseSpec = require('../../BaseShared.js').spec;
  */
 describe(MediaQueryFilter.className, function()
 {
-    baseSpec(MediaQueryFilter, 'nunjucks.filter/MediaQueryFilter', function(parameters)
-    {
-        parameters.unshift(fixtures.environment);
-        return parameters;
-    });
+    /**
+     * BaseFilter Test
+     */
+    baseFilterSpec(MediaQueryFilter, 'nunjucks.filter/MediaQueryFilter');
 
 
+    /**
+     * MediaQueryFilter Test
+     */
     beforeEach(function()
     {
-        fixtures = {};
-        fixtures.breakpoints =
+        fixtures.options =
         {
-            desktop:
+            breakpoints:
             {
-                minWidth: '1200px'
-            },
-            tablet:
-            {
-                maxWidth: '1199px',
-                minWidth: '321px'
-            },
-            mobile:
-            {
-                maxWidth: '320px'
+                desktop:
+                {
+                    minWidth: '1200px'
+                },
+                tablet:
+                {
+                    maxWidth: '1199px',
+                    minWidth: '321px'
+                },
+                mobile:
+                {
+                    maxWidth: '320px'
+                }
             }
         };
-        fixtures.environment = new nunjucks.Environment();
     });
 
 
-    describe('#execute', function()
+    describe('#filter', function()
     {
         it('should return a media query for a breakpoint', function()
         {
-            let testee = new MediaQueryFilter(fixtures.environment, fixtures.breakpoints);
-            expect(testee.execute()('tablet')).to.contain('min-width: 321px');
-            expect(testee.execute()('tablet')).to.contain('max-width: 1199px');
+            let testee = new MediaQueryFilter(fixtures.options);
+            expect(testee.filter()('tablet')).to.contain('min-width: 321px');
+            expect(testee.filter()('tablet')).to.contain('max-width: 1199px');
         });
 
         it('should return a media query for a breakpoint and above', function()
         {
-            let testee = new MediaQueryFilter(fixtures.environment, fixtures.breakpoints);
-            expect(testee.execute()('tabletAndAbove')).to.contain('min-width: 321px');
+            let testee = new MediaQueryFilter(fixtures.options);
+            expect(testee.filter()('tabletAndAbove')).to.contain('min-width: 321px');
         });
 
         it('should return a media query for a breakpoint and below', function()
         {
-            let testee = new MediaQueryFilter(fixtures.environment, fixtures.breakpoints);
-            expect(testee.execute()('tabletAndBelow')).to.contain('max-width: 1199px');
+            let testee = new MediaQueryFilter(fixtures.options);
+            expect(testee.filter()('tabletAndBelow')).to.contain('max-width: 1199px');
         });
     });
 });
