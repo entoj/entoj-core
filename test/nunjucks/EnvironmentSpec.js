@@ -15,10 +15,5 @@ describe(Environment.className, function()
 {
     describe('#constructor', function()
     {
-        xit('should register the debug filter', function()
-        {
-            let testee = new Environment(new PathesConfiguration());
-            expect(testee.getFilter('debug')).to.be.ok;
-        });
     });
 });

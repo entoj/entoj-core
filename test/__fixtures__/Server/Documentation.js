@@ -16,6 +16,8 @@ const GlobalConfiguration = require(SOURCE_ROOT + '/model/configuration/GlobalCo
 const UrlsConfiguration = require(SOURCE_ROOT + '/model/configuration/UrlsConfiguration.js').UrlsConfiguration;
 const PathesConfiguration = require(SOURCE_ROOT + '/model/configuration/PathesConfiguration.js').PathesConfiguration;
 const BuildConfiguration = require(SOURCE_ROOT + '/model/configuration/BuildConfiguration.js').BuildConfiguration;
+const Environment = require(SOURCE_ROOT + '/nunjucks/Environment.js').Environment;
+const MarkdownFilter = require(SOURCE_ROOT + '/nunjucks/filter/MarkdownFilter.js').MarkdownFilter;
 
 
 /**
@@ -74,6 +76,9 @@ function createFixture()
             fixture.entitiesRepository, fixture.entityIdParser);
 
     fixture.buildConfiguration = new BuildConfiguration();
+
+    fixture.nunjucks = new Environment(fixture.entitiesRepository, fixture.globalConfiguration,
+        fixture.pathesConfiguration, fixture.buildConfiguration, [new MarkdownFilter()]);
 
     return fixture;
 }

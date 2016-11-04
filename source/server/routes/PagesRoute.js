@@ -25,19 +25,20 @@ const fs = require('fs');
 class PagesRoute extends BaseRoute
 {
     /**
-     * @param {CliLogger} cliLogger
-     * @param {SitesRepository} sitesRepository
-     * @param {EntityCategoriesRepository} entityCategoriesRepository
-     * @param {EntitiesRepository} entitiesRepository
-     * @param {GlobalConfiguration} globalConfiguration
-     * @param {UrlsConfiguration} urlsConfiguration
-     * @param {PathesConfiguration} pathesConfiguration
-     * @param {BuildConfiguration} buildConfiguration
+     * @param {cli.CliLogger} cliLogger
+     * @param {model.site.SitesRepository} sitesRepository
+     * @param {model.entity.EntityCategoriesRepository} entityCategoriesRepository
+     * @param {model.entity.EntitiesRepository} entitiesRepository
+     * @param {model.configuration.GlobalConfiguration} globalConfiguration
+     * @param {model.configuration.UrlsConfiguration} urlsConfiguration
+     * @param {model.configuration.PathesConfiguration} pathesConfiguration
+     * @param {model.configuration.BuildConfiguration} buildConfiguration
+     * @param {nunjucks.Environment} nunjucks
      * @param {array} routes
      * @param {object} [options]
      */
     constructor(cliLogger, sitesRepository, entityCategoriesRepository, entitiesRepository, globalConfiguration,
-                urlsConfiguration, pathesConfiguration, buildConfiguration, routes, options)
+                urlsConfiguration, pathesConfiguration, buildConfiguration, nunjucks, routes, options)
     {
         super(cliLogger.createPrefixed('routes.pagesroute'));
 
@@ -49,6 +50,7 @@ class PagesRoute extends BaseRoute
         assertParameter(this, 'pathesConfiguration', pathesConfiguration, true, PathesConfiguration);
         assertParameter(this, 'globalConfiguration', globalConfiguration, true, GlobalConfiguration);
         assertParameter(this, 'buildConfiguration', buildConfiguration, true, BuildConfiguration);
+        assertParameter(this, 'nunjucks', nunjucks, true, Environment);
 
         // Assign options
         this._sitesRepository = synchronize(sitesRepository);
@@ -57,6 +59,7 @@ class PagesRoute extends BaseRoute
         this._urlsConfiguration = synchronize(urlsConfiguration);
         this._pathesConfiguration = pathesConfiguration;
         this._buildConfiguration = buildConfiguration;
+        this._nunjucks = nunjucks;
 
         // Routes
         this._routes = [];
@@ -78,8 +81,8 @@ class PagesRoute extends BaseRoute
         this._templateRoot = opts.templateRoot || __dirname;
         this._staticRoute = opts.staticRoute || '/internal';
 
-        // Template engine
-        this._nunjucks = new Environment(entitiesRepository, globalConfiguration, this._pathesConfiguration, this._buildConfiguration, { rootPath: this._templateRoot });
+        // Configure nunjucks
+        this._nunjucks.path = this._templateRoot;
     }
 
 

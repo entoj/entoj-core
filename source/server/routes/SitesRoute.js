@@ -29,13 +29,16 @@ const co = require('co');
 class SitesRoute extends BaseRoute
 {
     /**
-     * @param {EntitiesRepository} entitiesRepository
-     * @param {GlobalConfiguration} globalConfiguration
-     * @param {PathesConfiguration} pathesConfiguration
-     * @param {UrlsConfiguration} urlsConfiguration
+     * @param {cli.CliLogger} cliLogger
+     * @param {model.entity.EntitiesRepository} entitiesRepository
+     * @param {model.configuration.GlobalConfiguration} globalConfiguration
+     * @param {model.configuration.PathesConfiguration} pathesConfiguration
+     * @param {model.configuration.UrlsConfiguration} urlsConfiguration
+     * @param {model.configuration.BuildConfiguration} buildConfiguration
+     * @param {nunjucks.Environment} nunjucks
      * @param {object} [options]
      */
-    constructor(cliLogger, entitiesRepository, globalConfiguration, pathesConfiguration, urlsConfiguration, buildConfiguration, options)
+    constructor(cliLogger, entitiesRepository, globalConfiguration, pathesConfiguration, urlsConfiguration, buildConfiguration, nunjucks, options)
     {
         super(cliLogger.createPrefixed('routes.sitesroute'));
 
@@ -45,6 +48,7 @@ class SitesRoute extends BaseRoute
         assertParameter(this, 'urlsConfiguration', urlsConfiguration, true, UrlsConfiguration);
         assertParameter(this, 'globalConfiguration', globalConfiguration, true, GlobalConfiguration);
         assertParameter(this, 'buildConfiguration', buildConfiguration, true, BuildConfiguration);
+        assertParameter(this, 'nunjucks', nunjucks, true, Environment);
 
         // Assign options
         const opts = options || {};
@@ -52,14 +56,17 @@ class SitesRoute extends BaseRoute
         this._pathesConfiguration = pathesConfiguration;
         this._urlsConfiguration = urlsConfiguration;
         this._buildConfiguration = buildConfiguration;
-        this._rootPath = opts.rootPath || pathesConfiguration.sites;
+        this._nunjucks = nunjucks;
+        this._path = opts.path || pathesConfiguration.sites;
         this._rootUrl = opts.rootUrl || '/:site/:entityCategory/*';
         this._formatHtml = opts.formatHtml || false;
         this._staticFileExtensions = opts.staticFileExtensions || ['.js', '.css', '.png', '.jpg', '.gif', '.svg', '.woff', '.json', '.ico'];
         this._staticRoutes = opts.staticRoutes || [];
-        this._nunjucks = new Environment(this._entitiesRepository, globalConfiguration, this._pathesConfiguration, this._buildConfiguration, { rootPath: this._rootPath });
         this._htmlFormatter = new HtmlFormatter();
         this._jinjaParser = new CallParser();
+
+        // Configure nunjucks
+        this._nunjucks.path = this._path;
     }
 
 
@@ -69,7 +76,8 @@ class SitesRoute extends BaseRoute
     static get injections()
     {
         return { 'parameters': [CliLogger, EntitiesRepository, GlobalConfiguration,
-            PathesConfiguration, UrlsConfiguration, BuildConfiguration, 'server.routes/SitesRoute.options'] };
+            PathesConfiguration, UrlsConfiguration, BuildConfiguration, Environment, 'server.routes/SitesRoute.options'] };
+
     }
 
 
@@ -154,7 +162,7 @@ class SitesRoute extends BaseRoute
         const scope = this;
         const promise = co(function *()
         {
-            scope._cliLogger.info('handleTemplate: from <' + scope._rootPath + '> trying <' + request.url + '>');
+            scope._cliLogger.info('handleTemplate: from <' + scope._path + '> trying <' + request.url + '>');
 
             // Check extension
             if (!request.path.endsWith('.j2'))
@@ -164,7 +172,7 @@ class SitesRoute extends BaseRoute
             }
 
             // Check direct hit
-            let filename = pathes.concat(scope._rootPath, request.path);
+            let filename = pathes.concat(scope._path, request.path);
             if (!fs.existsSync(filename))
             {
                 //scope._cliLogger.info('handleTemplate: no direct hit at <' + filename + '>');
@@ -229,7 +237,7 @@ class SitesRoute extends BaseRoute
         for (const staticRoute of this._staticRoutes)
         {
             const rootUrl = staticRoute.rootUrl || this._rootUrl;
-            let rootPath = this._rootPath;
+            let rootPath = this._path;
             if (staticRoute.rootPath)
             {
                 rootPath = synchronize.execute(this._pathesConfiguration, 'resolve', [staticRoute.rootPath]);
@@ -237,7 +245,7 @@ class SitesRoute extends BaseRoute
             const fileExtensions = staticRoute.fileExtensions || [];
             express.all(rootUrl, this.handleStatic.bind(this, rootPath, fileExtensions, true));
         }
-        express.all(this._rootUrl, this.handleStatic.bind(this, this._rootPath, this._staticFileExtensions, true));
+        express.all(this._rootUrl, this.handleStatic.bind(this, this._path, this._staticFileExtensions, true));
         if (this._pathesConfiguration.jspm)
         {
             const jspmPath = path.resolve(this._pathesConfiguration.jspm + '/..');

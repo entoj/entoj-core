@@ -31,9 +31,10 @@ class Environment extends nunjucks.Environment
     constructor(entitiesRepository, globalConfiguration, pathesConfiguration, buildConfiguration, filters, options)
     {
         const opts = options || {};
-        const rootPath = opts.rootPath || '';
+        const path = opts.path || '';
         opts.autoescape = false;
-        super(new FileLoader(rootPath, entitiesRepository, buildConfiguration), options);
+        const loader = new FileLoader(path, entitiesRepository, buildConfiguration);
+        super(loader, options);
 
         // Check params
         assertParameter(this, 'globalConfiguration', globalConfiguration, true, GlobalConfiguration);
@@ -47,8 +48,10 @@ class Environment extends nunjucks.Environment
         this._pathesConfiguration = pathesConfiguration;
         this._buildConfiguration = buildConfiguration;
         this._filters = filters || [];
+        this._path = path;
+        this._loader = loader;
         this._static = this._buildConfiguration.get('nunjucks.static', false);
-        this._template = new Template(this._entitiesRepository, rootPath, this._buildConfiguration.environment);
+        this._template = new Template(this._entitiesRepository, path, this._buildConfiguration.environment);
 
         // Add globals
         this.addGlobal('environment', this._buildConfiguration);
@@ -102,6 +105,27 @@ class Environment extends nunjucks.Environment
     get logger()
     {
         return intel.getLogger('entoj.' + this.className);
+    }
+
+
+    /**
+     * Returns the templates root path used for resolving templates.
+     *
+     * @type {string}
+     */
+    get path()
+    {
+        return this._path;
+    }
+
+
+    /**
+     * @type {string}
+     */
+    set path(value)
+    {
+        this._path = value;
+        this._loader.setSearchPaths(this._path);
     }
 
 

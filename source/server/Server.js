@@ -40,7 +40,7 @@ class Server extends Base
         this._cliLogger = cliLogger;
         this._modelSynchronizer = modelSynchronizer;
         this._http2 = opts.http2 || false;
-        this._port = opts.port || 3100;
+        this._port = opts.port || 3000;
         this._express = express();
         this._routes = [];
         this._sslKey = opts.sslKey || (__dirname + '/localhost.key');
@@ -50,7 +50,7 @@ class Server extends Base
         this._express.use(compression());
 
         // Add basic auth
-        if ((opts.authentication || false) === true)
+        if (opts.authentication === true)
         {
             const credentials = opts.credentials || { username: 'entoj', password: 'entoj' };
             this._express.use(basicAuth(credentials.username, credentials.password));
@@ -59,7 +59,7 @@ class Server extends Base
         // Add routes
         if (Array.isArray(routes))
         {
-            for(const route of routes)
+            for (const route of routes)
             {
                 this.addRoute(route);
             }
