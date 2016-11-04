@@ -11,39 +11,84 @@ function create(type, parameters)
     {
         return new type();
     }
-    if (parameters.length == 1)
+    return new type(...parameters);
+}
+
+
+/**
+ *  Function to test if an object is a plain object, i.e. is constructed
+ *  by the built-in Object constructor and inherits directly from Object.prototype
+ *  or null. Some built-in objects pass the test, e.g. Math which is a plain object
+ *  and some host or exotic objects may pass also.
+ *
+ *  @see http://stackoverflow.com/questions/5876332/how-can-i-differentiate-between-an-object-literal-other-javascript-objects
+ *  @param {*} value - value to test
+ *  @memberOf utils
+ *  @returns {Boolean}
+ */
+function isPlainObject(value)
+{
+    if (!value || typeof value !== 'object')
     {
-        return new type(parameters[0]);
+        return false;
     }
-    if (parameters.length == 2)
+
+    // Basic check for Type object that's not null
+    if (typeof value == 'object' && value !== null)
     {
-        return new type(parameters[0], parameters[1]);
+        // If Object.getPrototypeOf supported, use it
+        if (typeof Object.getPrototypeOf == 'function')
+        {
+            var proto = Object.getPrototypeOf(value);
+            return proto === Object.prototype || proto === null;
+        }
+
+        // Otherwise, use internal class
+        // This should be reliable as if getPrototypeOf not supported, is pre-ES5
+        return Object.prototype.toString.call(value) == '[object Object]';
     }
-    if (parameters.length == 3)
+
+    // Not an object
+    return false;
+}
+
+
+/**
+ *  Tests if given value is empty.
+ *  Empty are all falsy values and empty arrays / maps.
+ *
+ *  @param {*} value - value to test
+ *  @memberOf utils
+ *  @returns {Boolean}
+ */
+function isEmpty(value)
+{
+    if (Number.isFinite(value))
     {
-        return new type(parameters[0], parameters[1], parameters[2]);
+        return false;
     }
-    if (parameters.length == 4)
+    if (Array.isArray(value))
     {
-        return new type(parameters[0], parameters[1], parameters[2], parameters[3]);
+        return value.length === 0;
     }
-    if (parameters.length == 5)
+    if (value && value instanceof Map)
     {
-        return new type(parameters[0], parameters[1], parameters[2], parameters[3], parameters[4]);
+        return value.size === 0;
     }
-    if (parameters.length == 6)
+    if (value && value instanceof Map)
     {
-        return new type(parameters[0], parameters[1], parameters[2], parameters[3], parameters[4], parameters[5]);
+        return value.size === 0;
     }
-    if (parameters.length == 7)
+    if (isPlainObject(value))
     {
-        return new type(parameters[0], parameters[1], parameters[2], parameters[3], parameters[4], parameters[5], parameters[6]);
+        return Object.keys(value).length === 0;
     }
-    if (parameters.length == 8)
+    if (value)
     {
-        return new type(parameters[0], parameters[1], parameters[2], parameters[3], parameters[4], parameters[5], parameters[6], parameters[7]);
+        return false;
     }
-    return undefined;
+
+    return !value;
 }
 
 
@@ -52,3 +97,5 @@ function create(type, parameters)
  * @ignore
  */
 module.exports.create = create;
+module.exports.isPlainObject = isPlainObject;
+module.exports.isEmpty = isEmpty;
