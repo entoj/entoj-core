@@ -35,12 +35,14 @@ class JspSelfTransformer extends NodeTransformer
         }
 
         // replace any variable references to model with self
+        /*
         if (node.type == 'VariableNode' &&
             node.fields.length >= 1 &&
             node.fields[0] == 'model')
         {
             node.fields[0] = 'self';
         }
+        */
 
         return node;
     }

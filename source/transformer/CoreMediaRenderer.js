@@ -298,13 +298,19 @@ class CoreMediaRenderer extends BaseRenderer
         let result = '';
         result+= '<!-- Macro ' + node.name + ' -->' + EOL;
 
-        // Handle default values
+        // Handle default values & model
         for (const parameter of node.parameters.children)
         {
             if (parameter.value && parameter.name !== 'model')
             {
                 result+= '<c:if test="${ empty ' + parameter.name + ' }">' + EOL;
                 result+= '  <c:set var="' + parameter.name + '" value="${ ' + this.renderExpression(parameter.value) + ' }" />' + EOL;
+                result+= '</c:if>' + EOL;
+            }
+            else if (parameter.value && parameter.name === 'model')
+            {
+                result+= '<c:if test="${ empty ' + parameter.name + ' }">' + EOL;
+                result+= '  <c:set var="${ self }" />' + EOL;
                 result+= '</c:if>' + EOL;
             }
         }
