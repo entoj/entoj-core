@@ -98,6 +98,12 @@ class Context extends Base
      * Maps type to use the given type configuration.
      *
      * @protected
+     * @param {Function} type - The type to be mapped
+     * @param {Boolean} singleton - Should the type be treated as a singelton?
+     * @param {Object|Function} configuration - The mapping configuration or a target type
+     * @param {Function} configuration.type - The target type
+     * @param {Array} configuration.$name - options starting with a $ will get instanciated via createInstances
+     * @param {Array} configuration.name - option will get mapped via a named mapping
      */
     mapType(type, singleton, configuration, parameters)
     {
@@ -114,15 +120,24 @@ class Context extends Base
         {
             const params = parameters || {};
             params.type = false;
+            params.sourceType = false;
             for (const name in configuration)
             {
-                if (typeof params[name] === 'undefined')
+                // Handle instanciation of special properties
+                if (name.startsWith('!'))
                 {
-                    this._di.map(configuration.type.className + '.' + name, configuration[name]);
+                    const items = this.createInstances(configuration[name]);
+                    this._di.map(configuration.type.className + '.' + name.substring(1), items);
                 }
-                if (typeof params[name] === 'function')
+                // Handle configured instanciations
+                else if (typeof params[name] === 'function')
                 {
                     this._di.map(configuration.type.className + '.' + name, params[name](configuration[name]));
+                }
+                // Handle simple mapping
+                else
+                {
+                    this._di.map(configuration.type.className + '.' + name, configuration[name]);
                 }
             }
         }
@@ -135,7 +150,7 @@ class Context extends Base
      * @protected
      * @returns {Array}
      */
-    createType(configuration, singleton)
+    createInstance(configuration, singleton)
     {
         if (!configuration)
         {
@@ -168,17 +183,17 @@ class Context extends Base
      * @protected
      * @returns {Array}
      */
-    createTypes(configuration, singleton)
+    createInstances(configurations, singleton)
     {
-        if (!Array.isArray(configuration))
+        if (!Array.isArray(configurations))
         {
             return [];
         }
 
         const result = [];
-        for (const config of configuration)
+        for (const config of configurations)
         {
-            const instance = this.createType(config, singleton);
+            const instance = this.createInstance(config, singleton);
             result.push(instance);
         }
 
@@ -245,15 +260,18 @@ class Context extends Base
         this._di.map(BuildConfiguration, BuildConfiguration, true);
 
         // Global mappings
-        /*
         if (this._configuration.mappings && this._configuration.mappings.length)
         {
             for (const mapping of this._configuration.mappings)
             {
                 const type = (typeof mapping === 'function') ? mapping : mapping.type;
+                const sourceType = mapping.sourceType || type;
+                if (sourceType)
+                {
+                    this.mapType(sourceType, undefined, mapping);
+                }
             }
         }
-        */
 
         // Repositories
         this.logger.debug('Setup repositories');
@@ -266,14 +284,14 @@ class Context extends Base
         this.logger.debug('Setup sites');
         if (this._configuration.sites && this._configuration.sites.loader)
         {
-            this.mapType(SitesLoader, true, this._configuration.sites.loader, { plugins: this.createTypes.bind(this) });
+            this.mapType(SitesLoader, true, this._configuration.sites.loader, { plugins: this.createInstances.bind(this) });
         }
 
         // EntityCategories
         this.logger.debug('Setup entity categories');
         if (this._configuration.entityCategories && this._configuration.entityCategories.loader)
         {
-            this.mapType(EntityCategoriesLoader, true, this._configuration.entityCategories.loader, { plugins: this.createTypes.bind(this) });
+            this.mapType(EntityCategoriesLoader, true, this._configuration.entityCategories.loader, { plugins: this.createInstances.bind(this) });
         }
 
         // Entity Id parser
@@ -288,7 +306,7 @@ class Context extends Base
         this.logger.debug('Setup entities');
         if (this._configuration.entities && this._configuration.entities.loader)
         {
-            this.mapType(EntitiesLoader, true, this._configuration.entities.loader, { plugins: this.createTypes.bind(this) });
+            this.mapType(EntitiesLoader, true, this._configuration.entities.loader, { plugins: this.createInstances.bind(this) });
         }
 
         // Commands
@@ -299,7 +317,7 @@ class Context extends Base
             for (const command of this._configuration.commands)
             {
                 const commandType = (typeof command === 'function') ? command : command.type;
-                this.mapType(commandType, false, command, { linters: this.createTypes.bind(this) });
+                this.mapType(commandType, false, command, { linters: this.createInstances.bind(this) });
                 commands.push(commandType);
             }
             this._di.map('application/Runner.commands', commands);

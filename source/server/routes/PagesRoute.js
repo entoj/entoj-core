@@ -92,7 +92,7 @@ class PagesRoute extends BaseRoute
     static get injections()
     {
         return { 'parameters': [CliLogger, SitesRepository, EntityCategoriesRepository, EntitiesRepository,
-                                GlobalConfiguration, UrlsConfiguration, PathesConfiguration, BuildConfiguration, 'server.routes/PagesRoute.routes', 'server.routes/PagesRoute.options'] };
+                                GlobalConfiguration, UrlsConfiguration, PathesConfiguration, BuildConfiguration, Environment, 'server.routes/PagesRoute.routes', 'server.routes/PagesRoute.options'] };
     }
 
 

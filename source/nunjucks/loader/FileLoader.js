@@ -57,6 +57,7 @@ const FileLoader = Loader.extend(
         {
             searchPathes = Array.isArray(searchPathes) ? searchPathes : [searchPathes];
             this.searchPaths = searchPathes.map(path.normalize);
+            this._template._basePath = this.searchPaths[0];
         },
 
 

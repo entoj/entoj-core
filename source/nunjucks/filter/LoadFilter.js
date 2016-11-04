@@ -149,6 +149,7 @@ class LoadFilter extends BaseFilter
         const entity = synchronize.execute(this._entitiesRepository, 'getById', [entityId, site]);
         if (!entity)
         {
+            console.log('trySite NO ENTITY', modelName, entityId, site);
             return false;
         }
 
@@ -174,6 +175,7 @@ class LoadFilter extends BaseFilter
      */
     load(context, value)
     {
+        console.log('LoadFilter', context, value);
         if (isString(value))
         {
             // Check straight path
@@ -219,6 +221,7 @@ class LoadFilter extends BaseFilter
                 }
             }
 
+            console.log('LoadFilter data=', data);
             return data;
         }
         return value;
@@ -233,6 +236,7 @@ class LoadFilter extends BaseFilter
         const scope = this;
         return function (value)
         {
+            console.log(this);
             return scope.load(this, value);
         };
     }

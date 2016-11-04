@@ -4,6 +4,7 @@
  * Requirements
  */
 const Context = require(SOURCE_ROOT + '/application/Context.js').Context;
+const Base = require(SOURCE_ROOT + '/Base.js').Base;
 const GlobalConfiguration = require(SOURCE_ROOT + '/model/configuration/GlobalConfiguration.js').GlobalConfiguration;
 const PathesConfiguration = require(SOURCE_ROOT + '/model/configuration/PathesConfiguration.js').PathesConfiguration;
 const SitesRepository = require(SOURCE_ROOT + '/model/site/SitesRepository.js').SitesRepository;
@@ -45,7 +46,7 @@ describe(Context.className, function()
     });
 
 
-    describe('#constructor', function()
+    xdescribe('#constructor', function()
     {
         it('should map a GlobalConfiguration instance that is configurable via configuration.settings', function()
         {
@@ -112,7 +113,7 @@ describe(Context.className, function()
     });
 
 
-    describe('.instance', function()
+    xdescribe('.instance', function()
     {
         it('should throw an error when no context was initialized', function()
         {
@@ -129,7 +130,7 @@ describe(Context.className, function()
     });
 
 
-    describe('#parameters', function()
+    xdescribe('#parameters', function()
     {
         it('should return a empty array when not configured', function()
         {
@@ -150,7 +151,7 @@ describe(Context.className, function()
     });
 
 
-    describe('#configuration', function()
+    xdescribe('#configuration', function()
     {
         it('should return the configuration object used while instanciation', function()
         {
@@ -160,7 +161,127 @@ describe(Context.className, function()
     });
 
 
-    describe('wiring', function()
+
+    describe('mapping', function()
+    {
+        /**
+         * Test classes
+         */
+        class Testee extends Base
+        {
+            constructor(stuff)
+            {
+                super();
+                this.stuff = stuff;
+            }
+
+            static get injections()
+            {
+                return { parameters:['Testee.stuff'] };
+            }
+
+            static get className()
+            {
+                return 'Testee';
+            }
+        }
+
+        class TesteeTwo extends Base
+        {
+            constructor(stuff)
+            {
+                super();
+                this.stuff = stuff;
+            }
+
+            static get injections()
+            {
+                return { parameters:['TesteeTwo.stuff'] };
+            }
+
+            static get className()
+            {
+                return 'TesteeTwo';
+            }
+        }
+
+
+        /**
+         * Tests
+         */
+        xit('should allow to map global classes', function()
+        {
+            const configuration =
+            {
+                mappings:
+                [
+                    {
+                        type: Testee,
+                        stuff: 'Stuff'
+                    }
+                ]
+            };
+            const testee = new Context(configuration);
+            const result = testee.di.create(Testee);
+            expect(result).to.be.instanceof(Testee);
+            expect(result.stuff).to.be.equal('Stuff');
+            console.log(result);
+        });
+
+
+        xit('should allow to remap global classes', function()
+        {
+            const configuration =
+            {
+                mappings:
+                [
+                    {
+                        sourceType: Testee,
+                        type: TesteeTwo,
+                        stuff: 'Stuff'
+                    }
+                ]
+            };
+            const testee = new Context(configuration);
+            const result = testee.di.create(Testee);
+            expect(result).to.be.instanceof(TesteeTwo);
+            expect(result.stuff).to.be.equal('Stuff');
+        });
+
+
+        it('should allow to configure options through !{name} that will get instanciated via di', function()
+        {
+            const configuration =
+            {
+                mappings:
+                [
+                    {
+                        type: Testee,
+                        '!stuff':
+                        [
+                            TesteeTwo,
+                            {
+                                type: TesteeTwo,
+                                stuff: 'One'
+                            }
+                        ]
+                    }
+                ]
+            };
+            const testee = new Context(configuration);
+            const result = testee.di.create(Testee);
+            expect(result).to.be.instanceof(Testee);
+            expect(result.stuff).to.be.instanceof(Array);
+            expect(result.stuff).to.have.length(2);
+            expect(result.stuff[0]).to.be.instanceof(TesteeTwo);
+            expect(result.stuff[0].stuff).to.be.undefined;
+            expect(result.stuff[1]).to.be.instanceof(TesteeTwo);
+            expect(result.stuff[1].stuff).to.be.equal('One');
+        });
+    });
+
+
+    xdescribe('wiring', function()
     {
         it('should allow to get a list of Site(s)', function()
         {

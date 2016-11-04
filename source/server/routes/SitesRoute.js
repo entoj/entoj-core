@@ -143,7 +143,7 @@ class SitesRoute extends BaseRoute
             response.setHeader("Cache-Control", "public, max-age=2592000");
             response.setHeader("Expires", new Date(Date.now() + 2592000000).toUTCString());
             */
-            work = scope._cliLogger.work('Serving static <' + filenameShort + '> as <' + request.url + '>');
+            //work = scope._cliLogger.work('Serving static <' + filenameShort + '> as <' + request.url + '>');
         }
         response.sendFile(filename);
         if (work)
@@ -175,7 +175,7 @@ class SitesRoute extends BaseRoute
             let filename = pathes.concat(scope._path, request.path);
             if (!fs.existsSync(filename))
             {
-                //scope._cliLogger.info('handleTemplate: no direct hit at <' + filename + '>');
+                scope.logger.debug('handleTemplate: no direct hit at <' + filename + '>');
 
                 // Check entity file
                 const match = yield scope._urlsConfiguration.matchEntityFile(request.path);
@@ -191,12 +191,13 @@ class SitesRoute extends BaseRoute
             scope._nunjucks.isStatic = (typeof request.query.static !== 'undefined');
             const data = yield scope._urlsConfiguration.matchEntity(request.path, true);
             const filenameShort = shortenLeft(synchronize.execute(scope._pathesConfiguration, 'shorten', [filename]), 60);
-            const fileUrl = yield scope._urlsConfiguration.resolveFilename(filename);
+            const tpl = fs.readFileSync(filename, { encoding: 'utf8' });
             const work = scope._cliLogger.work('Serving ' + (scope._nunjucks.isStatic ? '<static>' : '') + ' template <' + filenameShort + '> as <' + request.url + '>');
+            console.log(data);
             let html;
             try
             {
-                html = scope._nunjucks.render(fileUrl, data);
+                html = scope._nunjucks.renderString(tpl, data);
             }
             catch (e)
             {
