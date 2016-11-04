@@ -43,19 +43,19 @@ describe('utils/synchronize', function()
     {
         it('should synchronize methods returning a Promise', function()
         {
-            let testee = synchronize(new Testee());
+            const testee = synchronize(new Testee());
             expect(testee.async()).to.be.equal('Async');
         });
 
         it('should pass through methods returning anything else than a Promise', function()
         {
-            let testee = synchronize(new Testee());
+            const testee = synchronize(new Testee());
             expect(testee.sync()).to.be.equal('Sync');
         });
 
         it('should pass through property access', function()
         {
-            let testee = synchronize(new Testee());
+            const testee = synchronize(new Testee());
             expect(testee.property).to.be.equal('Testee');
             testee._property = 'Changed';
             expect(testee.property).to.be.equal('Changed');
