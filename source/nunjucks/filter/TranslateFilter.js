@@ -4,14 +4,37 @@
  * Requirements
  * @ignore
  */
-const Filter = require('./Filter.js').Filter;
+const BaseFilter = require('./BaseFilter.js').BaseFilter;
 
 
 /**
  * @memberOf nunjucks.filter
  */
-class TranslateFilter extends Filter
+class TranslateFilter extends BaseFilter
 {
+    /**
+     * @inheritDoc
+     */
+    constructor(options)
+    {
+        super();
+        this._name = 'translate';
+
+        // Assign options
+        this._options = options || {};
+        this._options.translations = this._options.translations || {};
+    }
+
+
+    /**
+     * @inheritDoc
+     */
+    static get injections()
+    {
+        return { 'parameters': ['nunjucks.filter/TranslateFilter.options'] };
+    }
+
+
     /**
      * @inheritDoc
      */
@@ -24,35 +47,21 @@ class TranslateFilter extends Filter
     /**
      * @inheritDoc
      */
-    get name()
-    {
-        return 'translate';
-    }
-
-
-    /**
-     * @param {*} value
-     */
-    execute()
+    filter()
     {
         const scope = this;
-        return function (value, name)
+        return function (value)
         {
-            const strings =
+            if (!value || typeof value !== 'string')
             {
-                'navigation.menu': 'Menü',
-                'navigation.search': 'Suche',
-                'navigation.login': 'Login',
-                'navigation.meinetk': 'Meine TK',
-                'navigation.back': 'Zurück',
-                'navigation.close': 'Schließen',
-                'navigation.welcome': 'Willkommen'
-            };
-            if (!strings[name])
-            {
-                scope.logger.error('Missing translation for ' + name);
+                return '';
             }
-            return strings[name] || name;
+            if (!scope._options.translations[value])
+            {
+                scope.logger.error('Missing translation for ' + value);
+                return value;
+            }
+            return scope._options.translations[value];
         };
     }
 }

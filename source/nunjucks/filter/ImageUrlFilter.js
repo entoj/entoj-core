@@ -4,24 +4,33 @@
  * Requirements
  * @ignore
  */
-const Filter = require('./Filter.js').Filter;
+const BaseFilter = require('./BaseFilter.js').BaseFilter;
 
 
 /**
  * @memberOf nunjucks.filter
  */
-class ImageUrlFilter extends Filter
+class ImageUrlFilter extends BaseFilter
 {
     /**
-     * @param {nunjucks.Environment} environment
-     * @param {String} mode
+     * @inheritDoc
      */
-    constructor(environment, mode)
+    constructor(options)
     {
-        super(environment);
+        super();
+        this._name = 'imageUrl';
 
         // Assign options
-        this._mode = mode || 'internal';
+        this._options = options || {};
+    }
+
+
+    /**
+     * @inheritDoc
+     */
+    static get injections()
+    {
+        return { 'parameters': ['nunjucks.filter/ImageUrlFilter.options'] };
     }
 
 
@@ -37,25 +46,13 @@ class ImageUrlFilter extends Filter
     /**
      * @inheritDoc
      */
-    get name()
-    {
-        return 'imageUrl';
-    }
-
-
-    /**
-     * @param {*} value
-     */
-    execute()
+    filter(value, width, height, force)
     {
         const scope = this;
-        return function (value, image, width, height, force)
+        return function(value, width, height, force)
         {
-            if (scope._mode == 'internal')
-            {
-                return '/images/' + (image || '*.png') + '/' + (width || 0) + '/' + (height || 0) + '/' + (force || 0);
-            }
-            if (scope._mode == 'umbraco')
+            const id = value && value.dataUrlBlob ? value.dataUrlBlob : '*.png';
+            if (scope._options.mode === 'umbraco')
             {
                 let parameters = '';
                 if (width)
@@ -69,7 +66,7 @@ class ImageUrlFilter extends Filter
                 }
                 return '@image.GetCropUrl(' + parameters + ')';
             }
-            return '';
+            return '/images/' + id + '/' + (width || 0) + '/' + (height || 0) + '/' + (force || 0);
         };
     }
 }

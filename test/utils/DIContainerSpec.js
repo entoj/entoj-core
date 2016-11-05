@@ -40,7 +40,7 @@ describe(DIContainer.className, function()
     {
         it('should return the namespaced class name', function()
         {
-            let testee = new DIContainer();
+            const testee = new DIContainer();
             expect(testee.className).to.be.equal('utils/DIContainer');
         });
     });
@@ -50,22 +50,22 @@ describe(DIContainer.className, function()
     {
         it('should return a instance of given type', function()
         {
-            let testee = new DIContainer();
+            const testee = new DIContainer();
             expect(testee.create(Color)).to.be.instanceof(Color);
         });
 
         it('should return the value for given name', function()
         {
-            let testee = new DIContainer();
-            let color = new Color();
+            const testee = new DIContainer();
+            const color = new Color();
             testee.map('color', color);
             expect(testee.create('color')).to.be.equal(color);
         });
 
         it('should resolve name based dependencies', function()
         {
-            let testee = new DIContainer();
-            let color = new Color();
+            const testee = new DIContainer();
+            const color = new Color();
             testee.map('color', color);
             Car.injections = { 'parameters': ['color'] };
             expect(testee.create(Car).color).to.be.equal(color);
@@ -73,14 +73,14 @@ describe(DIContainer.className, function()
 
         it('should resolve type based dependencies', function()
         {
-            let testee = new DIContainer();
+            const testee = new DIContainer();
             Car.injections = { 'parameters': [Color] };
             expect(testee.create(Car).color).to.be.instanceof(Color);
         });
 
         it('should allow to remap types', function()
         {
-            let testee = new DIContainer();
+            const testee = new DIContainer();
             testee.map(Color, ShinyColor);
             Car.injections = { 'parameters': [Color] };
             expect(testee.create(Car).color).to.be.instanceof(ShinyColor);
@@ -88,7 +88,7 @@ describe(DIContainer.className, function()
 
         it('should use the injections of the remaped type', function()
         {
-            let testee = new DIContainer();
+            const testee = new DIContainer();
             testee.map(Color, ShinyColor);
             testee.map('Color.name', 'red');
             testee.map('ShinyColor.name', 'green');
@@ -97,13 +97,13 @@ describe(DIContainer.className, function()
             ShinyColor.injections = { 'parameters': ['ShinyColor.name'] };
             Car.injections = { 'parameters': [Color] };
 
-            let car = testee.create(Car);
+            const car = testee.create(Car);
             expect(car.color.name).to.be.equal('green');
         });
 
         it('should allow to map types as singletons', function()
         {
-            let testee = new DIContainer();
+            const testee = new DIContainer();
             testee.map(Color, ShinyColor, true);
             Car.injections = { 'parameters': [Color] };
             expect(testee.create(Car).color).to.be.instanceof(ShinyColor);
@@ -112,7 +112,7 @@ describe(DIContainer.className, function()
 
         it('should allow to map same type as singleton', function()
         {
-            let testee = new DIContainer();
+            const testee = new DIContainer();
             testee.map(Color, Color, true);
             Car.injections = { 'parameters': [Color] };
             expect(testee.create(Car).color).to.be.instanceof(Color);
@@ -121,8 +121,8 @@ describe(DIContainer.className, function()
 
         it('should allow to map types to a instance', function()
         {
-            let testee = new DIContainer();
-            let color = new ShinyColor();
+            const testee = new DIContainer();
+            const color = new ShinyColor();
             testee.map(Color, color);
             Car.injections = { 'parameters': [Color] };
             expect(testee.create(Car).color).to.be.equal(color);
@@ -131,9 +131,9 @@ describe(DIContainer.className, function()
 
         it('should allow to override mappings', function()
         {
-            let testee = new DIContainer();
+            const testee = new DIContainer();
             testee.map(Color, ShinyColor);
-            let override = new Map();
+            const override = new Map();
             override.set('options', 'Test');
             Car.injections = { 'parameters': [Color, 'options'] };
             expect(testee.create(Car, override).color).to.be.instanceof(ShinyColor);

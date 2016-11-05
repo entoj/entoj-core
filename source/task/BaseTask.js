@@ -8,6 +8,7 @@ const Base = require('../Base.js').Base;
 const CliLogger = require('../cli/CliLogger.js').CliLogger;
 const assertParameter = require('../utils/assert.js').assertParameter;
 const through2 = require('through2');
+const VinylFile = require('vinyl');
 
 
 /**
@@ -29,6 +30,7 @@ class BaseTask extends Base
         this._cliLogger = cliLogger;
         this._previousTask = false;
         this._nextTask = false;
+        this._type = 'producer';
     }
 
 
@@ -47,6 +49,15 @@ class BaseTask extends Base
     static get className()
     {
         return 'task/BaseTask';
+    }
+
+
+    /**
+     * @inheritDocs
+     */
+    get type()
+    {
+        return this._type;
     }
 
 
@@ -117,7 +128,12 @@ class BaseTask extends Base
                 {
                     objectMode: true
                 });
-            resultStream.write(false); // this helps testing when stream is not implemented
+             // this helps testing when stream is not implemented
+            resultStream.write(new VinylFile(
+                {
+                    path:'test',
+                    contents: new Buffer('')
+                }));
             resultStream.end();
         }
         return resultStream;

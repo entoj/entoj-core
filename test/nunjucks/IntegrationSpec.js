@@ -54,15 +54,6 @@ describe('nunjucks/Integration', function()
         });
     });
 
-    describe('{{ object.method() }}', function()
-    {
-        it('should be able to call methods', function()
-        {
-            const tpl = "Count:{{ repository.getItems().length }}";
-            const testee = fixtures.environment.renderString(tpl, { repository: fixtures.repository });
-            expect(testee).to.contain('Count:2');
-        });
-    });
 
     describe('{{ function(Class) }}', function()
     {

@@ -4,21 +4,21 @@
  * Requirements
  * @ignore
  */
-const Filter = require('./Filter.js').Filter;
+const BaseFilter = require('./BaseFilter.js').BaseFilter;
 
 
 /**
  * @memberOf nunjucks.filter
  */
-class MarkupFilter extends Filter
+class MarkupFilter extends BaseFilter
 {
     /**
-     * @param {nunjucks.Environment} environment
-     * @param {String} mode
+     * @inheritDoc
      */
-    constructor(environment, mode)
+    constructor()
     {
-        super(environment);
+        super();
+        this._name = 'markup';
     }
 
 
@@ -34,20 +34,11 @@ class MarkupFilter extends Filter
     /**
      * @inheritDoc
      */
-    get name()
-    {
-        return 'markup';
-    }
-
-
-    /**
-     * @param {*} value
-     */
-    execute()
+    filter()
     {
         return function (value)
         {
-            return '<p>' + value + '</p>';
+            return '<p>' + (value || '') + '</p>';
         };
     }
 }

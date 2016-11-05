@@ -11,7 +11,7 @@ const Site = require(SOURCE_ROOT + '/model/site/Site.js').Site;
 const PathesConfiguration = require(SOURCE_ROOT + '/model/configuration/PathesConfiguration.js').PathesConfiguration;
 const CompactIdParser = require(SOURCE_ROOT + '/parser/entity/CompactIdParser.js').CompactIdParser;
 const nunjucks = require('nunjucks');
-const baseSpec = require('../../BaseShared.js').spec;
+const baseFilterSpec = require(TEST_ROOT + '/nunjucks/filter/BaseFilterShared.js');
 const compact = require(FIXTURES_ROOT + '/Application/Compact.js');
 const synchronize = require(SOURCE_ROOT + '/utils/synchronize.js');
 
@@ -21,12 +21,14 @@ const synchronize = require(SOURCE_ROOT + '/utils/synchronize.js');
  */
 describe(LoadFilter.className, function()
 {
-    baseSpec(LoadFilter, 'nunjucks.filter/LoadFilter', function(parameters)
+    /**
+     * BaseFilter Test
+     */
+    baseFilterSpec(LoadFilter, 'nunjucks.filter/LoadFilter', function(parameters)
     {
-        parameters.unshift(fixtures.rootPath);
+        parameters.unshift(fixtures.options);
         parameters.unshift(fixtures.pathesConfiguration);
         parameters.unshift(fixtures.entitiesRepository);
-        parameters.unshift(fixtures.environment);
         return parameters;
     });
 
@@ -44,13 +46,25 @@ describe(LoadFilter.className, function()
     });
 
 
-    describe('#execute', function()
+    /**
+     * LoadFilter Test
+     */
+    describe('#filter', function()
     {
+        it('should passthrough anything that is not a string', function()
+        {
+            const testee = new LoadFilter(fixtures.entitiesRepository,
+                fixtures.pathesConfiguration, { path: fixtures.rootPath });
+            const loaded = testee.filter()({ hell: 'yeah' });
+            expect(loaded.hell).to.be.equal('yeah');
+        });
+
+
         it('should load a json file', function()
         {
-            let testee = new LoadFilter(fixtures.environment, fixtures.entitiesRepository,
-                fixtures.pathesConfiguration, fixtures.rootPath);
-            let loaded = testee.execute()('/simple.json');
+            const testee = new LoadFilter(fixtures.entitiesRepository,
+                fixtures.pathesConfiguration, { path: fixtures.rootPath });
+            const loaded = testee.filter()('/simple.json');
             expect(loaded.name).to.be.equal('simple');
             expect(loaded.index).to.be.equal(1);
         });
@@ -58,14 +72,12 @@ describe(LoadFilter.className, function()
         it('should load a json file for a entity like m001-gallery/default', function()
         {
             const fixture = compact.createFixture();
-            const environment = new nunjucks.Environment();
             const entitiesRepository = fixture.context.di.create(EntitiesRepository);
             const sitesRepository = fixture.context.di.create(SitesRepository);
             const pathesConfiguration = fixture.context.di.create(PathesConfiguration);
             const siteExtended = synchronize.execute(sitesRepository, 'findBy', [Site.ANY, 'extended']);
-            const testee = new LoadFilter(environment, entitiesRepository,
-                pathesConfiguration, pathesConfiguration.sites);
-            const filter = testee.execute();
+            const testee = new LoadFilter(entitiesRepository, pathesConfiguration, pathesConfiguration.sites);
+            const filter = testee.filter();
             const loaded = filter.call({ ctx: { site: siteExtended } }, 'm001-gallery/default');
             expect(loaded.name).to.be.equal('m001-gallery');
         });
@@ -73,14 +85,12 @@ describe(LoadFilter.className, function()
         it('should allow a extending entity to overwrite a model', function()
         {
             const fixture = compact.createFixture();
-            const environment = new nunjucks.Environment();
             const entitiesRepository = fixture.context.di.create(EntitiesRepository);
             const sitesRepository = fixture.context.di.create(SitesRepository);
             const pathesConfiguration = fixture.context.di.create(PathesConfiguration);
             const siteExtended = synchronize.execute(sitesRepository, 'findBy', [Site.ANY, 'extended']);
-            const testee = new LoadFilter(environment, entitiesRepository,
-                pathesConfiguration, pathesConfiguration.sites);
-            const filter = testee.execute();
+            const testee = new LoadFilter(entitiesRepository, pathesConfiguration, pathesConfiguration.sites);
+            const filter = testee.filter();
             const loadedBase = filter.call({ ctx: {} }, 'e005-button/default');
             const loadedExtended = filter.call({ ctx: { site: siteExtended } }, 'e005-button/default');
             expect(loadedBase.name).to.be.equal('e005-button');
@@ -89,10 +99,9 @@ describe(LoadFilter.className, function()
 
         it('should generate random lipsum text via the @lipsum macro', function()
         {
-            let testee = new LoadFilter(fixtures.environment, fixtures.entitiesRepository,
-                fixtures.pathesConfiguration, fixtures.rootPath);
-            let loaded1 = testee.execute()('/lipsum.json');
-            let loaded2 = testee.execute()('/lipsum.json');
+            const testee = new LoadFilter(fixtures.entitiesRepository, fixtures.pathesConfiguration, { path: fixtures.rootPath });
+            const loaded1 = testee.filter()('/lipsum.json');
+            const loaded2 = testee.filter()('/lipsum.json');
             expect(loaded1.name.length).to.be.above(0);
             expect(loaded2.name.length).to.be.above(0);
             expect(loaded1.name).to.be.not.equal(loaded2.name);
@@ -100,11 +109,11 @@ describe(LoadFilter.className, function()
 
         it('should allow to render static content with @lipsum macros', function()
         {
-            let testee = new LoadFilter(fixtures.environment, fixtures.entitiesRepository,
-                fixtures.pathesConfiguration, fixtures.rootPath);
+            const testee = new LoadFilter(fixtures.entitiesRepository, fixtures.pathesConfiguration, { path: fixtures.rootPath });
             fixtures.environment.isStatic = true;
-            let loaded1 = testee.execute()('/lipsum.json');
-            let loaded2 = testee.execute()('/lipsum.json');
+            testee.register(fixtures.environment);
+            const loaded1 = testee.filter()('/lipsum.json');
+            const loaded2 = testee.filter()('/lipsum.json');
             expect(loaded1.name.length).to.be.above(0);
             expect(loaded2.name.length).to.be.above(0);
             expect(loaded1.name).to.be.equal(loaded2.name);
@@ -112,9 +121,8 @@ describe(LoadFilter.className, function()
 
         it('should allow to load other json files via the @import macro', function()
         {
-            let testee = new LoadFilter(fixtures.environment, fixtures.entitiesRepository,
-                fixtures.pathesConfiguration, fixtures.rootPath);
-            let loaded = testee.execute()('/import.json');
+            const testee = new LoadFilter(fixtures.entitiesRepository, fixtures.pathesConfiguration, { path: fixtures.rootPath });
+            const loaded = testee.filter()('/import.json');
             expect(loaded.lipsum.name.length).to.be.above(0);
             expect(loaded.lipsum.index).to.be.equal(2);
         });

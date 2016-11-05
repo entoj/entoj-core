@@ -5,8 +5,8 @@
  */
 const MarkdownFilter = require(SOURCE_ROOT + '/nunjucks/filter/MarkdownFilter.js').MarkdownFilter;
 const DocumentationTextSection = require(SOURCE_ROOT + '/model/documentation/DocumentationTextSection.js').DocumentationTextSection;
-const nunjucks = require('nunjucks');
 const marked = require('marked');
+const baseFilterSpec = require(TEST_ROOT + '/nunjucks/filter/BaseFilterShared.js');
 
 
 /**
@@ -14,30 +14,28 @@ const marked = require('marked');
  */
 describe(MarkdownFilter.className, function()
 {
-    describe('#className', function()
-    {
-        it('should return the namespaced class name', function()
-        {
-            let testee = new MarkdownFilter(new nunjucks.Environment());
-            expect(testee.className).to.be.equal('nunjucks.filter/MarkdownFilter');
-        });
-    });
+    /**
+     * BaseFilter Test
+     */
+    baseFilterSpec(MarkdownFilter, 'nunjucks.filter/MarkdownFilter');
 
-
-    describe('#execute', function()
+    /**
+     * MarkdownFilter Test
+     */
+    describe('#filter', function()
     {
         it('should return html for a markdown string', function()
         {
-            let testee = new MarkdownFilter(new nunjucks.Environment());
-            expect(testee.execute()('# Headline')).to.contain('</h1>');
-            expect(testee.execute()('Copy')).to.contain('</p>');
+            let testee = new MarkdownFilter();
+            expect(testee.filter()('# Headline')).to.contain('</h1>');
+            expect(testee.filter()('Copy')).to.contain('</p>');
         });
 
         it('should return html for markdown tokens', function()
         {
-            let testee = new MarkdownFilter(new nunjucks.Environment());
-            expect(testee.execute()(marked.lexer('# Headline'))).to.contain('</h1>');
-            expect(testee.execute()(marked.lexer('Cop'))).to.contain('</p>');
+            let testee = new MarkdownFilter();
+            expect(testee.filter()(marked.lexer('# Headline'))).to.contain('</h1>');
+            expect(testee.filter()(marked.lexer('Cop'))).to.contain('</p>');
         });
 
         it('should return html for a DocumentationTextSection', function()
@@ -45,8 +43,8 @@ describe(MarkdownFilter.className, function()
             let section = new DocumentationTextSection();
             section.tokens = marked.lexer('# Headline');
 
-            let testee = new MarkdownFilter(new nunjucks.Environment());
-            expect(testee.execute()(section)).to.contain('</h1>');
+            let testee = new MarkdownFilter();
+            expect(testee.filter()(section)).to.contain('</h1>');
         });
 
         it('should return html for a array of DocumentationTextSection', function()
@@ -57,23 +55,23 @@ describe(MarkdownFilter.className, function()
             section2.tokens = marked.lexer('Copy');
             let sections = [section1, section2];
 
-            let testee = new MarkdownFilter(new nunjucks.Environment());
-            expect(testee.execute()(sections)).to.contain('</h1>');
-            expect(testee.execute()(sections)).to.contain('</p>');
+            let testee = new MarkdownFilter();
+            expect(testee.filter()(sections)).to.contain('</h1>');
+            expect(testee.filter()(sections)).to.contain('</p>');
         });
 
         it('should allow to change headline levels via a offset', function()
         {
-            let testee = new MarkdownFilter(new nunjucks.Environment());
-            expect(testee.execute()('# Headline', 1)).to.contain('</h2>');
-            expect(testee.execute()('## Headline', 1)).to.contain('</h3>');
+            let testee = new MarkdownFilter();
+            expect(testee.filter()('# Headline', 1)).to.contain('</h2>');
+            expect(testee.filter()('## Headline', 1)).to.contain('</h3>');
         });
 
         it('should keep headline levels within 1-5', function()
         {
-            let testee = new MarkdownFilter(new nunjucks.Environment());
-            expect(testee.execute()('# Headline', 10)).to.contain('</h5>');
-            expect(testee.execute()('## Headline', -10)).to.contain('</h1>');
+            let testee = new MarkdownFilter();
+            expect(testee.filter()('# Headline', 10)).to.contain('</h5>');
+            expect(testee.filter()('## Headline', -10)).to.contain('</h1>');
         });
     });
 });

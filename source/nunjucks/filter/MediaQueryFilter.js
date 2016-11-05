@@ -4,24 +4,34 @@
  * Requirements
  * @ignore
  */
-const Filter = require('./Filter.js').Filter;
+const BaseFilter = require('./BaseFilter.js').BaseFilter;
 
 
 /**
  * @memberOf nunjucks.filter
  */
-class MediaQueryFilter extends Filter
+class MediaQueryFilter extends BaseFilter
 {
     /**
-     * @param {nunjucks.Environment} environment
-     * @param {Object} breakpoints
+     * @inheritDoc
      */
-    constructor(environment, breakpoints)
+    constructor(options)
     {
-        super(environment);
+        super();
+        this._name = 'mediaQuery';
 
         // Assign options
-        this._breakpoints = breakpoints || {};
+        this._options = options || {};
+        this._options.breakpoints = this._options.breakpoints || {};
+    }
+
+
+    /**
+     * @inheritDoc
+     */
+    static get injections()
+    {
+        return { 'parameters': ['nunjucks.filter/MediaQueryFilter.options'] };
     }
 
 
@@ -37,22 +47,13 @@ class MediaQueryFilter extends Filter
     /**
      * @inheritDoc
      */
-    get name()
-    {
-        return 'mediaQuery';
-    }
-
-
-    /**
-     * @param {*} value
-     */
-    execute()
+    filter()
     {
         const scope = this;
         return function (value, headlineOffset)
         {
             const device = value.split('And').shift().trim();
-            const breakpoint = scope._breakpoints[device] || {};
+            const breakpoint = scope._options.breakpoints[device] || {};
             let result = '';
             if (value.endsWith('AndBelow'))
             {

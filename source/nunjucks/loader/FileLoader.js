@@ -51,6 +51,17 @@ const FileLoader = Loader.extend(
 
 
         /**
+         * Updates the search pathes
+         */
+        setSearchPaths: function(searchPathes)
+        {
+            searchPathes = Array.isArray(searchPathes) ? searchPathes : [searchPathes];
+            this.searchPaths = searchPathes.map(path.normalize);
+            this._template._basePath = this.searchPaths[0];
+        },
+
+
+        /**
          * Resolves a template file
          */
         checkAllPathes: function(filename)

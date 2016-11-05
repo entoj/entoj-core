@@ -4,24 +4,21 @@
  * Requirements
  * @ignore
  */
-const Filter = require('./Filter.js').Filter;
+const BaseFilter = require('./BaseFilter.js').BaseFilter;
 
 
 /**
  * @memberOf nunjucks.filter
  */
-class LinkFilter extends Filter
+class LinkFilter extends BaseFilter
 {
     /**
-     * @param {nunjucks.Environment} environment
-     * @param {String} mode
+     * @inheritDoc
      */
-    constructor(environment, mode)
+    constructor()
     {
-        super(environment);
-
-        // Assign options
-        this._mode = mode || 'internal';
+        super();
+        this._name = 'link';
     }
 
 
@@ -37,18 +34,9 @@ class LinkFilter extends Filter
     /**
      * @inheritDoc
      */
-    get name()
+    filter()
     {
-        return 'link';
-    }
-
-
-    /**
-     * @param {*} value
-     */
-    execute()
-    {
-        return function (value)
+        return function(value)
         {
             if (value && value.selfLink)
             {
@@ -59,7 +47,7 @@ class LinkFilter extends Filter
                 return value.dataUrlBlob;
             }
             return 'JavaScript:;';
-        };
+        }
     }
 }
 

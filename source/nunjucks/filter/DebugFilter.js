@@ -4,13 +4,23 @@
  * Requirements
  * @ignore
  */
-const Filter = require('./Filter.js').Filter;
+const BaseFilter = require('./BaseFilter.js').BaseFilter;
+
 
 /**
  * @memberOf nunjucks.filter
  */
-class DebugFilter extends Filter
+class DebugFilter extends BaseFilter
 {
+    /**
+     * @inheritDoc
+     */
+    constructor()
+    {
+        super();
+        this._name = 'debug';
+    }
+
     /**
      * @inheritDoc
      */
@@ -23,18 +33,9 @@ class DebugFilter extends Filter
     /**
      * @inheritDoc
      */
-    get name()
+    filter()
     {
-        return 'debug';
-    }
-
-
-    /**
-     * @param {*} value
-     */
-    execute(value)
-    {
-        return function (value)
+        return function(value)
         {
             return '<pre>\n' + JSON.stringify(value, null, 4) + '\n</pre>';
         };

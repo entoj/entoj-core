@@ -24,7 +24,7 @@ describe(CreateSvgSpritesheetTask.className, function()
     /**
      * BaseTask Test
      */
-    baseTaskSpec(CreateSvgSpritesheetTask, 'task/CreateSvgSpritesheetTask', prepareParameters);
+    baseTaskSpec(CreateSvgSpritesheetTask, 'task/CreateSvgSpritesheetTask', prepareParameters, { skipDelegateTest: true });
 
     /**
      */
@@ -59,12 +59,11 @@ describe(CreateSvgSpritesheetTask.className, function()
                 const data = yield baseTaskSpec.readStream(testee.stream(sourceStream));
                 for (const file of data)
                 {
-                    console.log(file.path);
                     expect(file.contents.toString()).to.contain('id="arrow-right"');
                     expect(file.contents.toString()).to.contain('id="contact"');
                     expect(file.contents.toString()).to.contain('id="youtube"');
                 }
-            });
+            }).catch((e) => console.log(e));
             return promise;
         });
     });

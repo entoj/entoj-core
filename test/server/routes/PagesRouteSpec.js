@@ -3,11 +3,11 @@
 /**
  * Requirements
  */
-let Server = require(SOURCE_ROOT + '/server/Server.js').Server;
-let PagesRoute = require(SOURCE_ROOT + '/server/routes/PagesRoute.js').PagesRoute;
-let CliLogger = require(SOURCE_ROOT + '/cli/CliLogger.js').CliLogger;
-let request = require('supertest');
-let documentation = require(FIXTURES_ROOT + '/Server/Documentation.js');
+const Server = require(SOURCE_ROOT + '/server/Server.js').Server;
+const PagesRoute = require(SOURCE_ROOT + '/server/routes/PagesRoute.js').PagesRoute;
+const CliLogger = require(SOURCE_ROOT + '/cli/CliLogger.js').CliLogger;
+const request = require('supertest');
+const documentation = require(FIXTURES_ROOT + '/Server/Documentation.js');
 
 /**
  * Spec
@@ -21,7 +21,7 @@ describe(PagesRoute.className, function()
         fixtures.server = new Server(fixtures.cliLogger);
         fixtures.addRoute = function(routes, options)
         {
-            let opts = Object.assign({}, fixtures.options, options || {});
+            const opts = Object.assign({}, fixtures.options, options || {});
             fixtures.route = new PagesRoute(
                 fixtures.cliLogger,
                 fixtures.sitesRepository,
@@ -31,6 +31,7 @@ describe(PagesRoute.className, function()
                 fixtures.urlsConfiguration,
                 fixtures.pathesConfiguration,
                 fixtures.buildConfiguration,
+                fixtures.nunjucks,
                 routes,
                 opts);
             fixtures.server.addRoute(fixtures.route);
@@ -55,14 +56,15 @@ describe(PagesRoute.className, function()
     {
         it('should return the namespaced class name', function()
         {
-            let testee = new PagesRoute(fixtures.cliLogger,
+            const testee = new PagesRoute(fixtures.cliLogger,
                 fixtures.sitesRepository,
                 fixtures.categoriesRepository,
                 fixtures.entitiesRepository,
                 fixtures.globalConfiguration,
                 fixtures.urlsConfiguration,
                 fixtures.pathesConfiguration,
-                fixtures.buildConfiguration);
+                fixtures.buildConfiguration,
+                fixtures.nunjucks);
             expect(testee.className).to.be.equal('server.routes/PagesRoute');
         });
     });

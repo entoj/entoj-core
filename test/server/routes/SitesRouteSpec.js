@@ -6,6 +6,7 @@
 const Server = require(SOURCE_ROOT + '/server/Server.js').Server;
 const SitesRoute = require(SOURCE_ROOT + '/server/routes/SitesRoute.js').SitesRoute;
 const CliLogger = require(SOURCE_ROOT + '/cli/CliLogger.js').CliLogger;
+const Environment = require(SOURCE_ROOT + '/nunjucks/Environment.js').Environment;
 const request = require('supertest');
 const compact = require(FIXTURES_ROOT + '/Entities/Compact.js');
 
@@ -20,6 +21,8 @@ describe(SitesRoute.className, function()
         fixtures = compact.createFixture();
         fixtures.cliLogger = new CliLogger('', { muted: true });
         fixtures.server = new Server(fixtures.cliLogger);
+        fixtures.nunjucks = new Environment(fixtures.entitiesRepository, fixtures.globalConfiguration,
+            fixtures.pathesConfiguration, fixtures.buildConfiguration, []);
     });
 
 
@@ -42,7 +45,7 @@ describe(SitesRoute.className, function()
         {
             const testee = new SitesRoute(fixtures.cliLogger, fixtures.entitiesRepository,
                 fixtures.globalConfiguration, fixtures.pathesConfiguration,
-                fixtures.urlsConfiguration, fixtures.buildConfiguration);
+                fixtures.urlsConfiguration, fixtures.buildConfiguration, fixtures.nunjucks);
             expect(testee.className).to.be.equal('server.routes/SitesRoute');
         });
     });
@@ -54,7 +57,7 @@ describe(SitesRoute.className, function()
         {
             fixtures.server.addRoute(new SitesRoute(fixtures.cliLogger, fixtures.entitiesRepository,
                 fixtures.globalConfiguration, fixtures.pathesConfiguration, fixtures.urlsConfiguration,
-                fixtures.buildConfiguration));
+                fixtures.buildConfiguration, fixtures.nunjucks));
             fixtures.server.start().then(function(server)
             {
                 request(server)
@@ -72,7 +75,7 @@ describe(SitesRoute.className, function()
             };
             fixtures.server.addRoute(new SitesRoute(fixtures.cliLogger, fixtures.entitiesRepository,
                 fixtures.globalConfiguration, fixtures.pathesConfiguration, fixtures.urlsConfiguration,
-                fixtures.buildConfiguration, options));
+                fixtures.buildConfiguration, fixtures.nunjucks, options));
             fixtures.server.start().then(function(server)
             {
                 request(server)
@@ -85,7 +88,7 @@ describe(SitesRoute.className, function()
         {
             fixtures.server.addRoute(new SitesRoute(fixtures.cliLogger, fixtures.entitiesRepository,
                 fixtures.globalConfiguration, fixtures.pathesConfiguration, fixtures.urlsConfiguration,
-                fixtures.buildConfiguration));
+                fixtures.buildConfiguration, fixtures.nunjucks));
             fixtures.server.start().then(function(server)
             {
                 request(server)
@@ -100,7 +103,7 @@ describe(SitesRoute.className, function()
         {
             fixtures.server.addRoute(new SitesRoute(fixtures.cliLogger, fixtures.entitiesRepository,
                 fixtures.globalConfiguration, fixtures.pathesConfiguration, fixtures.urlsConfiguration,
-                fixtures.buildConfiguration));
+                fixtures.buildConfiguration, fixtures.nunjucks));
             fixtures.server.start().then(function(server)
             {
                 request(server)
@@ -116,7 +119,7 @@ describe(SitesRoute.className, function()
             fixtures.buildConfiguration.environment = 'development';
             fixtures.server.addRoute(new SitesRoute(fixtures.cliLogger, fixtures.entitiesRepository,
                 fixtures.globalConfiguration, fixtures.pathesConfiguration, fixtures.urlsConfiguration,
-                fixtures.buildConfiguration));
+                fixtures.buildConfiguration, fixtures.nunjucks));
             fixtures.server.start().then(function(server)
             {
                 request(server)
@@ -143,7 +146,7 @@ describe(SitesRoute.className, function()
             };
             fixtures.server.addRoute(new SitesRoute(fixtures.cliLogger, fixtures.entitiesRepository,
                 fixtures.globalConfiguration, fixtures.pathesConfiguration, fixtures.urlsConfiguration,
-                fixtures.buildConfiguration, options));
+                fixtures.buildConfiguration, fixtures.nunjucks, options));
             fixtures.server.start().then(function(server)
             {
                 request(server)

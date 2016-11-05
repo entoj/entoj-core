@@ -8,7 +8,7 @@ const fixWhitespace = require(SOURCE_ROOT + '/utils/markdown.js').fixWhitespace;
 /**
  * Spec
  */
-describe('utils/fixWhitespace', function()
+describe('utils/markdown', function()
 {
     describe('#fixWhitespace', function()
     {
@@ -53,7 +53,7 @@ x = 0
 x = 2 + 2
 what is x
 \`\`\``;
-            let testee = fixWhitespace(input);
+            const testee = fixWhitespace(input);
             expect(testee).to.be.equal(expected);
         });
     });

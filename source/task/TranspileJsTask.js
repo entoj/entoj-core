@@ -45,7 +45,7 @@ class TranspileJsTask extends BaseTask
         resultStream._transform = (file, encoding, callback) =>
         {
             /* istanbul ignore next */
-            if (!file || !file.isNull)
+            if (!file || !file.isNull || !file.contents)
             {
                 callback();
                 return;
