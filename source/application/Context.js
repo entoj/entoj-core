@@ -259,20 +259,6 @@ class Context extends Base
         }
         this._di.map(BuildConfiguration, BuildConfiguration, true);
 
-        // Global mappings
-        if (this._configuration.mappings && this._configuration.mappings.length)
-        {
-            for (const mapping of this._configuration.mappings)
-            {
-                const type = (typeof mapping === 'function') ? mapping : mapping.type;
-                const sourceType = mapping.sourceType || type;
-                if (sourceType)
-                {
-                    this.mapType(sourceType, undefined, mapping);
-                }
-            }
-        }
-
         // Repositories
         this.logger.debug('Setup repositories');
         this._di.map(SitesRepository, SitesRepository, true);
@@ -307,6 +293,20 @@ class Context extends Base
         if (this._configuration.entities && this._configuration.entities.loader)
         {
             this.mapType(EntitiesLoader, true, this._configuration.entities.loader, { plugins: this.createInstances.bind(this) });
+        }
+
+        // Global mappings
+        if (this._configuration.mappings && this._configuration.mappings.length)
+        {
+            for (const mapping of this._configuration.mappings)
+            {
+                const type = (typeof mapping === 'function') ? mapping : mapping.type;
+                const sourceType = mapping.sourceType || type;
+                if (sourceType)
+                {
+                    this.mapType(sourceType, undefined, mapping);
+                }
+            }
         }
 
         // Commands

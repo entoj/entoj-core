@@ -193,7 +193,6 @@ class SitesRoute extends BaseRoute
             const filenameShort = shortenLeft(synchronize.execute(scope._pathesConfiguration, 'shorten', [filename]), 60);
             const tpl = fs.readFileSync(filename, { encoding: 'utf8' });
             const work = scope._cliLogger.work('Serving ' + (scope._nunjucks.isStatic ? '<static>' : '') + ' template <' + filenameShort + '> as <' + request.url + '>');
-            console.log(data);
             let html;
             try
             {
