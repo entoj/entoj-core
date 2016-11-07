@@ -80,7 +80,7 @@ describe(BundleJsTask.className, function()
             return promise;
         });
 
-        it('should resolve to an array containing bundle configs for each site', function()
+        it('should resolve to an array containing bundle configs for each configured site', function()
         {
             const promise = co(function *()
             {
@@ -100,10 +100,30 @@ describe(BundleJsTask.className, function()
                 const bundles = yield testee.generateConfiguration();
                 const baseBundle = bundles[0];
                 const extendedBundle = bundles[1];
-                expect(baseBundle).to.have.contain.key('common');
-                expect(baseBundle).to.have.contain.key('core');
-                expect(extendedBundle).to.have.contain.key('common');
-                expect(extendedBundle).to.have.contain.key('extended');
+                expect(baseBundle).to.contain.key('common');
+                expect(baseBundle.common.filename).to.be.equal(pathes.normalizePathSeperators('base/common.js'));
+                expect(baseBundle).to.contain.key('core');
+                expect(baseBundle.core.filename).to.be.equal(pathes.normalizePathSeperators('base/core.js'));
+                expect(extendedBundle).to.contain.key('common');
+                expect(extendedBundle.common.filename).to.be.equal(pathes.normalizePathSeperators('extended/common.js'));
+                expect(extendedBundle).to.contain.key('extended');
+                expect(extendedBundle.extended.filename).to.be.equal(pathes.normalizePathSeperators('extended/extended.js'));
+            });
+            return promise;
+        });
+
+        it('should allow to customize bundle file pathes', function()
+        {
+            const promise = co(function *()
+            {
+                const testee = createTestee();
+                const bundles = yield testee.generateConfiguration(undefined, { filenameTemplate: '${group.urlify()}.js'});
+                const baseBundle = bundles[0];
+                const extendedBundle = bundles[1];
+                expect(baseBundle.common.filename).to.be.equal(pathes.normalizePathSeperators('common.js'));
+                expect(baseBundle.core.filename).to.be.equal(pathes.normalizePathSeperators('core.js'));
+                expect(extendedBundle.common.filename).to.be.equal(pathes.normalizePathSeperators('common.js'));
+                expect(extendedBundle.extended.filename).to.be.equal(pathes.normalizePathSeperators('extended.js'));
             });
             return promise;
         });

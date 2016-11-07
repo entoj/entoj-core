@@ -94,7 +94,7 @@ describe(CompileSassTask.className, function()
             return promise;
         });
 
-        it('should should generate a file for each group of each configured site', function()
+        it('should generate a file for each group of each configured site', function()
         {
             const promise = co(function *()
             {
@@ -107,7 +107,7 @@ describe(CompileSassTask.className, function()
                 expect(files.find(item => item.path == normalize('base/css/common.scss'))).to.be.ok;
                 expect(files.find(item => item.path == normalize('base/css/core.scss'))).to.be.ok;
                 expect(files.find(item => item.path == normalize('extended/css/common.scss'))).to.be.ok;
-                expect(files.find(item => item.path == normalize('extended/css/core.scss'))).to.be.ok;              
+                expect(files.find(item => item.path == normalize('extended/css/core.scss'))).to.be.ok;
             });
             return promise;
         });
@@ -268,7 +268,7 @@ describe(CompileSassTask.className, function()
                 {
                     expect(file.contents.toString()).to.not.contain('@import \'');
                     expect(file.path).to.be.oneOf([normalize('base/common.css'), normalize('base/core.css'),
-                                                   normalize('extended/common.css'), normalize('extended/core.css')]);                    
+                                                   normalize('extended/common.css'), normalize('extended/core.css')]);
                 }
             });
             return promise;

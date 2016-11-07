@@ -20,6 +20,7 @@ const difference = require('lodash.difference');
 const co = require('co');
 const PATH_SEPERATOR = require('path').sep;
 const fs = require('co-fs-extra');
+const templateString = require('es6-template-strings');
 
 
 /**
@@ -69,22 +70,35 @@ class BundleJsTask extends BaseTask
      * @protected
      * @returns {Promise<Array>}
      */
+    prepareParameters(buildConfiguration, parameters)
+    {
+        const result = super.prepareParameters(buildConfiguration, parameters);
+        result.query = result.query || '*';
+        result.filenameTemplate = result.filenameTemplate || '${site.name.urlify()}/${group.urlify()}.js';
+        return result;
+    }
+
+
+    /**
+     * @protected
+     * @returns {Promise<Array>}
+     */
     generateConfiguration(buildConfiguration, parameters)
     {
         const scope = this;
         const promise = co(function *()
         {
             // Prepare
-            const query = parameters ? parameters.query || '*' : '*';
+            const params = scope.prepareParameters(buildConfiguration, parameters);
 
             // Start
-            const work = scope._cliLogger.section('Generating bundle configuration for <' + query + '>');
+            const work = scope._cliLogger.section('Generating bundle configuration for <' + params.query + '>');
 
             // Get Sites
             let sites = [];
-            if (query !== '*')
+            if (params.query !== '*')
             {
-                const site = yield scope._sitesRepository.findBy(Site.ANY, query);
+                const site = yield scope._sitesRepository.findBy(Site.ANY, params.query);
                 sites.push(site);
             }
             else
@@ -117,10 +131,11 @@ class BundleJsTask extends BaseTask
                 const bundles = {};
                 for (const group in sourceFiles)
                 {
+                    const filename = templateString(params.filenameTemplate, { site: site, group: group });
                     const groupWork = scope._cliLogger.work('Genrating bundle config for <' + site.name + '> / <' + group + '>');
                     const bundle =
                     {
-                        filename : site.name.toLowerCase() + PATH_SEPERATOR + group.toLowerCase() + '.js',
+                        filename : filename,
                         prepend: [],
                         append: [],
                         include: [],
@@ -282,6 +297,7 @@ class BundleJsTask extends BaseTask
             {
                 const siteBundles = yield scope.generateConfiguration(buildConfiguration, parameters);
                 const work = scope._cliLogger.section('Bundling js files');
+                scope._cliLogger.options(scope.prepareParameters(buildConfiguration, parameters));
                 for (const siteBundle of siteBundles)
                 {
                     const siteFiles = yield scope.compileBundles(siteBundle, buildConfiguration, parameters);
