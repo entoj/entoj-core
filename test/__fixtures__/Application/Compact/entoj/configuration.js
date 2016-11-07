@@ -211,11 +211,10 @@ configuration.entityCategories.loader =
             longName: 'Grid'
         },
         {
-            longName: 'Page Template'
+            longName: 'Template'
         },
         {
-            shortName: 't',
-            longName: 'Page Type'
+            longName: 'Page'
         }
     ]
 };

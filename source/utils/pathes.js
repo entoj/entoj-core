@@ -6,7 +6,7 @@ const WIN32 = (process.platform == 'win32');
 
 
 /**
- * Replaces any path seperator to the platfform specific one
+ * Replaces any path seperator with the platfform specific one
  *
  * @memberof utils
  */
@@ -91,9 +91,9 @@ function normalize(path)
     if (WIN32)
     {
         preparedPath = trimLeadingSlash(preparedPath);
-    }    
+    }
     const parts = parse(preparedPath);
- 
+
     // Check root
     if (!parts.root)
     {
@@ -175,5 +175,6 @@ module.exports.concat = concat;
 module.exports.strip = strip;
 module.exports.trimLeadingSlash = trimLeadingSlash;
 module.exports.normalizePathSeperators = normalizePathSeperators;
+module.exports.normalizePathSeparators = normalizePathSeperators;
 module.exports.normalize = normalize;
 module.exports.shift = shift;

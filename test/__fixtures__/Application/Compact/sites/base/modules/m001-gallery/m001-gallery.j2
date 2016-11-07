@@ -13,11 +13,17 @@
 #}
 
 {% macro m001_gallery(
-		type=false,
+		type='',
 		paginationMode='graphical',
-		class=false) %}
-	<div class="m001-gallery {{class}}">
+		class='') %}
+	<div class="m001-gallery {{ type }} {{ class }}">
         {{ e005_button() }}
 	</div>
 {%  endmacro %}
 
+{% macro m001_gallery_page(
+        type='',
+        class='') %}
+    <div class="m001-gallery-page {{ type }} {{ class }}">
+    </div>
+{%  endmacro %}

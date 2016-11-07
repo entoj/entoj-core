@@ -28,6 +28,22 @@ function normalizePathSeperators(path)
 
 
 /**
+ * Removes a leading slash
+ *
+ * @memberof utils
+ */
+function trimLeadingSlash(path)
+{
+    let result = normalizePathSeperators(path);
+    if (result.substr(0, 1) === '/')
+    {
+        result = result.substr(1);
+    }
+    return result;
+}
+
+
+/**
  * Makes the given string a valid url
  *
  * @memberof utils
@@ -70,6 +86,7 @@ function shift(path)
  * @ignore
  */
 module.exports.shift = shift;
+module.exports.trimLeadingSlash = trimLeadingSlash;
 module.exports.normalizePathSeperators = normalizePathSeperators;
 module.exports.normalize = normalize;
 module.exports.urlify = urlify;
