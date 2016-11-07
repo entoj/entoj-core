@@ -10,6 +10,7 @@ const EntitiesRepository = require('../../model/entity/EntitiesRepository.js').E
 const assertParameter = require('../../utils/assert.js').assertParameter;
 const synchronize = require('../../utils/synchronize.js');
 const uppercaseFirst = require('../../utils/string.js').uppercaseFirst;
+const pathes = require('../../utils/pathes.js');
 const isObject = require('lodash.isobject');
 const isString = require('lodash.isstring');
 const path = require('path');
@@ -42,6 +43,12 @@ class LoadFilter extends BaseFilter
         this._options = options || {};
         this._entitiesRepository = entitiesRepository;
         this._pathesConfiguration = pathesConfiguration;
+
+        // Set path
+        if (!this._options.path)
+        {
+            this._options.path = this._pathesConfiguration.sites;
+        }
     }
 
 
@@ -177,16 +184,29 @@ class LoadFilter extends BaseFilter
         if (isString(value))
         {
             // Check straight path
-            let filename = path.resolve(this._rootPath + value);
+            let filename = pathes.concat(this._options.path, value);
             if (!fs.existsSync(filename))
             {
                 // Check missing .json
                 filename+= '.json';
                 if (!fs.existsSync(filename))
                 {
-                    // Check entity model
                     const parts = value.split('/');
-                    filename = this.trySite(parts[1], parts[0]);
+                    // Check site entity model
+                    if (context && context.globals && context.globals.site)
+                    {
+                        filename = this.trySite(parts[1], parts[0], context.globals.site);
+                    }
+                    // Check entity model
+                    if (!fs.existsSync(filename))
+                    {
+                        filename = this.trySite(parts[1], parts[0]);
+                    }
+                    // Model not found
+                    if (!fs.existsSync(filename))
+                    {
+                        filename = false;
+                    }
                 }
             }
 
