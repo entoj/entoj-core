@@ -51,7 +51,6 @@ class ImageUrlFilter extends BaseFilter
         const scope = this;
         return function(value, width, height, force)
         {
-            const id = value && value.dataUrlBlob ? value.dataUrlBlob : '*.png';
             if (scope._options.mode === 'umbraco')
             {
                 let parameters = '';
@@ -65,6 +64,11 @@ class ImageUrlFilter extends BaseFilter
                     parameters+= 'height: ' + (height || 0);
                 }
                 return '@image.GetCropUrl(' + parameters + ')';
+            }
+            let id = value ? value : '*.png';
+            if (scope._options.mode === 'coremedia')
+            {
+                id = value && value.dataUrlBlob ? value.dataUrlBlob : '*.png';
             }
             return '/images/' + id + '/' + (width || 0) + '/' + (height || 0) + '/' + (force || 0);
         };
