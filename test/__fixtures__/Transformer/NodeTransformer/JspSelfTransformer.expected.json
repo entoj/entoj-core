@@ -19,7 +19,7 @@
                     {
                         "type": "transformer.node/VariableNode",
                         "fields": [
-                            "self",
+                            "model",
                             "text"
                         ]
                     }
@@ -42,7 +42,7 @@
             "value": {
                 "type": "transformer.node/VariableNode",
                 "fields": [
-                    "self",
+                    "model",
                     "items"
                 ]
             }
@@ -65,7 +65,7 @@
                     {
                         "type": "transformer.node/VariableNode",
                         "fields": [
-                            "self",
+                            "model",
                             "copy"
                         ]
                     }
@@ -83,7 +83,7 @@
                 {
                     "type": "transformer.node/VariableNode",
                     "fields": [
-                        "self",
+                        "model",
                         "headline"
                     ]
                 }
