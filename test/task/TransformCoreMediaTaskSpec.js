@@ -161,7 +161,7 @@ describe(TransformCoreMediaTask.className, function()
                 for (const file of files)
                 {
                     expect(file).to.be.instanceof(VinylFile);
-                    expect(file.contents.toString()).to.be.contain('<%@ include');
+                    expect(file.contents.toString()).to.contain('<%@ include');
                     expect(file.path).to.match(/^([^\/\\]*)(\/|\\)([^\/\\]*(\/|\\))+([^\/\\]*)$/ig);
                 }
             });
