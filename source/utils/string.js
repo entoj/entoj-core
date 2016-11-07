@@ -126,24 +126,51 @@ function uppercaseFirst(content)
  */
 function activateEnvironment(content, environment)
 {
+    const typeDefault = function(environment)
+    {
+        return new RegExp('\\/\\*\\s*\\+environment\\s*:\\s*' + environment + '\\s*\\*\\/([^\\/]*)\\/\\*\\s+\\-environment\\s\\*\\/', 'igm');
+    }
+
+    const typeJinja = function(environment)
+    {
+        return new RegExp('\\{#\\s*\\+environment\\s*:\\s*' + environment + '\\s*#\\}([^\\{}]*)\\{#\\s+\\-environment\\s#\\}', 'igm');
+    }
+
     let result = content;
     const env = environment || '';
-    const environmentRegex =
+    const placeholder = '([\\!\\w]+)';
+    const types =
     [
-        new RegExp('\\/\\*\\s*\\+environment\\s*:\\s*' + env + '\\s*\\*\\/([^\\/]*)\\/\\*\\s+\\-environment\\s\\*\\/', 'igm'),
-        new RegExp('\\{#\\s*\\+environment\\s*:\\s*' + env + '\\s*#\\}([^\\{}]*)\\{#\\s+\\-environment\\s#\\}', 'igm')
+        typeDefault,
+        typeJinja
     ];
-    const removeRegex =
-    [
-        new RegExp('\\/\\*\\s*\\+environment\\s*:\\s*\\w+\\s*\\*\\/[^\\/]*\\/\\*\\s+\\-environment\\s\\*\\/', 'igm'),
-        new RegExp('\\{#\\s*\\+environment\\s*:\\s*\\w+\\s*#\\}[^\\{]*\\{#\\s+\\-environment\\s#\\}', 'igm')
-    ]
+    const environmentRegex = types.map((create) => create(environment));
+    const removeRegex = types.map((create) => create(placeholder));
 
     if (environment)
     {
+        // Replace direct matches
         for (const regex of environmentRegex)
         {
             result = result.replace(regex, '$1');
+        }
+        // Replace negated matches
+        for (const type of types)
+        {
+            const findRegex = type(placeholder);
+            let match;
+            while ((match = findRegex.exec(result)) !== null)
+            {
+                if (match[1].startsWith('!'))
+                {
+                    const env = match[1].substring(1);
+                    if (env !== environment)
+                    {
+                        const activateRegex = type('\\!' + env);
+                        result = result.replace(activateRegex, '$1');
+                    }
+                }
+            }
         }
     }
     for (const regex of removeRegex)

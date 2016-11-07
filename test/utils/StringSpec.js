@@ -159,6 +159,13 @@ describe('utils/string', function()
                 const expected = `All-Production`;
                 expect(activateEnvironment(input, 'production')).to.be.equal(expected);
             });
+
+            it('should allow to negate environments', function()
+            {
+                const input = `All/* +environment: !development */-NotDevelopment/* -environment *//* +environment: production */-Production/* -environment */`;
+                const expected = `All-NotDevelopment-Production`;
+                expect(activateEnvironment(input, 'production')).to.be.equal(expected);
+            });
         });
 
 
@@ -175,6 +182,13 @@ describe('utils/string', function()
             {
                 const input = `All{# +environment: development #}-Development{# -environment #}{# +environment: production #}-Production{# -environment #}`;
                 const expected = `All-Production`;
+                expect(activateEnvironment(input, 'production')).to.be.equal(expected);
+            });
+
+            it('should allow to negate environments', function()
+            {
+                const input = `All{# +environment: !development #}-NotDevelopment{# -environment #}{# +environment: production #}-Production{# -environment #}`;
+                const expected = `All-NotDevelopment-Production`;
                 expect(activateEnvironment(input, 'production')).to.be.equal(expected);
             });
         });
