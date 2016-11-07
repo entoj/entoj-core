@@ -49,7 +49,7 @@ describe(EntitiesLoader.className, function()
             const promise = co(function *()
             {
                 const items = yield testee.load();
-                expect(items).to.have.length(3);
+                expect(items).to.have.length(5);
                 expect(items.find(item => item.id.name == 'button')).to.be.instanceof(Entity);
                 expect(items.find(item => item.id.name == 'gallery')).to.be.instanceof(Entity);
                 expect(items.find(item => item.id.category.longName == 'Common')).to.be.instanceof(Entity);
@@ -64,7 +64,7 @@ describe(EntitiesLoader.className, function()
             const promise = co(function *()
             {
                 const items = yield testee.load();
-                expect(items).to.have.length(3);
+                expect(items).to.have.length(5);
                 expect(items.find(item => item.id.name == 'button').id.site).to.be.instanceof(Site);
                 expect(items.find(item => item.id.name == 'gallery').id.site).to.be.instanceof(Site);
                 expect(items.find(item => item.id.category.longName == 'Common').id.site).to.be.instanceof(Site);
@@ -80,7 +80,7 @@ describe(EntitiesLoader.className, function()
             {
                 const siteExtended = yield fixtures.sitesRepository.findBy(Site.ANY, 'extended');
                 const items = yield testee.load();
-                expect(items).to.have.length(3);
+                expect(items).to.have.length(5);
                 expect(items.find(item => item.id.name == 'button').usedBy).to.contain(siteExtended);
                 expect(items.find(item => item.id.name == 'gallery').usedBy).to.contain(siteExtended);
                 expect(items.find(item => item.id.category.longName == 'Common').usedBy).to.contain(siteExtended);

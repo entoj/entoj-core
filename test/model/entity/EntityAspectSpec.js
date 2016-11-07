@@ -138,15 +138,13 @@ describe(EntityAspect.className, function()
         it('should contain all macros that are owned by the aspect', function()
         {
             const testee = new EntityAspect(fixtures.entityGallery, fixtures.siteBase, fixtures.entityIdTemplate);
-            expect(testee.documentation.filter(doc => doc.contentKind == ContentKind.MACRO)).to.have.length(1);
-            expect(testee.documentation.find(doc => doc.name == 'overview.j2')).to.be.ok;
+            expect(testee.documentation.filter(doc => doc.contentKind == ContentKind.MACRO)).to.have.length(2);
         });
 
         it('should contain all macros that are extended by the aspect', function()
         {
             const testee = new EntityAspect(fixtures.entityGallery, fixtures.siteExtended, fixtures.entityIdTemplate);
-            expect(testee.documentation.filter(doc => doc.contentKind == ContentKind.MACRO)).to.have.length(1);
-            expect(testee.documentation.find(doc => doc.name == 'overview.j2')).to.be.ok;
+            expect(testee.documentation.filter(doc => doc.contentKind == ContentKind.MACRO)).to.have.length(2);
         });
 
         it('should contain all texts that are owned by the aspect', function()
