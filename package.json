@@ -50,6 +50,7 @@
     "lodash.isstring": "*",
     "lodash.kebabcase": "*",
     "lodash.merge": "*",
+    "lodash.mergewith": "*",
     "lodash.pull": "*",
     "lodash.union": "*",
     "lodash.uniq": "*",
