@@ -1,0 +1,4 @@
+{
+    "default": "@include:e005-button/default",
+    "lipsum": "@include:e005-button/lipsum"
+}

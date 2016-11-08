@@ -192,5 +192,29 @@ describe('utils/string', function()
                 expect(activateEnvironment(input, 'production')).to.be.equal(expected);
             });
         });
+
+        describe('html-style comments', function()
+        {
+            it('should remove all environments when no environment is given', function()
+            {
+                const input = `All<!-- +environment: development -->-Development<!-- -environment --><!-- +environment: production -->-Production<!-- -environment -->`;
+                const expected = `All`;
+                expect(activateEnvironment(input)).to.be.equal(expected);
+            });
+
+            it('should remove all environments except the given one', function()
+            {
+                const input = `All<!-- +environment: development -->-Development<!-- -environment --><!-- +environment: production -->-Production<!-- -environment -->`;
+                const expected = `All-Production`;
+                expect(activateEnvironment(input, 'production')).to.be.equal(expected);
+            });
+
+            it('should allow to negate environments', function()
+            {
+                const input = `All<!-- +environment: !development -->-NotDevelopment<!-- -environment --><!-- +environment: production -->-Production<!-- -environment -->`;
+                const expected = `All-NotDevelopment-Production`;
+                expect(activateEnvironment(input, 'production')).to.be.equal(expected);
+            });
+        });
     });
 });

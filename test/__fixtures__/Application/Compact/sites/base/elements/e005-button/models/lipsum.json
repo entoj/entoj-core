@@ -1,0 +1,16 @@
+{
+    "copy": "@lipsum:w,2,4",
+    "intro":
+    {
+        "headline": "@lipsum:w,2,4"
+    },
+    "items":
+    [
+        {
+            "name": "@lipsum:w,2,4"
+        },
+        {
+            "name": "@lipsum:w,2,4"
+        }
+    ]
+}

@@ -128,12 +128,17 @@ function activateEnvironment(content, environment)
 {
     const typeDefault = function(environment)
     {
-        return new RegExp('\\/\\*\\s*\\+environment\\s*:\\s*' + environment + '\\s*\\*\\/([^\\/]*)\\/\\*\\s+\\-environment\\s\\*\\/', 'igm');
+        return new RegExp('\\/\\*\\s*\\+environment\\s*:\\s*' + environment + '\\s*\\*\\/([\\s\\S]*?)\\/\\*\\s+\\-environment\\s\\*\\/', 'igm');
     }
 
     const typeJinja = function(environment)
     {
-        return new RegExp('\\{#\\s*\\+environment\\s*:\\s*' + environment + '\\s*#\\}([^\\{}]*)\\{#\\s+\\-environment\\s#\\}', 'igm');
+        return new RegExp('\\{#\\s*\\+environment\\s*:\\s*' + environment + '\\s*#\\}([\\s\\S]*?)\\{#\\s+\\-environment\\s#\\}', 'igm');
+    }
+
+    const typeHtml = function(environment)
+    {
+        return new RegExp('<!--\\s+\\+environment:\\s+' + environment + '\\s*-->([\\s\\S]*?)<!--\\s+\\-environment\\s-->', 'igm');
     }
 
     let result = content;
@@ -142,7 +147,8 @@ function activateEnvironment(content, environment)
     const types =
     [
         typeDefault,
-        typeJinja
+        typeJinja,
+        typeHtml
     ];
     const environmentRegex = types.map((create) => create(environment));
     const removeRegex = types.map((create) => create(placeholder));
