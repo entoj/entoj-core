@@ -41,7 +41,7 @@ describe(ReadFilesTask.className, function()
     {
         fixtures.cliLogger = new CliLogger();
         fixtures.cliLogger.muted = true;
-        fixtures.path = pathes.concat(FIXTURES_ROOT, '/Nunjucks/**/*.json');
+        fixtures.path = pathes.concat(FIXTURES_ROOT, '/Tasks/ReadFilesTask/**/*.css');
     });
 
 
@@ -53,10 +53,10 @@ describe(ReadFilesTask.className, function()
             {
                 const testee = new ReadFilesTask(fixtures.cliLogger);
                 const data = yield baseTaskSpec.readStream(testee.stream(undefined, undefined, { path: fixtures.path }));
-                expect(data).to.have.length(3);
+                expect(data).to.have.length(2);
                 for (const file of data)
                 {
-                    expect(file.path).to.endWith('.json');
+                    expect(file.path).to.endWith('.css');
                 }
             });
             return promise;
