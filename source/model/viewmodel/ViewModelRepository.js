@@ -18,8 +18,6 @@ const isString = require('lodash.isstring');
 const lorem = require('lorem-ipsum');
 
 
-
-
 /**
  * @class
  * @memberOf model.file

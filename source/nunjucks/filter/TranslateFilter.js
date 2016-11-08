@@ -50,18 +50,22 @@ class TranslateFilter extends BaseFilter
     filter()
     {
         const scope = this;
-        return function (value)
+        return function (value, key)
         {
-            if (!value || typeof value !== 'string')
+            // Use value or key for translations
+            const translationKey = key || value;
+            if (!translationKey || typeof translationKey !== 'string')
             {
                 return '';
             }
-            if (!scope._options.translations[value])
+
+            // Translate
+            if (!scope._options.translations[translationKey])
             {
-                scope.logger.error('Missing translation for ' + value);
-                return value;
+                scope.logger.error('Missing translation for ' + translationKey);
+                return translationKey;
             }
-            return scope._options.translations[value];
+            return scope._options.translations[translationKey];
         };
     }
 }

@@ -15,9 +15,9 @@ class SetNode extends BaseNode
     /**
      * @ignore
      */
-    constructor(variable, value, children)
+    constructor(variable, value)
     {
-        super(children);
+        super();
         this.serializeFields.push('variable', 'value');
         this.nodeFields.push('variable', 'value');
         this.variable = variable;

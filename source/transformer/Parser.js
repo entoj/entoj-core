@@ -26,6 +26,7 @@ const MacroNode = require('./node/MacroNode.js').MacroNode;
 const CallNode = require('./node/CallNode.js').CallNode;
 const OutputNode = require('./node/OutputNode.js').OutputNode;
 const YieldNode = require('./node/YieldNode.js').YieldNode;
+const DictionaryNode = require('./node/DictionaryNode.js').DictionaryNode;
 
 
 /**
@@ -192,6 +193,60 @@ class Parser extends BaseParser
     /**
      *
      */
+    parseDictionary(node)
+    {
+        const parse = (node, result) =>
+        {
+            const type = Object.getPrototypeOf(node).typename;
+            switch(type)
+            {
+                case 'NodeList':
+                case 'Dict':
+                    result = {};
+                    for (const child of node.children)
+                    {
+                        parse(child, result);
+                    }
+                    return result;
+                    break;
+
+                case 'Array':
+                    result = [];
+                    for (const child of node.children)
+                    {
+                        result.push(parse(child));
+                    }
+                    return result;
+                    break;
+
+                case 'Literal':
+                    return node.value;
+                    break;
+
+                case 'Pair':
+                    if (result)
+                    {
+                        result[node.key.value] = parse(node.value);
+                    }
+                    else
+                    {
+                        return parse(node.value);
+                    }
+                    break;
+
+                /* istanbul ignore next */
+                default:
+                    this.logger.error('parseDictionary: Not Implemented', type, JSON.stringify(node, null, 4));
+            }
+            return undefined;
+        };
+        return new DictionaryNode(parse(node));
+    }
+
+
+    /**
+     *
+     */
     parseCondition(node)
     {
         const parse = (node, result) =>
@@ -291,6 +346,10 @@ class Parser extends BaseParser
                 case 'Symbol':
                 case 'LookupVal':
                     result.push(this.parseVariable(node));
+                    break;
+
+                case 'Dict':
+                    result.push(this.parseDictionary(node));
                     break;
 
                 case 'Filter':

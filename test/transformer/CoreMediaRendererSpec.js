@@ -94,5 +94,10 @@ describe(CoreMediaRenderer.className, function()
         {
             return testFixture('translate');
         });
+
+        it('should render complex variables', function()
+        {
+            return testFixture('complexvariables');
+        });
     });
 });

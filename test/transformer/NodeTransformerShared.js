@@ -18,15 +18,15 @@ function spec(type, className, prepareParameters)
     /**
      * Base Test
      */
-    baseSpec(type, className);
+    baseSpec(type, className, prepareParameters);
 
 
     /**
      * NodeTransformer Test
      */
-    function createTestee(classType)
+    function createTestee(classType, prepareParameters, ...params)
     {
-        let parameters = Array.from(arguments);
+        let parameters = Array.from(params);
         if (prepareParameters)
         {
             parameters = prepareParameters(parameters);
@@ -57,12 +57,12 @@ function spec(type, className, prepareParameters)
     /**
      * Loads a fixture and compares the transformed result to expected
      */
-    function testFixture(name, classType)
+    function testFixture(name, classType, prepareParameters)
     {
         const promise = co(function *()
         {
             const fixture = yield loadFixture(name);
-            const testee = createTestee(classType);
+            const testee = createTestee(classType, prepareParameters);
             const transformed = yield testee.transform(fixture.rootNode);
             try
             {
@@ -88,7 +88,7 @@ function spec(type, className, prepareParameters)
     {
         it('should return a promise', function()
         {
-            const testee = createTestee();
+            const testee = createTestee(type, prepareParameters);
             const promise = testee.transform();
             expect(promise).to.be.instanceof(Promise);
             return promise;
@@ -99,7 +99,7 @@ function spec(type, className, prepareParameters)
             const promise = co(function *()
             {
                 const fixture = yield loadFixture('NodeTransformer');
-                const testee = createTestee();
+                const testee = createTestee(type, prepareParameters);
                 const transformed = yield testee.transform(fixture.rootNode);
 
                 // Shoud be new objects

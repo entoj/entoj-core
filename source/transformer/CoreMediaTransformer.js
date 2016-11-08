@@ -10,7 +10,9 @@ const CoreMediaRenderer = require('./CoreMediaRenderer.js').CoreMediaRenderer;
 const JspConcatTransformer = require('./nodetransformer/JspConcatTransformer.js').JspConcatTransformer;
 const JspEmptyTransformer = require('./nodetransformer/JspEmptyTransformer.js').JspEmptyTransformer;
 const JspSelfTransformer = require('./nodetransformer/JspSelfTransformer.js').JspSelfTransformer;
+const JspStaticModelTransformer = require('./nodetransformer/JspStaticModelTransformer.js').JspStaticModelTransformer;
 const GlobalRepository = require('../model/GlobalRepository.js').GlobalRepository;
+const ViewModelRepository = require('../model/viewmodel/ViewModelRepository.js').ViewModelRepository;
 
 
 /**
@@ -21,12 +23,12 @@ class CoreMediaTransformer extends Transformer
     /**
      * @ignore
      */
-    constructor(globalRepository)
+    constructor(globalRepository, viewModelRepository)
     {
         super(globalRepository,
             new Parser(),
             new CoreMediaRenderer(),
-            [new JspConcatTransformer(), new JspEmptyTransformer(), new JspSelfTransformer()]);
+            [new JspConcatTransformer(), new JspEmptyTransformer(), new JspSelfTransformer(), new JspStaticModelTransformer(viewModelRepository)]);
     }
 
 
@@ -35,7 +37,7 @@ class CoreMediaTransformer extends Transformer
      */
     static get injections()
     {
-        return { 'parameters': [GlobalRepository] };
+        return { 'parameters': [GlobalRepository, ViewModelRepository] };
     }
 
 

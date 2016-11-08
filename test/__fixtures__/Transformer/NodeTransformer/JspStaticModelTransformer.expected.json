@@ -1,0 +1,105 @@
+{
+    "type": "transformer.node/NodeList",
+    "children": [
+        {
+            "type": "transformer.node/NodeList",
+            "children": [
+                {
+                    "type": "transformer.node/SetNode",
+                    "variable": "staticModel1",
+                    "value": {
+                        "type": "transformer.node/ExpressionNode",
+                        "children": [
+                            {
+                                "type": "transformer.node/DictionaryNode",
+                                "value": {
+                                    "name": "e005-button"
+                                }
+                            }
+                        ]
+                    }
+                },
+                {
+                    "type": "transformer.node/CallNode",
+                    "children": [],
+                    "name": "e_input",
+                    "parameters": {
+                        "type": "transformer.node/ParametersNode",
+                        "children": [
+                            {
+                                "type": "transformer.node/ParameterNode",
+                                "name": "model",
+                                "value": {
+                                    "type": "transformer.node/ExpressionNode",
+                                    "children": [
+                                        {
+                                            "type": "transformer.node/VariableNode",
+                                            "fields": [
+                                                "staticModel1"
+                                            ]
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                "type": "transformer.node/ParameterNode",
+                                "name": "classes",
+                                "value": {
+                                    "type": "transformer.node/ExpressionNode",
+                                    "children": [
+                                        {
+                                            "type": "transformer.node/VariableNode",
+                                            "fields": [
+                                                "moduleClass"
+                                            ]
+                                        },
+                                        {
+                                            "type": "transformer.node/OperandNode",
+                                            "value": "+"
+                                        },
+                                        {
+                                            "type": "transformer.node/LiteralNode",
+                                            "value": "__search-input"
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                "type": "transformer.node/ParameterNode",
+                                "name": "skin",
+                                "value": {
+                                    "type": "transformer.node/ExpressionNode",
+                                    "children": [
+                                        {
+                                            "type": "transformer.node/VariableNode",
+                                            "fields": [
+                                                "skin"
+                                            ]
+                                        }
+                                    ]
+                                }
+                            },
+                            {
+                                "type": "transformer.node/ParameterNode",
+                                "name": "type",
+                                "value": {
+                                    "type": "transformer.node/ExpressionNode",
+                                    "children": [
+                                        {
+                                            "type": "transformer.node/LiteralNode",
+                                            "value": "search"
+                                        }
+                                    ]
+                                }
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "type": "transformer.node/TextNode",
+            "value": "\n"
+        }
+    ]
+}

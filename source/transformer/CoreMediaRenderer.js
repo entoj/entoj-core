@@ -5,6 +5,7 @@
  * @ignore
  */
 const BaseRenderer = require('./BaseRenderer.js').BaseRenderer;
+const htmlencode = require('htmlencode').htmlEncode;
 const EOL = '\n';
 
 
@@ -310,7 +311,7 @@ class CoreMediaRenderer extends BaseRenderer
             else if (parameter.value && parameter.name === 'model')
             {
                 result+= '<c:if test="${ empty ' + parameter.name + ' }">' + EOL;
-                result+= '  <c:set var="${ self }" />' + EOL;
+                result+= '  <c:set var="model" value="${ self }" />' + EOL;
                 result+= '</c:if>' + EOL;
             }
         }
@@ -378,6 +379,15 @@ class CoreMediaRenderer extends BaseRenderer
             result+= ' var="' + this.getVariable(node.variable) + '"';
             result+= ' key="' + key + '"';
             result+= ' />';
+        }
+        // handle complex variables
+        else if (node.type === 'SetNode' &&
+            node.value.type === 'ExpressionNode' &&
+            node.value.children.length &&
+            node.value.children[0].type === 'DictionaryNode')
+        {
+            const data = JSON.stringify(node.value.children[0].value);
+            result+= '<tk:loadJson modelAttribute="' + this.getVariable(node.variable) + '" jsonString="' + htmlencode(data) + '" />';
         }
         // handle standard set
         else if (node.variable.type == 'VariableNode')

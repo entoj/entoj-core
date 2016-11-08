@@ -87,5 +87,10 @@ describe(Parser.className, function()
         {
             return testFixture('macro');
         });
+
+        it('should parse complex variables', function()
+        {
+            return testFixture('complexvariables');
+        });
     });
 });

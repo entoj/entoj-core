@@ -38,6 +38,7 @@
     "gulp-svg-sprite": "*",
     "gulp-uglify": "*",
     "gulp-util": "*",
+    "htmlencode": "*",
     "htmlparser2": "*",
     "inquirer": "*",
     "intel": "*",

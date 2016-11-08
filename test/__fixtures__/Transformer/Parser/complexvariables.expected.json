@@ -1,0 +1,38 @@
+{
+    "type": "transformer.node/NodeList",
+    "children": [
+        {
+            "type": "transformer.node/SetNode",
+            "variable": {
+                "type": "transformer.node/VariableNode",
+                "fields": [
+                    "map"
+                ]
+            },
+            "value": {
+                "type": "transformer.node/ExpressionNode",
+                "children": [
+                    {
+                        "type": "transformer.node/DictionaryNode",
+                        "value": {
+                            "name": "foo",
+                            "index": 1,
+                            "options": {
+                                "key": "value"
+                            },
+                            "children": [
+                                {
+                                    "name": "bar"
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "type": "transformer.node/TextNode",
+            "value": "\n"
+        }
+    ]
+}
