@@ -17,30 +17,6 @@ const EOL = '\n';
 class CoreMediaRenderer extends BaseRenderer
 {
     /**
-     * @ignore
-     */
-    constructor(options)
-    {
-        super();
-
-        // Assign options
-        this._options = options || {};
-        this._options.self = this._options.self || {};
-        this._options.self.macros = this._options.self.macros || [];
-        this._options.self.models = this._options.self || [/staticModel\d+/i];
-    }
-
-
-    /**
-     * @inheritDoc
-     */
-    static get injections()
-    {
-        return { 'parameters': ['transformer/CoreMediaRenderer.options'] };
-    }
-
-
-    /**
      * @inheritDoc
      */
     static get className()
@@ -52,7 +28,21 @@ class CoreMediaRenderer extends BaseRenderer
     /**
      * Renders a variable
      */
-    getVariable(node)
+    prepareParameters(parameters)
+    {
+        const result = parameters || {};
+        result.useSelf = result.useSelf || {};
+        result.useSelf.macros = result.useSelf.macros || [];
+        result.useSelf.values = result.useSelf.values || [];
+        result.replaceSet = result.replaceSet || {};
+        return result;
+    }
+
+
+    /**
+     * Renders a variable
+     */
+    getVariable(node, parameters)
     {
         let result = '';
         if (node.fields && node.fields.length > 0)
@@ -78,7 +68,7 @@ class CoreMediaRenderer extends BaseRenderer
     /**
      *
      */
-    getLiteral(node)
+    getLiteral(node, parameters)
     {
         let result = '';
         if (typeof node.value == 'string')
@@ -97,7 +87,7 @@ class CoreMediaRenderer extends BaseRenderer
     /**
      *
      */
-    renderOutput(node)
+    renderOutput(node, parameters)
     {
         let result = '';
 
@@ -128,7 +118,7 @@ class CoreMediaRenderer extends BaseRenderer
             let key = '';
             const filter = node.children[0];
             result+= '<cm:include';
-            result+= ' self="${ ' + this.renderExpression(filter.value) + ' }"';
+            result+= ' self="${ ' + this.renderExpression(filter.value, parameters) + ' }"';
             result+= ' />';
         }
         // Just straight output
@@ -141,7 +131,7 @@ class CoreMediaRenderer extends BaseRenderer
                 switch(node.type)
                 {
                     case 'FilterNode':
-                        result+= this.renderExpression(node);
+                        result+= this.renderExpression(node, parameters);
                         break;
 
                     case 'NodeList':
@@ -153,15 +143,15 @@ class CoreMediaRenderer extends BaseRenderer
                         break;
 
                     case 'LiteralNode':
-                        result+= this.getLiteral(node);
+                        result+= this.getLiteral(node, parameters);
                         break;
 
                     case 'VariableNode':
-                        result+= this.getVariable(node);
+                        result+= this.getVariable(node, parameters);
                         break;
 
                     case 'YieldNode':
-                        result+= this.renderYield(node);
+                        result+= this.renderYield(node, parameters);
                         break;
 
                     default:
@@ -180,16 +170,16 @@ class CoreMediaRenderer extends BaseRenderer
     /**
      *
      */
-    renderVariable(node)
+    renderVariable(node, parameters)
     {
-        return '${ ' + this.getVariable(node) + ' }';
+        return '${ ' + this.getVariable(node, parameters) + ' }';
     }
 
 
     /**
      *
      */
-    renderCondition(node)
+    renderCondition(node, parameters)
     {
         if (!node)
         {
@@ -203,12 +193,12 @@ class CoreMediaRenderer extends BaseRenderer
                 if (node.name == 'empty')
                 {
                     result+= 'empty ';
-                    result+= this.renderExpression(node.value);
+                    result+= this.renderExpression(node.value, parameters);
                 }
                 else if (node.name == 'notempty')
                 {
                     result+= ' not empty ';
-                    result+= this.renderExpression(node.value);
+                    result+= this.renderExpression(node.value, parameters);
                 }
                 else
                 {
@@ -216,7 +206,7 @@ class CoreMediaRenderer extends BaseRenderer
                     {
                         result+= '(';
                     }
-                    result+= this.renderCondition(node.value);
+                    result+= this.renderCondition(node.value, parameters);
                     if (node.value.type === 'FilterNode')
                     {
                         result+= ')';
@@ -233,12 +223,12 @@ class CoreMediaRenderer extends BaseRenderer
             case 'ConditionNode':
                 for (const child of node.children)
                 {
-                    result+= this.renderCondition(child);
+                    result+= this.renderCondition(child, parameters);
                 }
                 break;
 
             case 'LiteralNode':
-                result+= this.getLiteral(node);
+                result+= this.getLiteral(node, parameters);
                 break;
 
             case 'OperandNode':
@@ -250,7 +240,7 @@ class CoreMediaRenderer extends BaseRenderer
                 result+= '(';
                 for (const groupNode of node.children)
                 {
-                    result+= this.renderCondition(groupNode);
+                    result+= this.renderCondition(groupNode, parameters);
                 }
                 result+= ')';
                 break;
@@ -265,7 +255,7 @@ class CoreMediaRenderer extends BaseRenderer
     /**
      *
      */
-    renderExpression(node)
+    renderExpression(node, parameters)
     {
         if (!node)
         {
@@ -279,41 +269,41 @@ class CoreMediaRenderer extends BaseRenderer
             case 'NodeList':
                 for (const child of node.children)
                 {
-                    result+= this.renderExpression(child);
+                    result+= this.renderExpression(child, parameters);
                 }
                 break;
 
             case 'Array':
                 for (const child of node)
                 {
-                    result+= this.renderExpression(child);
+                    result+= this.renderExpression(child, parameters);
                 }
                 break;
 
             case 'FilterNode':
-                result+= this.renderExpression(node.value);
+                result+= this.renderExpression(node.value, parameters);
                 result+= '.' + node.name + '(';
-                const parameters = [];
+                const filterParameters = [];
                 if (node.parameters)
                 {
                     for (const parameter of node.parameters.children)
                     {
-                        parameters.push(this.renderExpression(parameter.value));
+                        filterParameters.push(this.renderExpression(parameter.value, parameters));
                     }
                 }
-                result+= parameters.join(', ');
+                result+= filterParameters.join(', ');
                 result+= ')';
                 break;
 
             case 'ExpressionNode':
                 for (const child of node.children)
                 {
-                    result+= this.renderExpression(child);
+                    result+= this.renderExpression(child, parameters);
                 }
                 break;
 
             case 'LiteralNode':
-                result+= this.getLiteral(node);
+                result+= this.getLiteral(node, parameters);
                 break;
 
             case 'OperandNode':
@@ -322,7 +312,7 @@ class CoreMediaRenderer extends BaseRenderer
                 break;
 
             case 'VariableNode':
-                result+= this.getVariable(node);
+                result+= this.getVariable(node, parameters);
                 break;
 
             default:
@@ -335,7 +325,7 @@ class CoreMediaRenderer extends BaseRenderer
     /**
      *
      */
-    renderMacro(node)
+    renderMacro(node, parameters)
     {
         let result = '';
         result+= '<!-- Macro ' + node.name + ' -->' + EOL;
@@ -346,7 +336,7 @@ class CoreMediaRenderer extends BaseRenderer
             if (parameter.value && parameter.name !== 'model')
             {
                 result+= '<c:if test="${ empty ' + parameter.name + ' }">' + EOL;
-                result+= '  <c:set var="' + parameter.name + '" value="${ ' + this.renderExpression(parameter.value) + ' }" />' + EOL;
+                result+= '  <c:set var="' + parameter.name + '" value="${ ' + this.renderExpression(parameter.value, parameters) + ' }" />' + EOL;
                 result+= '</c:if>' + EOL;
             }
             else if (parameter.value && parameter.name === 'model')
@@ -360,7 +350,7 @@ class CoreMediaRenderer extends BaseRenderer
         // Render contents
         for (const child of node.children)
         {
-            result+= this.renderNode(child);
+            result+= this.renderNode(child, parameters);
         }
 
         result+= '<!-- /Macro ' + node.name + ' -->' + EOL;
@@ -371,7 +361,7 @@ class CoreMediaRenderer extends BaseRenderer
     /**
      *
      */
-    renderSet(node)
+    renderSet(node, parameters)
     {
         let result = '';
 
@@ -383,8 +373,8 @@ class CoreMediaRenderer extends BaseRenderer
             node.value.children[0].name === 'link')
         {
             result+= '<cm:link';
-            result+= ' var="' + this.getVariable(node.variable) + '"';
-            result+= ' target="${ ' + this.renderExpression(node.value.children[0].value) + ' }"';
+            result+= ' var="' + this.getVariable(node.variable, parameters) + '"';
+            result+= ' target="${ ' + this.renderExpression(node.value.children[0].value, parameters) + ' }"';
             result+= ' />';
         }
         // handle markup fields
@@ -395,11 +385,11 @@ class CoreMediaRenderer extends BaseRenderer
             node.value.children[0].name === 'markup')
         {
             result+= '<c:set';
-            result+= ' var="' + this.getVariable(node.variable) + '"';
+            result+= ' var="' + this.getVariable(node.variable, parameters) + '"';
             result+= '>';
 
             result+= '<cm:include';
-            result+= ' self="${ ' + this.renderExpression(node.value.children[0].value) + ' }"';
+            result+= ' self="${ ' + this.renderExpression(node.value.children[0].value, parameters) + ' }"';
             result+= ' />';
 
             result+= '</c:set>';
@@ -422,7 +412,7 @@ class CoreMediaRenderer extends BaseRenderer
                 key = filter.value.value;
             }
             result+= '<fmt:message';
-            result+= ' var="' + this.getVariable(node.variable) + '"';
+            result+= ' var="' + this.getVariable(node.variable, parameters) + '"';
             result+= ' key="' + key + '"';
             result+= ' />';
         }
@@ -433,14 +423,22 @@ class CoreMediaRenderer extends BaseRenderer
             node.value.children[0].type === 'DictionaryNode')
         {
             const data = JSON.stringify(node.value.children[0].value);
-            result+= '<tk:loadJson modelAttribute="' + this.getVariable(node.variable) + '" jsonString=\'' + (data) + '\' />';
+            result+= '<tk:loadJson modelAttribute="' + this.getVariable(node.variable, parameters) + '" jsonString=\'' + (data) + '\' />';
+        }
+        // handle set replacements
+        else if (typeof parameters.replaceSet[this.getVariable(node.variable, parameters)] !== 'undefined')
+        {
+            result+= '<c:set';
+            result+= ' var="' + this.getVariable(node.variable, parameters) + '"';
+            result+= ' value="' + parameters.replaceSet[this.getVariable(node.variable, parameters)] + '"';
+            result+= ' />';
         }
         // handle standard set
         else if (node.variable.type == 'VariableNode')
         {
             result+= '<c:set';
-            result+= ' var="' + this.getVariable(node.variable) + '"';
-            result+= ' value="${ ' + this.renderExpression(node.value) + ' }"';
+            result+= ' var="' + this.getVariable(node.variable, parameters) + '"';
+            result+= ' value="${ ' + this.renderExpression(node.value, parameters) + ' }"';
             result+= ' />';
         }
         return result;
@@ -450,7 +448,7 @@ class CoreMediaRenderer extends BaseRenderer
     /**
      *
      */
-    renderIf(node)
+    renderIf(node, parameters)
     {
         let result = '';
 
@@ -458,11 +456,11 @@ class CoreMediaRenderer extends BaseRenderer
         if (!node.elseChildren.length)
         {
             result+= '<c:if test="${ ';
-            result+= this.renderCondition(node.condition).trim();
+            result+= this.renderCondition(node.condition, parameters).trim();
             result+= ' }">';
             for (const child of node.children)
             {
-                result+= this.renderNode(child);
+                result+= this.renderNode(child, parameters);
             }
             result+= '</c:if>';
         }
@@ -470,17 +468,17 @@ class CoreMediaRenderer extends BaseRenderer
         else
         {
             result+= '<c:choose><c:when test="${ ';
-            result+= this.renderCondition(node.condition).trim();
+            result+= this.renderCondition(node.condition, parameters).trim();
             result+= ' }">';
             for (const child of node.children)
             {
-                result+= this.renderNode(child);
+                result+= this.renderNode(child, parameters);
             }
             result+= '</c:when>';
             result+= '<c:otherwise>';
             for (const child of node.elseChildren)
             {
-                result+= this.renderNode(child);
+                result+= this.renderNode(child, parameters);
             }
             result+= '</c:otherwise></c:choose>';
         }
@@ -492,17 +490,17 @@ class CoreMediaRenderer extends BaseRenderer
     /**
      *
      */
-    renderFor(node)
+    renderFor(node, parameters)
     {
         let result = '';
         result+= '<c:forEach var="';
         result+= node.name;
         result+= '" items="${ ';
-        result+= this.renderExpression(node.value).trim();
+        result+= this.renderExpression(node.value, parameters).trim();
         result+= ' }">';
         for (const child of node.children)
         {
-            result+= this.renderNode(child);
+            result+= this.renderNode(child, parameters);
         }
         result+= '</c:forEach>';
         return result;
@@ -512,12 +510,12 @@ class CoreMediaRenderer extends BaseRenderer
     /**
      *
      */
-    renderCall(node)
+    renderCall(node, parameters)
     {
         // Prepare
         const modelParameter = node.parameters.getParameter('model');
         const view = (node.name.endsWith('_dispatcher')) ? node.name.substr(0, node.name.length - 11) : node.name;
-        const value = (modelParameter && modelParameter.value) ? this.renderExpression(modelParameter.value) : false;
+        const value = (modelParameter && modelParameter.value) ? this.renderExpression(modelParameter.value, parameters) : '';
         let result = '';
 
         // Start
@@ -526,8 +524,8 @@ class CoreMediaRenderer extends BaseRenderer
         // Determine self
         if (modelParameter &&
             modelParameter.value &&
-            this._options.self.macros.indexOf(view) < 0 &&
-            !value.startsWith('staticModel'))
+            parameters.useSelf.macros.indexOf(view) < 0 &&
+            !parameters.useSelf.values.some((regex) => value.match(regex) ))
         {
             result+= 'self="${ ' + value + ' }" ';
         }
@@ -545,13 +543,13 @@ class CoreMediaRenderer extends BaseRenderer
         // Determine parameters
         if (modelParameter && modelParameter.value)
         {
-            result+= '<cm:param name="' + modelParameter.name + '" value="${ ' + this.renderExpression(modelParameter.value) + ' }"/>';
+            result+= '<cm:param name="' + modelParameter.name + '" value="${ ' + this.renderExpression(modelParameter.value, parameters) + ' }"/>';
         }
         for (const parameter of node.parameters.children)
         {
             if (parameter !== modelParameter)
             {
-                result+= '<cm:param name="' + parameter.name + '" value="${ ' + this.renderExpression(parameter.value) + ' }"/>';
+                result+= '<cm:param name="' + parameter.name + '" value="${ ' + this.renderExpression(parameter.value, parameters) + ' }"/>';
             }
         }
 
@@ -565,7 +563,7 @@ class CoreMediaRenderer extends BaseRenderer
     /**
      *
      */
-    renderYield(node)
+    renderYield(node, parameters)
     {
         return '<cm:include self="${ self }"/>';
     }
@@ -574,7 +572,7 @@ class CoreMediaRenderer extends BaseRenderer
     /**
      *
      */
-    renderNode(node)
+    renderNode(node, parameters)
     {
         let result = '';
         switch(node.type)
@@ -583,12 +581,12 @@ class CoreMediaRenderer extends BaseRenderer
             case 'NodeList':
                 for (const child of node.children)
                 {
-                    result+= this.renderNode(child);
+                    result+= this.renderNode(child, parameters);
                 }
                 break;
 
             case 'OutputNode':
-                result+= this.renderOutput(node);
+                result+= this.renderOutput(node, parameters);
                 break;
 
             case 'TextNode':
@@ -597,31 +595,31 @@ class CoreMediaRenderer extends BaseRenderer
                 break;
 
             case 'IfNode':
-                result+= this.renderIf(node);
+                result+= this.renderIf(node, parameters);
                 break;
 
             case 'SetNode':
-                result+= this.renderSet(node);
+                result+= this.renderSet(node, parameters);
                 break;
 
             case 'MacroNode':
-                result+= this.renderMacro(node);
+                result+= this.renderMacro(node, parameters);
                 break;
 
             case 'VariableNode':
-                result+= this.renderVariable(node);
+                result+= this.renderVariable(node, parameters);
                 break;
 
             case 'ForNode':
-                result+= this.renderFor(node);
+                result+= this.renderFor(node, parameters);
                 break;
 
             case 'CallNode':
-                result+= this.renderCall(node);
+                result+= this.renderCall(node, parameters);
                 break;
 
             case 'YieldNode':
-                result+= this.renderYield(node);
+                result+= this.renderYield(node, parameters);
                 break;
 
             default:
@@ -634,16 +632,17 @@ class CoreMediaRenderer extends BaseRenderer
 
     /**
      */
-    render(node)
+    render(node, parameters)
     {
         if (!node)
         {
             return Promise.resolve('');
         }
+        const params = this.prepareParameters(parameters);
         let source = '';
         source+= '<%@ page contentType="text/html; charset=UTF-8" session="false" %>' + EOL;
         source+= '<%@ include file="../../../../../WEB-INF/includes/taglibs.jinc" %>' + EOL;
-        source+= this.renderNode(node);
+        source+= this.renderNode(node, params);
         return Promise.resolve(source);
     }
 }

@@ -63,7 +63,7 @@ class Transformer extends Base
     /**
      * @returns {Promise<BaseNode>}
      */
-    parseString(source)
+    parseString(source, parameters)
     {
         const scope = this;
         const promise = co(function *()
@@ -92,7 +92,7 @@ class Transformer extends Base
     /**
      * @returns {Promise<BaseNode>}
      */
-    parseMacro(siteQuery, macroQuery)
+    parseMacro(siteQuery, macroQuery, parameters)
     {
         const scope = this;
         const promise = co(function *()
@@ -105,7 +105,7 @@ class Transformer extends Base
             }
 
             // Parse file
-            const rootNode = yield scope.parseString(macro.file.contents);
+            const rootNode = yield scope.parseString(macro.file.contents, parameters);
             if (!rootNode)
             {
                 throw new Error(scope.className + '::parseMacro - could not parse source for macro ' + macroQuery);
@@ -139,7 +139,7 @@ class Transformer extends Base
      * @returns {Promise<BaseNode>}
      * @protected
      */
-    transformNode(rootNode)
+    transformNode(rootNode, parameters)
     {
         const scope = this;
         const promise = co(function *()
@@ -158,12 +158,12 @@ class Transformer extends Base
     /**
      * @returns {Promise<BaseNode>}
      */
-    renderNode(rootNode)
+    renderNode(rootNode, parameters)
     {
         const scope = this;
         const promise = co(function *()
         {
-            const result = yield scope._renderer.render(rootNode);
+            const result = yield scope._renderer.render(rootNode, parameters);
             return result;
         });
         return promise;
@@ -173,27 +173,27 @@ class Transformer extends Base
     /**
      * @returns {Promise<BaseNode>}
      */
-    transform(source)
+    transform(source, parameters)
     {
         const scope = this;
         const promise = co(function *()
         {
             // Parse source
-            const rootNode = yield scope.parseString(source);
+            const rootNode = yield scope.parseString(source, parameters);
             if (rootNode === false)
             {
                 throw new Error(scope.className + '::transform - could not parse source');
             }
 
             // Transform parsed nodes
-            const transformedRootNode = yield scope.transformNode(rootNode);
+            const transformedRootNode = yield scope.transformNode(rootNode, parameters);
             if (!transformedRootNode)
             {
                 throw new Error(scope.className + ':transform - could not transform parsed node');
             }
 
             // Render transformed nodes
-            const result = yield scope.renderNode(transformedRootNode);
+            const result = yield scope.renderNode(transformedRootNode, parameters);
             return result;
         });
         return promise;
@@ -203,27 +203,27 @@ class Transformer extends Base
     /**
      * @returns {Promise<BaseNode>}
      */
-    transformMacro(siteQuery, macroQuery)
+    transformMacro(siteQuery, macroQuery, parameters)
     {
         const scope = this;
         const promise = co(function *()
         {
             // Parse macro
-            const rootNode = yield scope.parseMacro(siteQuery, macroQuery);
+            const rootNode = yield scope.parseMacro(siteQuery, macroQuery, parameters);
             if (rootNode === false)
             {
                 throw new Error(scope.className + '::transform - could not parse macro');
             }
 
             // Transform parsed nodes
-            const transformedRootNode = yield scope.transformNode(rootNode);
+            const transformedRootNode = yield scope.transformNode(rootNode, parameters);
             if (!transformedRootNode)
             {
                 throw new Error(scope.className + ':transform - could not transform parsed node');
             }
 
             // Render transformed nodes
-            const result = yield scope.renderNode(transformedRootNode);
+            const result = yield scope.renderNode(transformedRootNode, parameters);
             return result;
         });
         return promise;

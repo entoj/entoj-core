@@ -10,6 +10,7 @@ const CoreMediaTransformer = require('../transformer/CoreMediaTransformer.js').C
 const CliLogger = require('../cli/CliLogger.js').CliLogger;
 const assertParameter = require('../utils/assert.js').assertParameter;
 const pathes = require('../utils/pathes.js');
+const merge = require('../utils/objects.js').merge;
 const templateString = require('es6-template-strings');
 const through2 = require('through2');
 const VinylFile = require('vinyl');
@@ -37,7 +38,6 @@ class TransformCoreMediaTask extends BaseTask
     constructor(cliLogger, globalRepository, transformer)
     {
         super(cliLogger);
-
 
         //Check params
         assertParameter(this, 'globalRepository', globalRepository, true, GlobalRepository);
@@ -131,7 +131,8 @@ class TransformCoreMediaTask extends BaseTask
 
             // Compile
             const work = scope._cliLogger.work('Compiling CoreMedia template for <' + entity.idString + '> as <' + filename + '>');
-            const contents = yield scope._transformer.transformMacro(entity.id.site, macroName);
+            const transformerOptions = merge(params, settings);
+            const contents = yield scope._transformer.transformMacro(entity.id.site, macroName, transformerOptions);
             scope._cliLogger.end(work);
 
             // Done

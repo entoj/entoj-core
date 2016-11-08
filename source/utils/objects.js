@@ -1,5 +1,9 @@
 'use strict';
 
+const mergeWith = require('lodash.mergewith');
+const clone = require('lodash.clone');
+
+
 /**
  * Creates a instance of type with the given parameters
  *
@@ -93,9 +97,28 @@ function isEmpty(value)
 
 
 /**
+ *  @memberOf utils
+ *  @returns {Object}
+ */
+function merge(object, ...merges)
+{
+    let result = clone(object);
+    mergeWith(result, ...merges, function(objValue, srcValue)
+    {
+        if (Array.isArray(objValue))
+        {
+            return objValue.concat(srcValue);
+        }
+    });
+    return result;
+}
+
+
+/**
  * Exports
  * @ignore
  */
 module.exports.create = create;
 module.exports.isPlainObject = isPlainObject;
 module.exports.isEmpty = isEmpty;
+module.exports.merge = merge;

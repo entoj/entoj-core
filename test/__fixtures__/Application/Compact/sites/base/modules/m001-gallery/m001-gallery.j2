@@ -16,8 +16,10 @@
 		type='',
 		paginationMode='graphical',
 		class='') %}
+    {% set content = 'default' %}
 	<div class="m001-gallery {{ type }} {{ class }}">
         {{ e005_button() }}
+        {{ content }}
 	</div>
 {%  endmacro %}
 
