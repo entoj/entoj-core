@@ -58,7 +58,7 @@
     "minimist": "*",
     "mz": "*",
     "node-sass": "*",
-    "nunjucks": "*",
+    "nunjucks": "^2.5.2",
     "postcss-cssnext": "*",
     "postcss-discard-comments": "*",
     "postcss-urlrewrite": "*",
