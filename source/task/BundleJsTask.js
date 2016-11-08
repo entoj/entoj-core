@@ -131,7 +131,7 @@ class BundleJsTask extends BaseTask
                 const bundles = {};
                 for (const group in sourceFiles)
                 {
-                    const filename = templateString(params.filenameTemplate, { site: site, group: group });
+                    const filename = pathes.normalizePathSeperators(templateString(params.filenameTemplate, { site: site, group: group }));
                     const groupWork = scope._cliLogger.work('Genrating bundle config for <' + site.name + '> / <' + group + '>');
                     const bundle =
                     {
