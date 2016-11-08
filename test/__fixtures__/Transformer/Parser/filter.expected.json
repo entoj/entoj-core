@@ -186,6 +186,30 @@
         {
             "type": "transformer.node/TextNode",
             "value": "\n"
+        },
+        {
+            "type": "transformer.node/OutputNode",
+            "children": [
+                {
+                    "type": "transformer.node/FilterNode",
+                    "name": "markup",
+                    "parameters": {
+                        "type": "transformer.node/ParametersNode",
+                        "children": []
+                    },
+                    "value": {
+                        "type": "transformer.node/VariableNode",
+                        "fields": [
+                            "model",
+                            "text"
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "type": "transformer.node/TextNode",
+            "value": "\n"
         }
     ]
 }

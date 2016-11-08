@@ -120,6 +120,17 @@ class CoreMediaRenderer extends BaseRenderer
             result+= ' key="' + key + '"';
             result+= ' />';
         }
+        // Check markup
+        else if (node.children.length &&
+            node.children[0].type === 'FilterNode' &&
+            node.children[0].name === 'markup')
+        {
+            let key = '';
+            const filter = node.children[0];
+            result+= '<cm:include';
+            result+= ' self="${ ' + this.renderExpression(filter.value) + ' }"';
+            result+= ' />';
+        }
         // Just straight output
         else
         {
@@ -164,7 +175,6 @@ class CoreMediaRenderer extends BaseRenderer
         }
         return result;
     }
-
 
 
     /**
