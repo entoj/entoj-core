@@ -165,7 +165,7 @@ describe(TransformCoreMediaTask.className, function()
     });
 
 
-    xdescribe('#transformEntities()', function()
+    describe('#transformEntities()', function()
     {
         it('should return a promise', function()
         {
@@ -194,7 +194,7 @@ describe(TransformCoreMediaTask.className, function()
     });
 
 
-    xdescribe('#stream()', function()
+    describe('#stream()', function()
     {
         it('should stream all compiled jsp files', function()
         {
