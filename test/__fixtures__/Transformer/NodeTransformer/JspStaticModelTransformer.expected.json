@@ -6,7 +6,12 @@
             "children": [
                 {
                     "type": "transformer.node/SetNode",
-                    "variable": "staticModel1",
+                    "variable": {
+                        "type": "transformer.node/VariableNode",
+                        "fields": [
+                            "staticModel1"
+                        ]
+                    },
                     "value": {
                         "type": "transformer.node/ExpressionNode",
                         "children": [

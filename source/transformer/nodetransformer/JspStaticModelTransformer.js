@@ -79,12 +79,13 @@ class JspStaticModelTransformer extends NodeTransformer
                 const modelPath = model.value.children[0].value;
                 const viewModel = synchronize.execute(this._viewModelRepository, 'getByPath', [modelPath]);
                 const jsonNode = new DictionaryNode(viewModel.data);
-                const setNode = new SetNode(modelName, new ExpressionNode([jsonNode]));
-                const listNode = new NodeList([setNode, node]);
+                const setNode = new SetNode(new VariableNode([modelName]), new ExpressionNode([jsonNode]));
 
                 // Set model parameter to generated variable
                 model.value = new ExpressionNode([new VariableNode([modelName])])
 
+                // Add
+                const listNode = new NodeList([setNode, node]);
                 return listNode;
             }
         }
