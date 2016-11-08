@@ -81,9 +81,14 @@ class CoreMediaRenderer extends BaseRenderer
             node.children[0].name === 'translate')
         {
             let key = '';
-            if (node.children[0].parameters.children.length)
+            const filter = node.children[0];
+            if (filter.parameters.children.length)
             {
-                key = node.children[0].parameters.children[0].value.children[0].value;
+                key = filter.parameters.children[0].value.children[0].value;
+            }
+            else if (filter.value.type === 'LiteralNode')
+            {
+                key = filter.value.value;
             }
             result+= '<fmt:message';
             result+= ' key="' + key + '"';
@@ -371,9 +376,14 @@ class CoreMediaRenderer extends BaseRenderer
             node.value.children[0].name === 'translate')
         {
             let key = '';
-            if (node.value.children[0] && node.value.children[0].parameters.children.length)
+            const filter = node.value.children[0];
+            if (filter.parameters.children.length)
             {
-                key = node.value.children[0].parameters.children[0].value.children[0].value;
+                key = filter.parameters.children[0].value.children[0].value;
+            }
+            else if (filter.value.type === 'LiteralNode')
+            {
+                key = filter.value.value;
             }
             result+= '<fmt:message';
             result+= ' var="' + this.getVariable(node.variable) + '"';
@@ -387,7 +397,7 @@ class CoreMediaRenderer extends BaseRenderer
             node.value.children[0].type === 'DictionaryNode')
         {
             const data = JSON.stringify(node.value.children[0].value);
-            result+= '<tk:loadJson modelAttribute="' + this.getVariable(node.variable) + '" jsonString="' + htmlencode(data) + '" />';
+            result+= '<tk:loadJson modelAttribute="' + this.getVariable(node.variable) + '" jsonString=\'' + (data) + '\' />';
         }
         // handle standard set
         else if (node.variable.type == 'VariableNode')
@@ -475,21 +485,7 @@ class CoreMediaRenderer extends BaseRenderer
         */
 
         let result = '';
-        result+= '<cm:include ';
-
-        // Determine self
-        const modelParameter = node.parameters.children.find((parameter) =>
-        {
-            return parameter.name == 'model';
-        });
-        if (modelParameter && modelParameter.value)
-        {
-            result+= 'self="${ ' + this.renderExpression(modelParameter.value) + ' }" ';
-        }
-        else
-        {
-            result+= 'self="${ self }" ';
-        }
+        result+= '<cm:include self="${ self }" ';
 
         // Determine view
         if (node.name.endsWith('_dispatcher'))
@@ -503,6 +499,14 @@ class CoreMediaRenderer extends BaseRenderer
         result+= '>';
 
         // Determine parameters
+        const modelParameter = node.parameters.children.find((parameter) =>
+        {
+            return parameter.name == 'model';
+        });
+        if (modelParameter && modelParameter.value)
+        {
+            result+= '<cm:param name="' + modelParameter.name + '" value="${ ' + this.renderExpression(modelParameter.value) + ' }"/>';
+        }
         for (const parameter of node.parameters.children)
         {
             if (parameter !== modelParameter)
