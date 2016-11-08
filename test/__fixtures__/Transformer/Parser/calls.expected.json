@@ -17,7 +17,8 @@
                                 {
                                     "type": "transformer.node/VariableNode",
                                     "fields": [
-                                        "self"
+                                        "model",
+                                        "button"
                                     ]
                                 }
                             ]

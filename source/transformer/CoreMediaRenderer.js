@@ -5,6 +5,8 @@
  * @ignore
  */
 const BaseRenderer = require('./BaseRenderer.js').BaseRenderer;
+const GlobalRepository = require('../model/GlobalRepository.js').GlobalRepository;
+const ViewModelRepository = require('../model/viewmodel/ViewModelRepository.js').ViewModelRepository;
 const htmlencode = require('htmlencode').htmlEncode;
 const EOL = '\n';
 
@@ -14,6 +16,30 @@ const EOL = '\n';
  */
 class CoreMediaRenderer extends BaseRenderer
 {
+    /**
+     * @ignore
+     */
+    constructor(options)
+    {
+        super();
+
+        // Assign options
+        this._options = options || {};
+        this._options.self = this._options.self || {};
+        this._options.self.macros = this._options.self.macros || [];
+        this._options.self.models = this._options.self || [/staticModel\d+/i];
+    }
+
+
+    /**
+     * @inheritDoc
+     */
+    static get injections()
+    {
+        return { 'parameters': ['transformer/CoreMediaRenderer.options'] };
+    }
+
+
     /**
      * @inheritDoc
      */
@@ -478,31 +504,35 @@ class CoreMediaRenderer extends BaseRenderer
      */
     renderCall(node)
     {
-        /*
-        <cm:include self="${list}" view="linklist">
-            <cm:param name="key" value="${}"/>
-        </cm:include>
-        */
-
+        // Prepare
+        const modelParameter = node.parameters.getParameter('model');
+        const view = (node.name.endsWith('_dispatcher')) ? node.name.substr(0, node.name.length - 11) : node.name;
+        const value = (modelParameter && modelParameter.value) ? this.renderExpression(modelParameter.value) : false;
         let result = '';
-        result+= '<cm:include self="${ self }" ';
 
-        // Determine view
-        if (node.name.endsWith('_dispatcher'))
+        // Start
+        result+= '<cm:include ';
+
+        // Determine self
+        if (modelParameter &&
+            modelParameter.value &&
+            this._options.self.macros.indexOf(view) < 0 &&
+            !value.startsWith('staticModel'))
         {
-            result+= 'view="' + node.name.substr(0, node.name.length - 11) + '"';
+            result+= 'self="${ ' + value + ' }" ';
         }
         else
         {
-            result+= 'view="' + node.name + '"';
+            result+= 'self="${ self }" ';
         }
+
+        // Determine view
+        result+= 'view="' + view + '"';
+
+        // End
         result+= '>';
 
         // Determine parameters
-        const modelParameter = node.parameters.children.find((parameter) =>
-        {
-            return parameter.name == 'model';
-        });
         if (modelParameter && modelParameter.value)
         {
             result+= '<cm:param name="' + modelParameter.name + '" value="${ ' + this.renderExpression(modelParameter.value) + ' }"/>';
