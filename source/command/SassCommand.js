@@ -102,7 +102,7 @@ class SassCommand extends BaseCommand
             yield scope.context.di.create(CompileSassTask, mapping)
                 .pipe(scope.context.di.create(PostprocessCssTask, mapping))
                 .pipe(scope.context.di.create(WriteFilesTask, mapping))
-                .run(buildConfiguration, { path: path });
+                .run(buildConfiguration, { writePath: path });
         });
         return promise;
     }

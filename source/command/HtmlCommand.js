@@ -5,9 +5,14 @@
  * @ignore
  */
 const BaseCommand = require('./BaseCommand.js').BaseCommand;
+const CliLogger = require('../cli/CliLogger.js').CliLogger;
 const Context = require('../application/Context.js').Context;
-const html = require('../gulp/task/html.js');
-const utils = require('./utils.js');
+const RenderHtmlTask = require('../task/RenderHtmlTask.js').RenderHtmlTask;
+const BeautifyHtmlTask = require('../task/BeautifyHtmlTask.js').BeautifyHtmlTask;
+const WriteFilesTask = require('../task/WriteFilesTask.js').WriteFilesTask;
+const PathesConfiguration = require('../model/configuration/PathesConfiguration.js').PathesConfiguration;
+const BuildConfiguration = require('../model/configuration/BuildConfiguration.js').BuildConfiguration;
+const co = require('co');
 
 
 /**
@@ -72,10 +77,20 @@ class HtmlCommand extends BaseCommand
      */
     compile(parameters)
     {
-        const logger = this.createLogger('command.html.compile');
-        const section = logger.section('Compiling html');
-        const promise = utils.runTask(html.compile, this.context.parameters._[2] || '*')
-            .then(() => logger.end(section));
+        const scope = this;
+        const promise = co(function *()
+        {
+            const logger = scope.createLogger('command.html.compile');
+            const mapping = new Map();
+            mapping.set(CliLogger, logger);
+            const pathesConfiguration = scope.context.di.create(PathesConfiguration);
+            const path = yield pathesConfiguration.resolveCache('/html');
+            const buildConfiguration = scope.context.di.create(BuildConfiguration);
+            yield scope.context.di.create(RenderHtmlTask, mapping)
+                .pipe(scope.context.di.create(BeautifyHtmlTask, mapping))
+                .pipe(scope.context.di.create(WriteFilesTask, mapping))
+                .run(buildConfiguration, { writePath: path });
+        });
         return promise;
     }
 

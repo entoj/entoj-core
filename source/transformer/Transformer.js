@@ -101,6 +101,7 @@ class Transformer extends Base
             const macro = yield scope._globalRepository.resolveMacro(siteQuery, macroQuery);
             if (!macro || !macro.file)
             {
+                /* istanbul ignore next */
                 throw new Error(scope.className + '::parseMacro - could not find macro ' + macroQuery);
             }
 
@@ -108,6 +109,7 @@ class Transformer extends Base
             const rootNode = yield scope.parseString(macro.file.contents, parameters);
             if (!rootNode)
             {
+                /* istanbul ignore next */
                 throw new Error(scope.className + '::parseMacro - could not parse source for macro ' + macroQuery);
             }
 
@@ -126,6 +128,7 @@ class Transformer extends Base
             }
             if (!macroNode)
             {
+                /* istanbul ignore next */
                 throw new Error(scope.className + ':parseMacro - could not find macro ' + macroQuery + ' in parsed source');
             }
 
@@ -182,6 +185,7 @@ class Transformer extends Base
             const rootNode = yield scope.parseString(source, parameters);
             if (rootNode === false)
             {
+                /* istanbul ignore next */
                 throw new Error(scope.className + '::transform - could not parse source');
             }
 
@@ -189,6 +193,7 @@ class Transformer extends Base
             const transformedRootNode = yield scope.transformNode(rootNode, parameters);
             if (!transformedRootNode)
             {
+                /* istanbul ignore next */
                 throw new Error(scope.className + ':transform - could not transform parsed node');
             }
 
@@ -212,6 +217,7 @@ class Transformer extends Base
             const rootNode = yield scope.parseMacro(siteQuery, macroQuery, parameters);
             if (rootNode === false)
             {
+                /* istanbul ignore next */
                 throw new Error(scope.className + '::transform - could not parse macro');
             }
 
@@ -219,6 +225,7 @@ class Transformer extends Base
             const transformedRootNode = yield scope.transformNode(rootNode, parameters);
             if (!transformedRootNode)
             {
+                /* istanbul ignore next */
                 throw new Error(scope.className + ':transform - could not transform parsed node');
             }
 

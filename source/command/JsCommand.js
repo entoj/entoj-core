@@ -87,7 +87,7 @@ class JsCommand extends BaseCommand
             const buildConfiguration = scope.context.di.create(BuildConfiguration);
             yield scope.context.di.create(BundleJsTask, mapping)
                 .pipe(scope.context.di.create(WriteFilesTask, mapping))
-                .run(buildConfiguration, { path: path });
+                .run(buildConfiguration, { writePath: path });
         });
         return promise;
     }
