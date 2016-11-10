@@ -91,7 +91,7 @@ class CoreMediaRenderer extends BaseRenderer
     {
         let result = '';
 
-        // Check translation filters
+        // Check translation filter
         if (node.children.length &&
             node.children[0].type === 'FilterNode' &&
             node.children[0].name === 'translate')
@@ -110,7 +110,7 @@ class CoreMediaRenderer extends BaseRenderer
             result+= ' key="' + key + '"';
             result+= ' />';
         }
-        // Check markup
+        // Check markup filter
         else if (node.children.length &&
             node.children[0].type === 'FilterNode' &&
             node.children[0].name === 'markup')
@@ -120,6 +120,18 @@ class CoreMediaRenderer extends BaseRenderer
             result+= '<cm:include';
             result+= ' self="${ ' + this.renderExpression(filter.value, parameters) + ' }"';
             result+= ' />';
+        }
+        // Check default filter
+        else if (node.children.length &&
+            node.children[0].type === 'FilterNode' &&
+            node.children[0].name === 'default')
+        {
+            const filter = node.children[0];
+            const value = this.renderExpression(filter.value, parameters);
+            const defaultValue = this.renderExpression(filter.parameters.children[0].value, parameters);
+            result+= '${ ';
+            result+=  value + ' is empty ? ' + defaultValue + ' : ' + value;
+            result+= ' }';
         }
         // Just straight output
         else
