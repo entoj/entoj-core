@@ -51,10 +51,12 @@ class EnvironmentTask extends BaseTask
             return super.stream(stream, buildConfiguration, parameters);
         }
 
-        // Render stream
+        // Prepare
         const params = this.prepareParameters(buildConfiguration, parameters);
         const section = this._cliLogger.section('Processing environment specific code');
         this._cliLogger.options(params);
+
+        // Render stream
         const resultStream = new Stream.Transform({ objectMode: true });
         resultStream._transform = (file, encoding, callback) =>
         {
@@ -64,6 +66,7 @@ class EnvironmentTask extends BaseTask
                 callback();
                 return;
             }
+
             const work = this._cliLogger.work('Processing environment for file <' + file.path + '>');
             const contents = activateEnvironment(file.contents.toString(), params.environment);
             const resultFile = new VinylFile(
