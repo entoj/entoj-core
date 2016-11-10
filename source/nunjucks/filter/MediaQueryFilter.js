@@ -50,7 +50,7 @@ class MediaQueryFilter extends BaseFilter
     filter()
     {
         const scope = this;
-        return function (value, headlineOffset)
+        return function (value)
         {
             const device = value.split('And').shift().trim();
             const breakpoint = scope._options.breakpoints[device] || {};
