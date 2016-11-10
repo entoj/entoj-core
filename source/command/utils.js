@@ -115,7 +115,7 @@ function inquireEntityId(siteQuery, entityIdQuery, di)
                     {
                         return true;
                     }
-                    return 'Please enter a valid entity id (e.g. m001-gallery)';
+                    return 'Please enter a valid entity id (e.g. m-gallery)';
                 }
             };
             const selection = yield inquire([question]);

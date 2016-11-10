@@ -7,11 +7,13 @@
 const BaseCommand = require('./BaseCommand.js').BaseCommand;
 const Context = require('../application/Context.js').Context;
 const EntityId = require('../model/entity/EntityId.js').EntityId;
-const Scaffolder = require('../scaffold/Scaffolder.js').Scaffolder;
 const PathesConfiguration = require('../model/configuration/PathesConfiguration.js').PathesConfiguration;
 const GlobalConfiguration = require('../model/configuration/GlobalConfiguration.js').GlobalConfiguration;
+const Site = require('../model/site/Site.js').Site;
+const SitesRepository = require('../model/site/SitesRepository.js').SitesRepository;
+const IdParser = require('../parser/entity/IdParser.js').IdParser;
 const co = require('co');
-const utils = require('./utils.js');
+const inquirer = require('inquirer');
 
 
 /**
@@ -21,15 +23,13 @@ class ScaffoldCommand extends BaseCommand
 {
     /**
      */
-    constructor(context, globalConfiguration, pathesConfiguration, options)
+    constructor(context, options)
     {
         super(context);
 
         // Assign options
-        this._globalConfiguration = globalConfiguration;
-        this._pathesConfiguration = pathesConfiguration;
-        this._options = options || {};
         this._name = 'scaffold';
+        this._options = options || {};
         this._templatePath = this._options.templatePath || '';
     }
 
@@ -39,7 +39,7 @@ class ScaffoldCommand extends BaseCommand
      */
     static get injections()
     {
-        return { 'parameters': [Context, GlobalConfiguration, PathesConfiguration, 'command/ScaffoldCommand.options'] };
+        return { 'parameters': [Context, 'command/ScaffoldCommand.options'] };
     }
 
 
@@ -87,92 +87,104 @@ class ScaffoldCommand extends BaseCommand
         const logger = scope.createLogger('command.scaffold.entity');
         const promise = co(function *()
         {
+            // Prepare
+            const entityIdParser = scope.context.di.create(IdParser);
+            const sitesRepository = scope.context.di.create(SitesRepository);
             const section = logger.section('Creating entity scaffolding');
+            const sites = yield sitesRepository.getItems();
 
-            // Parse parameters
-            const query =
+            // Parse & prepare parameters
+            const values =
             {
                 site: undefined,
                 entityId: undefined,
                 javascript: parameters.javascript,
-                overwrite: parameters.overwrite
+                entityPath: undefined
             };
             if (parameters._.length == 1)
             {
-                query.entityId = parameters._[0];
+                values.entityId = yield entityIdParser.parse(parameters._[0]);
             }
             else if (parameters._.length == 2)
             {
-                query.site = parameters._[0];
-                query.entityId = parameters._[1];
+                values.site = yield sitesRepository.findBy(Site.NAME, parameters._[0]);
+                values.entityId = yield entityIdParser.parse(parameters._[1]);
             }
-
-            // Get entity
-            const entityId = yield utils.inquireEntityId(query.site, query.entityId, scope.context.di);
-            if (!entityId)
+            if (values.entityId)
             {
-                return Promise.reject('Could not find entity id');
-            }
-
-            // Javascript
-            const javascript = yield utils.inquireBoolean(query.javascript, 'Does the entity use JavaScript?');
-
-            // Overwrite
-            const entityPath = yield scope._pathesConfiguration.resolveEntityId(entityId);
-            const overwrite = yield utils.inquireOverwrite(query.overwrite, entityPath);
-            if (!overwrite)
-            {
-                return Promise.reject('Denied overwritting files...');
-            }
-
-            // Go
-            logger.options(
+                if (sites.length === 1)
                 {
-                    entityId: entityId.asString(EntityId.PATH),
-                    javascript: javascript,
-                    overwrite: overwrite
-                });
-            const scaffolderOptions = new Map();
-            scaffolderOptions.set(Scaffolder.className + '.options', { templateRoot: scope._templatePath });
-            const scaffolder = scope.context.di.create(Scaffolder, scaffolderOptions);
-            const result = yield scaffolder.entity(entityId, javascript);
-            if (result !== true)
-            {
-                logger.error(result.error);
+                    values.site = sites[0];
+                }
             }
 
-            // Done
-            logger.end(section);
-        })
-        .catch(function(error)
-        {
-            logger.error(error);
-        });
-        return promise;
-    }
+            // Ask questions
+            const questions =
+            [
+                {
+                    type: 'input',
+                    name: 'entityId',
+                    message: 'The entity id?',
+                    validate: function(value)
+                    {
+                        const promise = co(function *()
+                        {
+                            values.entityId = yield entityIdParser.parse(value);
+                            if (values.entityId)
+                            {
+                                if (sites.length === 1)
+                                {
+                                    values.site = sites[0];
+                                }
+                                return true;
+                            }
+                            return 'Please enter a valid entity id (e.g. m-gallery)';
+                        });
+                        return promise;
+                    },
+                    when: function()
+                    {
+                        const hasData = (values.entityId);
+                        return Promise.resolve(!hasData);
+                    }
+                },
+                {
+                    type: 'list',
+                    name: 'site',
+                    message: 'Select a site',
+                    choices: yield sitesRepository.getPropertyList(Site.NAME),
+                    when: function()
+                    {
+                        const hasData = (values.site);
+                        return Promise.resolve(!hasData);
+                    }
+                },
+                {
+                    type: 'confirm',
+                    name: 'javascript',
+                    message: 'Does it need JavaScript?',
+                    default: true,
+                    when: function()
+                    {
+                        const hasData = (values.javascript);
+                        return Promise.resolve(!hasData);
+                    }
+                }
+            ];
+            const answers = yield inquirer.prompt(questions);
 
+            // Update values
+            values.javascript = answers.javascript;
 
-    /**
-     * @inheritDocs
-     * @returns {Promise<Server>}
-     */
-    breakpoint(parameters)
-    {
-        const scope = this;
-        const logger = scope.createLogger('command.scaffold.breakpoint');
-        const promise = co(function *()
-        {
-            const section = logger.section('Creating breakpoint scaffolding');
-
-            // Create scaffolding
-            const scaffolderOptions = new Map();
-            scaffolderOptions.set(Scaffolder.className + '.options', { templateRoot: scope._templatePath });
-            const scaffolder = scope.context.di.create(Scaffolder, scaffolderOptions);
-            const result = yield scaffolder.breakpoint(scope._globalConfiguration.get('breakpoints'));
-            if (result !== true)
-            {
-                logger.error(result.error);
-            }
+            // Create tasks
+            const mapping = new Map();
+            mapping.set(CliLogger, logger);
+            const pathesConfiguration = scope.context.di.create(PathesConfiguration);
+            const templatePath = yield pathesConfiguration.resolveCache('/css');
+            const buildConfiguration = scope.context.di.create(BuildConfiguration);
+            yield scope.context.di.create(TemplateTask, mapping)
+                .pipe(scope.context.di.create(Task, mapping))
+                .run(buildConfiguration, { readPath: path });
 
             // Done
             logger.end(section);
@@ -191,10 +203,6 @@ class ScaffoldCommand extends BaseCommand
      */
     doExecute(parameters)
     {
-        if (parameters.action === 'breakpoint')
-        {
-            return this.breakpoint(parameters);
-        }
         return this.entity(parameters);
     }
 }
