@@ -63,7 +63,7 @@ class JspStaticModelTransformer extends NodeTransformer
      * @inheritDoc
      * @todo  support for extended sites is missing
      */
-    transformNode(node, options)
+    transformNode(node, transformer, options)
     {
         // prepend call nodes with jsonLaoder when model is a string literal
         if (node.type === 'CallNode' &&

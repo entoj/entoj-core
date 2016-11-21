@@ -7,6 +7,16 @@
     "tags": ["common", "gallery"],
     "release":
     {
+        "settings":
+        {
+            "macros":
+            {
+                "m001_gallery_page":
+                {
+                    "mode": "remove"
+                }
+            }
+        },
         "coremedia":
         [
             {},

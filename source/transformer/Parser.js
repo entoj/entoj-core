@@ -418,7 +418,7 @@ class Parser extends BaseParser
         {
             children.push(this.parseNode(child));
         }
-        if (node.else_)
+        if (node.else_ && node.else_.children)
         {
             for (const child of node.else_.children)
             {

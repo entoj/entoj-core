@@ -24,7 +24,7 @@ class JspSelfTransformer extends NodeTransformer
     /**
      * @inheritDoc
      */
-    transformNode(node, options)
+    transformNode(node, transformer, options)
     {
         // remove any set's to model/self references
         if (node.type == 'SetNode' &&

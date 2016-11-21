@@ -49,7 +49,7 @@ class JspEmptyTransformer extends NodeTransformer
     /**
      * @inheritDoc
      */
-    transformNode(node, options)
+    transformNode(node, transformer, options)
     {
         if (node.type === 'ConditionNode')
         {

@@ -271,7 +271,8 @@ class CoreMediaRenderer extends BaseRenderer
     {
         if (!node)
         {
-            throw new Error(this.className + '::renderExpression node is undefined');
+            this.logger.warn(this.className + '::renderExpression node is undefined');
+            return '';
         }
 
         let result = '';
@@ -379,6 +380,7 @@ class CoreMediaRenderer extends BaseRenderer
 
         // handle cm:link
         if (node.type === 'SetNode' &&
+            node.value &&
             node.value.type === 'ExpressionNode' &&
             node.value.children.length &&
             node.value.children[0].type === 'FilterNode' &&
@@ -391,6 +393,7 @@ class CoreMediaRenderer extends BaseRenderer
         }
         // handle markup fields
         else if (node.type === 'SetNode' &&
+            node.value &&
             node.value.type === 'ExpressionNode' &&
             node.value.children.length &&
             node.value.children[0].type === 'FilterNode' &&
@@ -408,6 +411,7 @@ class CoreMediaRenderer extends BaseRenderer
         }
         // handle translate
         else if (node.type === 'SetNode' &&
+            node.value &&
             node.value.type === 'ExpressionNode' &&
             node.value.children.length &&
             node.value.children[0].type === 'FilterNode' &&
@@ -430,6 +434,7 @@ class CoreMediaRenderer extends BaseRenderer
         }
         // handle complex variables
         else if (node.type === 'SetNode' &&
+            node.value &&
             node.value.type === 'ExpressionNode' &&
             node.value.children.length &&
             node.value.children[0].type === 'DictionaryNode')
