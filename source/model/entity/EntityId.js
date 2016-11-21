@@ -10,6 +10,7 @@ const EntityIdTemplate = require('./EntityIdTemplate.js').EntityIdTemplate;
 const Site = require('./../site/Site.js').Site;
 const assertParameter = require('../../utils/assert.js').assertParameter;
 
+
 /**
  *
  */

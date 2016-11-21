@@ -6,13 +6,13 @@
  */
 const BaseTask = require('./BaseTask.js').BaseTask;
 const CliLogger = require('../cli/CliLogger.js').CliLogger;
-const Environment = require('../nunjucks/Environment.js').Environment;
 const assertParameter = require('../utils/assert.js').assertParameter;
 const pathes = require('../utils/pathes.js');
-const through2 = require('through2');
+const Stream = require('stream');
 const VinylFile = require('vinyl');
 const co = require('co');
 const path = require('path');
+const Environment = require('nunjucks').Environment;
 
 
 /**
@@ -72,9 +72,11 @@ class TemplateTask extends BaseTask
 
         // Prepare
         const params = this.prepareParameters(buildConfiguration, parameters);
-        const section = scope._cliLogger.section('Processing templates');
-        const nunjucks = new nunjucks.Environment(undefined,
+        const section = this._cliLogger.section('Processing templates');
+        const nunjucks = new Environment(undefined,
         {
+            autoescape: false,
+            throwOnUndefined: false,
             tags:
             {
                 blockStart: '<%',
@@ -90,9 +92,12 @@ class TemplateTask extends BaseTask
         const resultStream = new Stream.Transform({ objectMode: true });
         resultStream._transform = (file, encoding, callback) =>
         {
+            console.log('Yes?', file.path);
+
             /* istanbul ignore next */
             if (!file || !file.isNull)
             {
+                this._cliLogger.info('Invalid file <' + file + '>');
                 callback();
                 return;
             }
@@ -101,15 +106,27 @@ class TemplateTask extends BaseTask
             if (params.passthroughFiles.indexOf(path.extname(file.path)) > -1)
             {
                 this._cliLogger.info('Copying file <' + file.path + '>');
+                resultStream.push(file);
                 callback();
                 return;
             }
 
             // Render template
             const work = this._cliLogger.work('Templating file <' + file.path + '>');
-            const contents = nunjucks.renderString(file.contents.toString(), params.templateData);
-            const resultFile = new VinylFile({ path: file.path, contents: contents });
-            resultStream.push(resultFile);
+            try
+            {
+                const contents = nunjucks.renderString(file.contents.toString(), params.templateData);
+                const resultFile = new VinylFile(
+                {
+                    path: file.path,
+                    contents: new Buffer(contents)
+                });
+                resultStream.push(resultFile);
+            }
+            catch(e)
+            {
+                this._cliLogger.error(e);
+            }
             this._cliLogger.end(work);
             callback();
         };

@@ -1,0 +1,14 @@
+{##
+    Renders a <$ entityId.name $>
+#}
+{% macro <$ entityId.asString('id').lodasherize() $>(model=false, classes='') %}
+
+    {# Prepare #}
+    {% set model = model|load %}
+    {% set moduleClass = '<$ entityId.asString('id') $>' %}
+
+    {# Render #}
+    <div class="{{ moduleClass }} {{ classes }}">
+    </div>
+
+{%  endmacro %}
