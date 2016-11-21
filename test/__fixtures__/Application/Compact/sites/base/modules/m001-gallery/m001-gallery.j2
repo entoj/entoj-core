@@ -17,15 +17,16 @@
 		paginationMode='graphical',
 		class='') %}
     {% set content = 'default' %}
-	<div class="m001-gallery {{ type }} {{ class }}">
-        {{ e005_button() }}
+    {% set moduleClass = 'm001-gallery' %}
+	<div class="{{ moduleClass }} {{ type }} {{ class }}">
+        {{ e005_button(size='l', classes=moduleClass + '-button') }}
         {{ content }}
+        {{ m001_gallery_page() }}
 	</div>
 {%  endmacro %}
 
 {% macro m001_gallery_page(
         type='',
         class='') %}
-    <div class="m001-gallery-page {{ type }} {{ class }}">
-    </div>
+    <div class="m001-gallery-page {{ type }} {{ class }}"></div>
 {%  endmacro %}

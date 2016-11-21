@@ -5,6 +5,7 @@
  * @ignore
  */
 const Base = require('../Base.js').Base;
+const BaseMap = require('../base/BaseMap.js').BaseMap;
 const BaseRenderer = require('./BaseRenderer.js').BaseRenderer;
 const BaseParser = require('./BaseParser.js').BaseParser;
 const MacroNode = require('./node/MacroNode.js').MacroNode;
@@ -133,6 +134,54 @@ class Transformer extends Base
             }
 
             return macroNode;
+        });
+        return promise;
+    }
+
+
+    /**
+     * @returns {Promise<BaseMap>}
+     */
+    getMacroProperties(siteQuery, macroQuery)
+    {
+        const scope = this;
+        const promise = co(function *()
+        {
+            const entity = yield scope._globalRepository.resolveEntityForMacro(siteQuery, macroQuery);
+            if (!entity)
+            {
+                /* istanbul ignore next */
+                throw new Error(scope.className + '::getMacroOptions - could not find entity for macro ' + macroQuery);
+            }
+            return entity.properties;
+        });
+        return promise;
+    }
+
+
+    /**
+     * @returns {Promise<BaseMap>}
+     */
+    getMacroSettings(siteQuery, macroQuery)
+    {
+        const scope = this;
+        const promise = co(function *()
+        {
+            const properties = yield scope.getMacroProperties(siteQuery, macroQuery);
+            let settings = {};
+            if (properties)
+            {
+                const macroSettings = properties.getByPath('release.settings.macros', {});
+                if (macroSettings[macroQuery])
+                {
+                    settings = macroSettings[macroQuery];
+                }
+                else if (macroSettings['*'])
+                {
+                    settings = macroSettings['*'];
+                }
+            }
+            return new BaseMap(settings);
         });
         return promise;
     }

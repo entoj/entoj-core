@@ -240,7 +240,7 @@ describe(GlobalRepository.className, function()
             return promise;
         });
 
-        it('should resolve to a existing macro when given a valid site and macro name', function()
+        it('should resolve to a existing macro when given a valid site name and macro name', function()
         {
             const fixture = createFixture();
             const testee = new GlobalRepository(fixture.sitesRepository, fixture.categoriesRepository, fixture.entitiesRepository);
@@ -263,6 +263,96 @@ describe(GlobalRepository.className, function()
                 const macro = yield testee.resolveMacro(site, 'm001_gallery');
                 expect(macro).to.be.instanceof(DocumentationCallable);
                 expect(macro.name).to.be.equal('m001_gallery');
+            });
+            return promise;
+        });
+
+        it('should resolve to a existing macro when given only a macro name', function()
+        {
+            const fixture = createFixture();
+            const testee = new GlobalRepository(fixture.sitesRepository, fixture.categoriesRepository, fixture.entitiesRepository);
+            const promise = co(function *()
+            {
+                const macro = yield testee.resolveMacro(undefined, 'm001_gallery');
+                expect(macro).to.be.instanceof(DocumentationCallable);
+                expect(macro.name).to.be.equal('m001_gallery');
+            });
+            return promise;
+        });
+    });
+
+
+    describe('#resolveEntityForMacro', function()
+    {
+        function createFixture()
+        {
+            const fixture = compactApplication.createFixture();
+            fixture.sitesRepository = fixture.context.di.create(SitesRepository);
+            fixture.categoriesRepository = fixture.context.di.create(EntityCategoriesRepository);
+            fixture.entitiesRepository = fixture.context.di.create(EntitiesRepository);
+            return fixture;
+        }
+
+        it('should resolve to false for a non existing site', function()
+        {
+            const fixture = createFixture();
+            const testee = new GlobalRepository(fixture.sitesRepository, fixture.categoriesRepository, fixture.entitiesRepository);
+            const promise = co(function *()
+            {
+                const entity = yield testee.resolveEntityForMacro('foo', 'm001_gallery');
+                expect(entity).to.be.not.ok;
+            });
+            return promise;
+        });
+
+        it('should resolve to false for a non existing macro', function()
+        {
+            const fixture = createFixture();
+            const testee = new GlobalRepository(fixture.sitesRepository, fixture.categoriesRepository, fixture.entitiesRepository);
+            const promise = co(function *()
+            {
+                const entity = yield testee.resolveEntityForMacro('base', 'foo');
+                expect(entity).to.be.not.ok;
+            });
+            return promise;
+        });
+
+        it('should resolve to a existing macro when given a valid site name and macro name', function()
+        {
+            const fixture = createFixture();
+            const testee = new GlobalRepository(fixture.sitesRepository, fixture.categoriesRepository, fixture.entitiesRepository);
+            const promise = co(function *()
+            {
+                const entity = yield testee.resolveEntityForMacro('base', 'm001_gallery');
+                expect(entity).to.be.instanceof(EntityAspect);
+                expect(entity.idString).to.be.equal('m001-gallery');
+            });
+            return promise;
+        });
+
+        it('should resolve to a existing macro when given a valid site and a macro name', function()
+        {
+            const fixture = createFixture();
+            const testee = new GlobalRepository(fixture.sitesRepository, fixture.categoriesRepository, fixture.entitiesRepository);
+            const promise = co(function *()
+            {
+                const site = yield fixture.sitesRepository.findBy(Site.ANY, 'base');
+                const entity = yield testee.resolveEntityForMacro(site, 'm001_gallery');
+                expect(entity).to.be.instanceof(EntityAspect);
+                expect(entity.idString).to.be.equal('m001-gallery');
+            });
+            return promise;
+        });
+
+        it('should resolve to a existing macro when given only a macro name', function()
+        {
+            const fixture = createFixture();
+            const testee = new GlobalRepository(fixture.sitesRepository, fixture.categoriesRepository, fixture.entitiesRepository);
+            const promise = co(function *()
+            {
+                const entity = yield testee.resolveEntityForMacro(undefined, 'm001_gallery');
+                expect(entity).to.be.instanceof(EntityAspect);
+                expect(entity.idString).to.be.equal('m001-gallery');
             });
             return promise;
         });

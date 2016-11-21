@@ -10,6 +10,7 @@ const Parser = require(SOURCE_ROOT + '/transformer/Parser.js').Parser;
 const NodeTransformer = require(SOURCE_ROOT + '/transformer/NodeTransformer.js').NodeTransformer;
 const MacroNode = require(SOURCE_ROOT + '/transformer/node/MacroNode.js').MacroNode;
 const GlobalRepository = require(SOURCE_ROOT + '/model/GlobalRepository.js').GlobalRepository;
+const BaseMap = require(SOURCE_ROOT + '/base/BaseMap.js').BaseMap;
 const compact = require(FIXTURES_ROOT + '/Application/Compact.js');
 const baseSpec = require(TEST_ROOT + '/BaseShared.js');
 const co = require('co');
@@ -89,6 +90,22 @@ describe(Transformer.className, function()
                 expect(rootNode).to.be.ok;
                 expect(rootNode).to.be.instanceof(MacroNode);
                 expect(rootNode.name).to.be.equal('m001_gallery');
+            });
+            return promise;
+        });
+    });
+
+
+    describe('#getMacroProperties()', function()
+    {
+        it('should yield the entity properties for a given macro by site and name', function()
+        {
+            const promise = co(function *()
+            {
+                const testee = new Transformer(fixtures.globalRepository, fixtures.jinjaParser, fixtures.renderer);
+                const properties = yield testee.getMacroProperties('base', 'm001_gallery');
+                expect(properties).to.be.ok;
+                expect(properties.className).to.be.equal('base/BaseMap');
             });
             return promise;
         });

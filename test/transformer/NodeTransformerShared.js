@@ -57,13 +57,13 @@ function spec(type, className, prepareParameters)
     /**
      * Loads a fixture and compares the transformed result to expected
      */
-    function testFixture(name, classType, prepareParameters)
+    function testFixture(name, classType, prepareParameters, options)
     {
         const promise = co(function *()
         {
             const fixture = yield loadFixture(name);
             const testee = createTestee(classType, prepareParameters);
-            const transformed = yield testee.transform(fixture.rootNode);
+            const transformed = yield testee.transform(fixture.rootNode, undefined, options);
             try
             {
                 expect(transformed.serialize()).to.be.deep.equal(fixture.expected);

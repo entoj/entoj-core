@@ -39,5 +39,18 @@
                 }
             ]
         }
+    },
+    "release":
+    {
+        "settings":
+        {
+            "macros":
+            {
+                "*":
+                {
+                    "mode": "inline"
+                }
+            }
+        }
     }
 }

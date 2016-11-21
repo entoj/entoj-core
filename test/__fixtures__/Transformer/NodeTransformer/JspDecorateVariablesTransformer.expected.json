@@ -1,0 +1,94 @@
+{
+    "type": "transformer.node/NodeList",
+    "children": [
+        {
+            "type": "transformer.node/SetNode",
+            "variable": {
+                "type": "transformer.node/VariableNode",
+                "fields": [
+                    "pre_variable_suf"
+                ]
+            },
+            "value": {
+                "type": "transformer.node/ExpressionNode",
+                "children": [
+                    {
+                        "type": "transformer.node/VariableNode",
+                        "fields": [
+                            "pre_model_suf",
+                            "headline"
+                        ]
+                    },
+                    {
+                        "type": "transformer.node/OperandNode",
+                        "value": "+"
+                    },
+                    {
+                        "type": "transformer.node/LiteralNode",
+                        "value": "-teaser"
+                    }
+                ]
+            }
+        },
+        {
+            "type": "transformer.node/TextNode",
+            "value": "\n"
+        },
+        {
+            "type": "transformer.node/OutputNode",
+            "children": [
+                {
+                    "type": "transformer.node/VariableNode",
+                    "fields": [
+                        "pre_variable_suf"
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "transformer.node/TextNode",
+            "value": "\n"
+        },
+        {
+            "type": "transformer.node/IfNode",
+            "children": [
+                {
+                    "type": "transformer.node/TextNode",
+                    "value": "COPY"
+                }
+            ],
+            "condition": {
+                "type": "transformer.node/ConditionNode",
+                "children": [
+                    {
+                        "type": "transformer.node/VariableNode",
+                        "fields": [
+                            "pre_model_suf",
+                            "copy"
+                        ]
+                    }
+                ]
+            },
+            "elseChildren": []
+        },
+        {
+            "type": "transformer.node/TextNode",
+            "value": "\n"
+        },
+        {
+            "type": "transformer.node/OutputNode",
+            "children": [
+                {
+                    "type": "transformer.node/VariableNode",
+                    "fields": [
+                        "keep"
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "transformer.node/TextNode",
+            "value": "\n\n"
+        }
+    ]
+}

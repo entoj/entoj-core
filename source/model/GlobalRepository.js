@@ -193,7 +193,11 @@ class GlobalRepository extends Base
         const promise = co(function*()
         {
             // Get site
-            const site = (siteQuery instanceof Site) ? siteQuery : yield scope._sitesRepository.findBy(Site.ANY, siteQuery);
+            let site = (siteQuery instanceof Site) ? siteQuery : yield scope._sitesRepository.findBy(Site.ANY, siteQuery);
+            if (!site && !siteQuery)
+            {
+                site = yield scope._sitesRepository.getFirst();
+            }
             if (!site)
             {
                 return false;
@@ -203,24 +207,62 @@ class GlobalRepository extends Base
             const entities = yield scope._entitiesRepository.getBySite(site);
 
             // Find macro
-            let macro;
             for (const entity of entities)
             {
-                if (!macro)
+                const macro = entity.documentation.find((doc) =>
                 {
-                    macro = entity.documentation.find((doc) =>
-                    {
-                        return doc.contentType === ContentType.JINJA &&
-                               doc.name === macroQuery;
-                    });
+                    return doc.contentType === ContentType.JINJA &&
+                           doc.name === macroQuery;
+                });
+                if (macro)
+                {
+                    return macro;
                 }
             }
-            if (!macro)
+
+            return false;
+        });
+        return promise;
+    }
+
+
+    /**
+     * @returns {Promise<Object>}
+     */
+    resolveEntityForMacro(siteQuery, macroQuery)
+    {
+        const scope = this;
+        const promise = co(function*()
+        {
+            // Get site
+            let site = (siteQuery instanceof Site) ? siteQuery : yield scope._sitesRepository.findBy(Site.ANY, siteQuery);
+            if (!site && !siteQuery)
+            {
+                site = yield scope._sitesRepository.getFirst();
+            }
+            if (!site)
             {
                 return false;
             }
 
-            return macro;
+            // Get entities
+            const entities = yield scope._entitiesRepository.getBySite(site);
+
+            // Find entity
+            for (const entity of entities)
+            {
+                const macro = entity.documentation.find((doc) =>
+                {
+                    return doc.contentType === ContentType.JINJA &&
+                           doc.name === macroQuery;
+                });
+                if (macro)
+                {
+                    return entity;
+                }
+            }
+
+            return false;
         });
         return promise;
     }

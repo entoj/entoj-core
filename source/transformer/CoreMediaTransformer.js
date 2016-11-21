@@ -11,6 +11,8 @@ const JspConcatTransformer = require('./nodetransformer/JspConcatTransformer.js'
 const JspEmptyTransformer = require('./nodetransformer/JspEmptyTransformer.js').JspEmptyTransformer;
 const JspSelfTransformer = require('./nodetransformer/JspSelfTransformer.js').JspSelfTransformer;
 const JspStaticModelTransformer = require('./nodetransformer/JspStaticModelTransformer.js').JspStaticModelTransformer;
+const JspInlineMacroCallTransformer = require('./nodetransformer/JspInlineMacroCallTransformer.js').JspInlineMacroCallTransformer;
+const JspRemoveMacroCallTransformer = require('./nodetransformer/JspRemoveMacroCallTransformer.js').JspRemoveMacroCallTransformer;
 const GlobalRepository = require('../model/GlobalRepository.js').GlobalRepository;
 const ViewModelRepository = require('../model/viewmodel/ViewModelRepository.js').ViewModelRepository;
 
@@ -28,7 +30,14 @@ class CoreMediaTransformer extends Transformer
         super(globalRepository,
             new Parser(),
             new CoreMediaRenderer(),
-            [new JspConcatTransformer(), new JspEmptyTransformer(), new JspSelfTransformer(), new JspStaticModelTransformer(viewModelRepository)]);
+            [
+                new JspConcatTransformer(),
+                new JspEmptyTransformer(),
+                new JspSelfTransformer(),
+                new JspStaticModelTransformer(viewModelRepository),
+                new JspInlineMacroCallTransformer(),
+                new JspRemoveMacroCallTransformer()
+            ]);
     }
 
 
