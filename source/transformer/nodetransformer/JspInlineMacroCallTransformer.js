@@ -43,8 +43,6 @@ class JspInlineMacroCallTransformer extends NodeTransformer
             const macroSettings = synchronize.execute(transformer, 'getMacroSettings', [undefined, node.name]);
             if (macroSettings.getByPath('mode', false) === 'inline')
             {
-                console.log('INLINE, YO!');
-
                 // Prepare
                 const suffix = '_u' + (uniqueId++);
                 const rootNode = new NodeList();
