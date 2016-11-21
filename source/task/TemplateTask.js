@@ -56,6 +56,7 @@ class TemplateTask extends BaseTask
         const result = super.prepareParameters(buildConfiguration, parameters);
         result.passthroughFiles = result.passthroughFiles || ['.png', '.jpg', '.gif'];
         result.templateData = result.templateData || {};
+        result.templateAutoescape = result.templateAutoescape || false;
         return result;
     }
 
@@ -75,7 +76,7 @@ class TemplateTask extends BaseTask
         const section = this._cliLogger.section('Processing templates');
         const nunjucks = new Environment(undefined,
         {
-            autoescape: false,
+            autoescape: params.templateAutoescape,
             throwOnUndefined: false,
             tags:
             {
@@ -92,8 +93,6 @@ class TemplateTask extends BaseTask
         const resultStream = new Stream.Transform({ objectMode: true });
         resultStream._transform = (file, encoding, callback) =>
         {
-            console.log('Yes?', file.path);
-
             /* istanbul ignore next */
             if (!file || !file.isNull)
             {
@@ -105,8 +104,9 @@ class TemplateTask extends BaseTask
             // Check passthrough files
             if (params.passthroughFiles.indexOf(path.extname(file.path)) > -1)
             {
-                this._cliLogger.info('Copying file <' + file.path + '>');
+                const work = this._cliLogger.work('Copying file <' + file.path + '>');
                 resultStream.push(file);
+                this._cliLogger.end(work);
                 callback();
                 return;
             }
