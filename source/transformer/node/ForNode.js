@@ -15,12 +15,13 @@ class ForNode extends NodeList
     /**
      * @ignore
      */
-    constructor(name, value, children)
+    constructor(keyName, valueName, value, children)
     {
         super(children);
-        this.serializeFields.push('name', 'value');
+        this.serializeFields.push('keyName', 'valueName', 'value');
         this.nodeFields.push('value');
-        this.name = name;
+        this.keyName = keyName;
+        this.valueName = valueName;
         this.value = value || [];
     }
 

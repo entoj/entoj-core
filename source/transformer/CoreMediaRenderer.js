@@ -7,6 +7,9 @@
 const BaseRenderer = require('./BaseRenderer.js').BaseRenderer;
 const GlobalRepository = require('../model/GlobalRepository.js').GlobalRepository;
 const ViewModelRepository = require('../model/viewmodel/ViewModelRepository.js').ViewModelRepository;
+const GlobalConfiguration = require('../model/configuration/GlobalConfiguration.js').GlobalConfiguration;
+const assertParameter = require('../utils/assert.js').assertParameter;
+const uppercaseFirst = require('../utils/string.js').uppercaseFirst;
 const htmlencode = require('htmlencode').htmlEncode;
 const EOL = '\n';
 
@@ -17,6 +20,30 @@ const EOL = '\n';
 class CoreMediaRenderer extends BaseRenderer
 {
     /**
+     * @ignore
+     */
+    constructor(globalConfiguration)
+    {
+        super();
+
+        // Check params
+        assertParameter(this, 'globalConfiguration', globalConfiguration, true, GlobalConfiguration);
+
+        // Assign options
+        this._globalConfiguration = globalConfiguration;
+    }
+
+
+    /**
+     * @inheritDoc
+     */
+    static get injections()
+    {
+        return { 'parameters': [GlobalConfiguration] };
+    }
+
+
+    /**
      * @inheritDoc
      */
     static get className()
@@ -26,7 +53,7 @@ class CoreMediaRenderer extends BaseRenderer
 
 
     /**
-     * Renders a variable
+     * Prepares rendering parameters
      */
     prepareParameters(parameters)
     {
@@ -510,15 +537,37 @@ class CoreMediaRenderer extends BaseRenderer
     renderFor(node, parameters)
     {
         let result = '';
+
+        // Create iteration var
+        const variableName = node.keyName ? node.keyName + 'And' + uppercaseFirst(node.valueName) : node.valueName;
+
+        // Create iteration
         result+= '<c:forEach var="';
-        result+= node.name;
+        result+= variableName;
         result+= '" items="${ ';
         result+= this.renderExpression(node.value, parameters).trim();
         result+= ' }">';
+
+        // Add local vars
+        if (node.keyName)
+        {
+            result+= '<c:set';
+            result+= ' var="' + node.keyName + '"';
+            result+= ' value="${ ' + variableName + '.key }"';
+            result+= ' />';
+            result+= '<c:set';
+            result+= ' var="' + node.valueName + '"';
+            result+= ' value="${ ' + variableName + '.value }"';
+            result+= ' />';
+        }
+
+        // Render children
         for (const child of node.children)
         {
             result+= this.renderNode(child, parameters);
         }
+
+        // End Iteration
         result+= '</c:forEach>';
         return result;
     }

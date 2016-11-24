@@ -441,7 +441,9 @@ class Parser extends BaseParser
         {
             children.push(this.parseNode(child));
         }
-        return new ForNode(node.name.value, values, children);
+        const keyName = node.name.children ? node.name.children[0].value : false;
+        const valueName = node.name.children ? node.name.children[1].value : node.name.value;
+        return new ForNode(keyName, valueName, values, children);
     }
 
 

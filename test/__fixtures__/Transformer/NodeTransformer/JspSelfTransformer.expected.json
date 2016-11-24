@@ -38,7 +38,8 @@
                     "value": "ITEM"
                 }
             ],
-            "name": "item",
+            "valueName": "item",
+            "keyName": false,
             "value": {
                 "type": "transformer.node/VariableNode",
                 "fields": [
