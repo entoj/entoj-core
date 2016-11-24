@@ -22,7 +22,7 @@ class MediaQueryFilter extends BaseFilter
 
         // Assign options
         this._options = options || {};
-        this._options.breakpoints = this._options.breakpoints || {};
+        this._options.mediaQueries = this._options.mediaQueries || {};
     }
 
 
@@ -52,36 +52,7 @@ class MediaQueryFilter extends BaseFilter
         const scope = this;
         return function (value)
         {
-            const device = value.split('And').shift().trim();
-            const breakpoint = scope._options.breakpoints[device] || {};
-            let result = '';
-            if (value.endsWith('AndBelow'))
-            {
-                if (breakpoint.maxWidth)
-                {
-                    result+= '(max-width: ' + breakpoint.maxWidth + ')';
-                }
-            }
-            else if (value.endsWith('AndAbove'))
-            {
-                if (breakpoint.minWidth)
-                {
-                    result+= '(min-width: ' + breakpoint.minWidth + ')';
-                }
-            }
-            else
-            {
-                if (breakpoint.minWidth)
-                {
-                    result+= '(min-width: ' + breakpoint.minWidth + ')';
-                }
-                if (breakpoint.maxWidth)
-                {
-                    result+= (result.length ? ' and ' : '') + '(max-width: ' + breakpoint.maxWidth + ')';
-                }
-            }
-
-            return result;
+            return scope._options.mediaQueries[value] || '';
         };
     }
 }

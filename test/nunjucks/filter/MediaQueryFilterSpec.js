@@ -4,6 +4,7 @@
  * Requirements
  */
 const MediaQueryFilter = require(SOURCE_ROOT + '/nunjucks/filter/MediaQueryFilter.js').MediaQueryFilter;
+
 const baseFilterSpec = require(TEST_ROOT + '/nunjucks/filter/BaseFilterShared.js');
 
 
@@ -42,6 +43,7 @@ describe(MediaQueryFilter.className, function()
                 }
             }
         };
+        fixtures.options.mediaQueries = require(SOURCE_ROOT + '/utils/processors.js').breakpointsToMediaQueries(fixtures.options.breakpoints);
     });
 
 
