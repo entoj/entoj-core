@@ -3,7 +3,7 @@
 /**
  * Requirements
  */
-let urlify = require(SOURCE_ROOT + '/utils/urls.js').urlify;
+const urlify = require(SOURCE_ROOT + '/utils/urls.js').urlify;
 
 /**
  * Spec
