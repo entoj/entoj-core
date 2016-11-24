@@ -102,7 +102,7 @@
                     "variable": {
                         "type": "transformer.node/VariableNode",
                         "fields": [
-                            "type_u40"
+                            "type_u1"
                         ]
                     },
                     "value": {
@@ -120,7 +120,7 @@
                     "variable": {
                         "type": "transformer.node/VariableNode",
                         "fields": [
-                            "dark_u40"
+                            "dark_u1"
                         ]
                     },
                     "value": {
@@ -138,7 +138,7 @@
                     "variable": {
                         "type": "transformer.node/VariableNode",
                         "fields": [
-                            "size_u40"
+                            "size_u1"
                         ]
                     },
                     "value": {
@@ -156,7 +156,7 @@
                     "variable": {
                         "type": "transformer.node/VariableNode",
                         "fields": [
-                            "model_u40"
+                            "model_u1"
                         ]
                     },
                     "value": {
@@ -174,7 +174,7 @@
                     "variable": {
                         "type": "transformer.node/VariableNode",
                         "fields": [
-                            "classes_u40"
+                            "classes_u1"
                         ]
                     },
                     "value": {
@@ -207,7 +207,7 @@
                         {
                             "type": "transformer.node/VariableNode",
                             "fields": [
-                                "classes_u40"
+                                "classes_u1"
                             ]
                         }
                     ]

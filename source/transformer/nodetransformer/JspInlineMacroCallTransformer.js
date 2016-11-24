@@ -16,6 +16,16 @@ const synchronize = require('../../utils/synchronize.js');
  */
 let uniqueId = 1;
 
+
+/**
+ * Reset the unique id (use this only for testing purposes)
+ */
+function resetUniqueId()
+{
+    uniqueId = 1;
+}
+
+
 /**
  *
  */
@@ -73,3 +83,4 @@ class JspInlineMacroCallTransformer extends NodeTransformer
 }
 
 module.exports.JspInlineMacroCallTransformer = JspInlineMacroCallTransformer;
+module.exports.resetUniqueId = resetUniqueId;
