@@ -155,7 +155,7 @@ class CoreMediaRenderer extends BaseRenderer
         {
             const filter = node.children[0];
             const value = this.renderExpression(filter.value, parameters);
-            const defaultValue = this.renderExpression(filter.parameters.children[0].value, parameters);
+            const defaultValue = filter.parameters.children.length ? this.renderExpression(filter.parameters.children[0].value, parameters) : "''";
             result+= '${ ';
             result+=  value + ' is empty ? ' + defaultValue + ' : ' + value;
             result+= ' }';
@@ -458,6 +458,41 @@ class CoreMediaRenderer extends BaseRenderer
             result+= ' var="' + this.getVariable(node.variable, parameters) + '"';
             result+= ' key="' + key + '"';
             result+= ' />';
+        }
+        // handle breakpoints
+        else if (node.type === 'SetNode' &&
+            node.value &&
+            node.value.type === 'ExpressionNode' &&
+            node.value.children.length &&
+            node.value.children[0].type === 'FilterNode' &&
+            node.value.children[0].name === 'mediaQuery')
+        {
+            const filter = node.value.children[0];
+            const mediaQueries = this._globalConfiguration.get('mediaQueries');
+            const mediaQueriesVariable = 'globalMediaQueries'
+            result+= '<jsp:useBean id="' + mediaQueriesVariable + '" class="java.util.TreeMap" />';
+            for (const mediaQueryName in mediaQueries)
+            {
+                result+= '<c:set target="${ ' + mediaQueriesVariable + ' }" property="' + mediaQueryName + '" value="' + mediaQueries[mediaQueryName] + '" />';
+            }
+            result+= '<c:set var="${ ' + this.getVariable(node.variable, parameters) + ' }" value="${ ' + mediaQueriesVariable + '[' + this.getVariable(filter.value, parameters) + '] }" />';
+        }
+        // handle imageUrl
+        else if (node.type === 'SetNode' &&
+            node.value &&
+            node.value.type === 'ExpressionNode' &&
+            node.value.children.length &&
+            node.value.children[0].type === 'FilterNode' &&
+            node.value.children[0].name === 'imageUrl')
+        {
+            const filter = node.value.children[0];
+            const args = [];
+            for (const param of filter.parameters.children)
+            {
+                args.push(this.renderExpression(param.value, parameters));
+            }
+            result+= '<c:set var="${ ' + this.getVariable(node.variable, parameters) + ' }" ';
+            result+= 'value="${ tk:responsiveImageLink(self, pageContext, ' + args.join(', ') + ') }" />';
         }
         // handle complex variables
         else if (node.type === 'SetNode' &&

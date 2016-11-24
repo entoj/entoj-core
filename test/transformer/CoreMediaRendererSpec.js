@@ -27,7 +27,17 @@ describe(CoreMediaRenderer.className, function()
      */
     function prepareParameters(parameters)
     {
-        const globalConfiguration = new GlobalConfiguration();
+        const mediaQueries =
+        {
+            applicationAndAbove: '(min-width: 1280px)',
+            application: '(min-width: 1280px)',
+            tabletAndBelow: '(max-width: 1024px)',
+            tabletAndAbove: '(min-width: 1024px)',
+            tablet: '(min-width: 1024px) and (max-width: 1024px)',
+            mobileAndBelow: '(max-width: 375px)',
+            mobile: '(max-width: 375px)'
+        };
+        const globalConfiguration = new GlobalConfiguration({ mediaQueries: mediaQueries });
         parameters.unshift(globalConfiguration);
         return parameters;
     };
@@ -45,8 +55,7 @@ describe(CoreMediaRenderer.className, function()
             const expected = fs.readFileSync(rootPath + 'CoreMediaRenderer/' + name + '.expected.jsp', { encoding: 'utf8' }).replace(/\r/g, '');
             const parser = new Parser();
             const nodes = yield parser.parse(input);
-            const globalConfiguration = new GlobalConfiguration();
-            const testee = new CoreMediaRenderer(globalConfiguration);
+            const testee = new CoreMediaRenderer(...prepareParameters([]));
             const jsp = yield testee.render(nodes);
             try
             {
@@ -64,8 +73,15 @@ describe(CoreMediaRenderer.className, function()
         return promise;
     }
 
-
     describe('#render()', function()
+    {
+        it('should render custom filters', function()
+        {
+            return testFixture('coremedia-filter');
+        });
+    });
+
+    xdescribe('#render()', function()
     {
         it('should render embedded variables', function()
         {

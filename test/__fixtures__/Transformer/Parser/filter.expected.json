@@ -2,66 +2,24 @@
     "type": "transformer.node/NodeList",
     "children": [
         {
-            "type": "transformer.node/SetNode",
-            "variable": {
-                "type": "transformer.node/VariableNode",
-                "fields": [
-                    "link"
-                ]
-            },
-            "value": {
-                "type": "transformer.node/ExpressionNode",
-                "children": [
-                    {
-                        "type": "transformer.node/FilterNode",
-                        "name": "link",
-                        "parameters": {
-                            "type": "transformer.node/ParametersNode",
-                            "children": []
-                        },
-                        "value": {
-                            "type": "transformer.node/VariableNode",
-                            "fields": [
-                                "model",
-                                "link"
-                            ]
-                        }
+            "type": "transformer.node/OutputNode",
+            "children": [
+                {
+                    "type": "transformer.node/FilterNode",
+                    "name": "default",
+                    "parameters": {
+                        "type": "transformer.node/ParametersNode",
+                        "children": []
+                    },
+                    "value": {
+                        "type": "transformer.node/VariableNode",
+                        "fields": [
+                            "model",
+                            "text"
+                        ]
                     }
-                ]
-            }
-        },
-        {
-            "type": "transformer.node/TextNode",
-            "value": "\n"
-        },
-        {
-            "type": "transformer.node/SetNode",
-            "variable": {
-                "type": "transformer.node/VariableNode",
-                "fields": [
-                    "text"
-                ]
-            },
-            "value": {
-                "type": "transformer.node/ExpressionNode",
-                "children": [
-                    {
-                        "type": "transformer.node/FilterNode",
-                        "name": "markup",
-                        "parameters": {
-                            "type": "transformer.node/ParametersNode",
-                            "children": []
-                        },
-                        "value": {
-                            "type": "transformer.node/VariableNode",
-                            "fields": [
-                                "model",
-                                "text"
-                            ]
-                        }
-                    }
-                ]
-            }
+                }
+            ]
         },
         {
             "type": "transformer.node/TextNode",
@@ -179,30 +137,6 @@
                                 ]
                             }
                         }
-                    }
-                }
-            ]
-        },
-        {
-            "type": "transformer.node/TextNode",
-            "value": "\n"
-        },
-        {
-            "type": "transformer.node/OutputNode",
-            "children": [
-                {
-                    "type": "transformer.node/FilterNode",
-                    "name": "markup",
-                    "parameters": {
-                        "type": "transformer.node/ParametersNode",
-                        "children": []
-                    },
-                    "value": {
-                        "type": "transformer.node/VariableNode",
-                        "fields": [
-                            "model",
-                            "text"
-                        ]
                     }
                 }
             ]
