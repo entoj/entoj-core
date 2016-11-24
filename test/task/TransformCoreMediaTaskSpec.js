@@ -30,6 +30,7 @@ describe(TransformCoreMediaTask.className, function()
      */
     baseTaskSpec(TransformCoreMediaTask, 'task/TransformCoreMediaTask', prepareParameters);
 
+
     /**
      */
     function prepareParameters(parameters)

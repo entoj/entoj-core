@@ -5,6 +5,7 @@
  */
 const CoreMediaRenderer = require(SOURCE_ROOT + '/transformer/CoreMediaRenderer.js').CoreMediaRenderer;
 const Parser = require(SOURCE_ROOT + '/transformer/Parser.js').Parser;
+const GlobalConfiguration = require(SOURCE_ROOT + '/model/configuration/GlobalConfiguration.js').GlobalConfiguration;
 const baseRendererSpec = require(TEST_ROOT + '/transformer/BaseRendererShared.js');
 const glob = require('glob');
 const fs = require('fs');
@@ -19,7 +20,17 @@ describe(CoreMediaRenderer.className, function()
     /**
      * Base Test
      */
-    baseRendererSpec(CoreMediaRenderer, 'transformer/CoreMediaRenderer');
+    baseRendererSpec(CoreMediaRenderer, 'transformer/CoreMediaRenderer', prepareParameters);
+
+
+    /**
+     */
+    function prepareParameters(parameters)
+    {
+        const globalConfiguration = new GlobalConfiguration();
+        parameters.unshift(globalConfiguration);
+        return parameters;
+    };
 
 
     /**
@@ -34,7 +45,8 @@ describe(CoreMediaRenderer.className, function()
             const expected = fs.readFileSync(rootPath + 'CoreMediaRenderer/' + name + '.expected.jsp', { encoding: 'utf8' }).replace(/\r/g, '');
             const parser = new Parser();
             const nodes = yield parser.parse(input);
-            const testee = new CoreMediaRenderer();
+            const globalConfiguration = new GlobalConfiguration();
+            const testee = new CoreMediaRenderer(globalConfiguration);
             const jsp = yield testee.render(nodes);
             try
             {

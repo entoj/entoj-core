@@ -4,11 +4,13 @@
  * Requirements
  */
 const JspInlineMacroCallTransformer = require(SOURCE_ROOT + '/transformer/nodetransformer/JspInlineMacroCallTransformer.js').JspInlineMacroCallTransformer;
+const resetUniqueId = require(SOURCE_ROOT + '/transformer/nodetransformer/JspInlineMacroCallTransformer.js').resetUniqueId;
 const BaseRenderer = require(SOURCE_ROOT + '/transformer/BaseRenderer.js').BaseRenderer;
 const Parser = require(SOURCE_ROOT + '/transformer/Parser.js').Parser;
 const Transformer = require(SOURCE_ROOT + '/transformer/Transformer.js').Transformer;
 const GlobalRepository = require(SOURCE_ROOT + '/model/GlobalRepository.js').GlobalRepository;
 const CoreMediaRenderer = require(SOURCE_ROOT + '/transformer/CoreMediaRenderer.js').CoreMediaRenderer;
+const GlobalConfiguration = require(SOURCE_ROOT + '/model/configuration/GlobalConfiguration.js').GlobalConfiguration;
 const compact = require(FIXTURES_ROOT + '/Application/Compact.js');
 const nodeTransformerSpec = require(TEST_ROOT + '/transformer/NodeTransformerShared.js');
 const co = require('co');
@@ -34,8 +36,9 @@ describe(JspInlineMacroCallTransformer.className, function()
         fixtures = compact.createFixture();
         fixtures.globalRepository = fixtures.context.di.create(GlobalRepository);
         fixtures.parser = new Parser();
-        fixtures.renderer = new CoreMediaRenderer();
+        fixtures.renderer = new CoreMediaRenderer(new GlobalConfiguration());
         fixtures.transformer = new Transformer(fixtures.globalRepository, fixtures.parser, fixtures.renderer);
+        resetUniqueId();
     });
 
 

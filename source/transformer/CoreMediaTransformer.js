@@ -15,6 +15,8 @@ const JspInlineMacroCallTransformer = require('./nodetransformer/JspInlineMacroC
 const JspRemoveMacroCallTransformer = require('./nodetransformer/JspRemoveMacroCallTransformer.js').JspRemoveMacroCallTransformer;
 const GlobalRepository = require('../model/GlobalRepository.js').GlobalRepository;
 const ViewModelRepository = require('../model/viewmodel/ViewModelRepository.js').ViewModelRepository;
+const GlobalConfiguration = require('../model/configuration/GlobalConfiguration.js').GlobalConfiguration;
+const assertParameter = require('../utils/assert.js').assertParameter;
 
 
 /**
@@ -25,11 +27,11 @@ class CoreMediaTransformer extends Transformer
     /**
      * @ignore
      */
-    constructor(globalRepository, viewModelRepository)
+    constructor(globalRepository, viewModelRepository, globalConfiguration)
     {
         super(globalRepository,
             new Parser(),
-            new CoreMediaRenderer(),
+            new CoreMediaRenderer(globalConfiguration),
             [
                 new JspConcatTransformer(),
                 new JspEmptyTransformer(),
@@ -46,7 +48,7 @@ class CoreMediaTransformer extends Transformer
      */
     static get injections()
     {
-        return { 'parameters': [GlobalRepository, ViewModelRepository] };
+        return { 'parameters': [GlobalRepository, ViewModelRepository, GlobalConfiguration] };
     }
 
 
