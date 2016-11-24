@@ -18,6 +18,7 @@ describe(EmptyFilter.className, function()
      */
     baseFilterSpec(EmptyFilter, 'nunjucks.filter/EmptyFilter');
 
+
     /**
      * EmptyFilter Test
      */

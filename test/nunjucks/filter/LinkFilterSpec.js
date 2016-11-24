@@ -18,6 +18,7 @@ describe(LinkFilter.className, function()
      */
     baseFilterSpec(LinkFilter, 'nunjucks.filter/LinkFilter');
 
+
     /**
      * LinkFilter Test
      */

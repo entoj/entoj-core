@@ -5,6 +5,8 @@
  * @ignore
  */
 const BaseFilter = require('./BaseFilter.js').BaseFilter;
+const GlobalConfiguration = require('../../model/configuration/GlobalConfiguration.js').GlobalConfiguration;
+const assertParameter = require('../../utils/assert.js').assertParameter;
 
 
 /**
@@ -15,14 +17,16 @@ class MediaQueryFilter extends BaseFilter
     /**
      * @inheritDoc
      */
-    constructor(options)
+    constructor(globalConfiguration)
     {
         super();
         this._name = 'mediaQuery';
 
+        // Check params
+        assertParameter(this, 'globalConfiguration', globalConfiguration, true, GlobalConfiguration);
+
         // Assign options
-        this._options = options || {};
-        this._options.mediaQueries = this._options.mediaQueries || {};
+        this._globalConfiguration = globalConfiguration;
     }
 
 
@@ -31,7 +35,7 @@ class MediaQueryFilter extends BaseFilter
      */
     static get injections()
     {
-        return { 'parameters': ['nunjucks.filter/MediaQueryFilter.options'] };
+        return { 'parameters': [GlobalConfiguration] };
     }
 
 
@@ -52,7 +56,8 @@ class MediaQueryFilter extends BaseFilter
         const scope = this;
         return function (value)
         {
-            return scope._options.mediaQueries[value] || '';
+            const mediaQueries = scope._globalConfiguration.get('mediaQueries');
+            return mediaQueries[value] || '';
         };
     }
 }

@@ -18,6 +18,7 @@ describe(DebugFilter.className, function()
      */
     baseFilterSpec(DebugFilter, 'nunjucks.filter/DebugFilter');
 
+
     /**
      * DebugFilter Test
      */

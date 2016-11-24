@@ -19,6 +19,7 @@ describe(MarkdownFilter.className, function()
      */
     baseFilterSpec(MarkdownFilter, 'nunjucks.filter/MarkdownFilter');
 
+
     /**
      * MarkdownFilter Test
      */

@@ -75,9 +75,9 @@ describe(CoreMediaRenderer.className, function()
 
     describe('#render()', function()
     {
-        it('should render custom filters', function()
+        it('should render complex variables', function()
         {
-            return testFixture('coremedia-filter');
+            return testFixture('complexvariables');
         });
     });
 
@@ -96,6 +96,11 @@ describe(CoreMediaRenderer.className, function()
         it('should render filters', function()
         {
             return testFixture('filter');
+        });
+
+        it('should render custom coremedia filters', function()
+        {
+            return testFixture('coremedia-filter');
         });
 
         it('should render macro calls', function()
