@@ -77,6 +77,15 @@ class GlobalConfiguration extends Base
     /**
      * @inheritDoc
      */
+    has(name)
+    {
+        return this._values.has(name);
+    }
+
+
+    /**
+     * @inheritDoc
+     */
     get(name)
     {
         const result = this._values.getByPath(name);
