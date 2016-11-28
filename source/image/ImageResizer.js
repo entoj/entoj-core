@@ -34,7 +34,7 @@ class ImageResizer extends Base
         const opts = options || {};
         this._pathesConfiguration = pathesConfiguration;
         this._showSize = (typeof opts.showSize !== 'undefined') ? opts.showSize : true;
-        this._useCache = (typeof opts.useCache !== 'undefined') ? opts.useCache : false;
+        this._useCache = (typeof opts.useCache !== 'undefined') ? opts.useCache : true;
         this._font = pathes.concat(__dirname, '/fonts/Dosis-Regular.ttf');
         this._cacheName = 'images';
     }
