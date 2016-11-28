@@ -60,14 +60,14 @@ class ViewModelRepository extends Base
     }
 
 
+
     /**
      * @param {String} parameters
      * @returns {Promise}
      */
-    lipsumMacro(parameters, site)
+    generateLipsum(params)
     {
         // Prepare
-        const params = parameters.split(',');
         const options =
         {
             units: 'words',
@@ -104,7 +104,57 @@ class ViewModelRepository extends Base
         options.count = min + ((max - min) * Math.random());
 
         // Go
-        return Promise.resolve(uppercaseFirst(lorem(options)));
+        return uppercaseFirst(lorem(options));
+    }
+
+
+    /**
+     * @param {String} parameters
+     * @returns {Promise}
+     */
+    lipsumMacro(parameters, site)
+    {
+        // Prepare
+        const params = parameters.split(',');
+
+        // Go
+        return Promise.resolve(this.generateLipsum(params));
+    }
+
+
+    /**
+     * @param {String} parameters
+     * @returns {Promise}
+     */
+    lipsumHtmlMacro(parameters, site)
+    {
+        // Prepare
+        const params = parameters.split(',');
+        const lipsum = this.generateLipsum(params);
+
+        // Transform to html
+        const paragraphs = lipsum.split('\n');
+        let result = '';
+        for (let paragraph of paragraphs)
+        {
+            if (paragraph.trim() != '')
+            {
+                const words = paragraph.split(' ');
+
+                // Add links
+                if (Math.random() > 0)
+                {
+                    const len = Math.round(2 + (Math.random() * 4));
+                    const position = (len >= words.length) ? 0 : Math.round((words.length - len - 1) * Math.random());
+                    words[position] =  '<a href="JavaScript:;">' + words[position];
+                    words[position + len] = words[position + len] + '</a>';
+                }
+                result+= '<p>' + words.join(' ') + '</p>';
+            }
+        }
+
+        // Go
+        return Promise.resolve(result);
     }
 
 
@@ -157,13 +207,17 @@ class ViewModelRepository extends Base
             if (isString(data))
             {
                 //Is it a macro call?
-                const macro = data.match(/^@(\w+):(.*)$/i);
+                const macro = data.match(/^@([\w\-]+):(.*)$/i);
                 if (macro)
                 {
                     switch(macro[1].toLowerCase())
                     {
                         case 'lipsum':
                             return scope.lipsumMacro(macro[2] || '', site);
+                            break;
+
+                        case 'lipsum-html':
+                            return scope.lipsumHtmlMacro(macro[2] || '', site);
                             break;
 
                         case 'include':
@@ -252,6 +306,10 @@ class ViewModelRepository extends Base
             }
 
             return Promise.resolve(false);
+        })
+        .catch((e) =>
+        {
+            this.logger.error('readPath(' + path + ') : ', e);
         });
         return promise;
     }
@@ -275,6 +333,10 @@ class ViewModelRepository extends Base
         {
             const data = yield scope.readPath(path, site);
             return new ViewModel(data);
+        })
+        .catch((e) =>
+        {
+            this.logger.error('getByPath(' + path + ') : ', e);
         });
         return promise;
     }

@@ -124,7 +124,22 @@ describe(ViewModelRepository.className, function()
                 expect(viewModel).to.be.instanceof(ViewModel);
                 expect(viewModel.data.copy).to.not.contain('@lipsum');
                 expect(viewModel.data.intro.headline).to.not.contain('@lipsum');
+                expect(viewModel.data.intro.headline).to.have.length.above(1);
                 expect(viewModel.data.items[0].name).to.not.contain('@lipsum');
+                expect(viewModel.data.items[0].name).to.have.length.above(1);
+            });
+            return promise;
+        });
+
+        it('should allow to use the @lipsum-html macro in model properties', function()
+        {
+            const promise = co(function *()
+            {
+                const testee = new ViewModelRepository(fixtures.entitiesRepository, fixtures.pathesConfiguration);
+                const viewModel = yield testee.getByPath('base/elements/e005-button/models/lipsum-html.json');
+                expect(viewModel).to.be.instanceof(ViewModel);
+                expect(viewModel.data.copy).to.not.contain('@lipsum-html');
+                console.log(viewModel.data);
             });
             return promise;
         });
