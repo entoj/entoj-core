@@ -26,7 +26,7 @@ const MacroNode = require('./node/MacroNode.js').MacroNode;
 const CallNode = require('./node/CallNode.js').CallNode;
 const OutputNode = require('./node/OutputNode.js').OutputNode;
 const YieldNode = require('./node/YieldNode.js').YieldNode;
-const DictionaryNode = require('./node/DictionaryNode.js').DictionaryNode;
+const ComplexVariableNode = require('./node/ComplexVariableNode.js').ComplexVariableNode;
 
 
 /**
@@ -193,7 +193,7 @@ class Parser extends BaseParser
     /**
      *
      */
-    parseDictionary(node)
+    parseComplexVariable(node)
     {
         const parse = (node, result) =>
         {
@@ -236,11 +236,11 @@ class Parser extends BaseParser
 
                 /* istanbul ignore next */
                 default:
-                    this.logger.error('parseDictionary: Not Implemented', type, JSON.stringify(node, null, 4));
+                    this.logger.error('parseComplexVariable: Not Implemented', type, JSON.stringify(node, null, 4));
             }
             return undefined;
         };
-        return new DictionaryNode(parse(node));
+        return new ComplexVariableNode(parse(node));
     }
 
 
@@ -349,7 +349,8 @@ class Parser extends BaseParser
                     break;
 
                 case 'Dict':
-                    result.push(this.parseDictionary(node));
+                case 'Array':
+                    result.push(this.parseComplexVariable(node));
                     break;
 
                 case 'Filter':

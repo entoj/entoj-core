@@ -9,7 +9,7 @@ const ViewModelRepository = require('../../model/viewmodel/ViewModelRepository.j
 const NodeList = require('../node/NodeList.js').NodeList;
 const SetNode = require('../node/SetNode.js').SetNode;
 const ExpressionNode = require('../node/ExpressionNode.js').ExpressionNode;
-const DictionaryNode = require('../node/DictionaryNode.js').DictionaryNode;
+const ComplexVariableNode = require('../node/ComplexVariableNode.js').ComplexVariableNode;
 const VariableNode = require('../node/VariableNode.js').VariableNode;
 const synchronize = require('../../utils/synchronize.js');
 const assertParameter = require('../../utils/assert.js').assertParameter;
@@ -78,7 +78,7 @@ class JspStaticModelTransformer extends NodeTransformer
                 const modelName = 'staticModel' + (uniqueId++);
                 const modelPath = model.value.children[0].value;
                 const viewModel = synchronize.execute(this._viewModelRepository, 'getByPath', [modelPath]);
-                const jsonNode = new DictionaryNode(viewModel.data);
+                const jsonNode = new ComplexVariableNode(viewModel.data);
                 const setNode = new SetNode(new VariableNode([modelName]), new ExpressionNode([jsonNode]));
 
                 // Set model parameter to generated variable

@@ -16,7 +16,7 @@
                         "type": "transformer.node/ExpressionNode",
                         "children": [
                             {
-                                "type": "transformer.node/DictionaryNode",
+                                "type": "transformer.node/ComplexVariableNode",
                                 "value": {
                                     "name": "e005-button"
                                 }

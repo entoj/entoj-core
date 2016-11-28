@@ -10,6 +10,7 @@ const ViewModelRepository = require('../model/viewmodel/ViewModelRepository.js')
 const GlobalConfiguration = require('../model/configuration/GlobalConfiguration.js').GlobalConfiguration;
 const assertParameter = require('../utils/assert.js').assertParameter;
 const uppercaseFirst = require('../utils/string.js').uppercaseFirst;
+const isPlainObject = require('../utils/objects.js').isPlainObject;
 const htmlencode = require('htmlencode').htmlEncode;
 const EOL = '\n';
 
@@ -399,6 +400,36 @@ class CoreMediaRenderer extends BaseRenderer
 
 
     /**
+     * Renders a complex variable
+     */
+    renderComplexVariable(name, data, parameters)
+    {
+        let result = '';
+        result+= '<jsp:useBean id="' + name + '" class="java.util.TreeMap" />';
+        const render = (name, data) =>
+        {
+            let result = '';
+            for (const key in data)
+            {
+                if (isPlainObject(data[key]))
+                {
+                    result+= '<jsp:useBean id="' + name + '_' + key + '" class="java.util.TreeMap" />';
+                    result+= render(name + '_' + key, data[key]);
+                    result+= '<c:set target="${ ' + name + ' }" property="' + key + '" value="${ ' + name + '_' + key + ' }" />';
+                }
+                else
+                {
+                    result+= '<c:set target="${ ' + name + ' }" property="' + key + '" value="' + data[key] + '" />';
+                }
+            }
+            return result;
+        }
+        result+= render(name, data);
+        return result;
+    }
+
+
+    /**
      *
      */
     renderSet(node, parameters)
@@ -499,10 +530,52 @@ class CoreMediaRenderer extends BaseRenderer
             node.value &&
             node.value.type === 'ExpressionNode' &&
             node.value.children.length &&
-            node.value.children[0].type === 'DictionaryNode')
+            node.value.children[0].type === 'ComplexVariableNode')
         {
+            /*
             const data = JSON.stringify(node.value.children[0].value);
             result+= '<tk:loadJson modelAttribute="' + this.getVariable(node.variable, parameters) + '" jsonString=\'' + (data) + '\' />';
+            */
+            const data = node.value.children[0].value;
+            if (Array.isArray(data))
+            {
+                // See if it is a breakpoint config
+                if (typeof data[0].breakpoint === 'string')
+                {
+                    let index = 0;
+                    const variableName = this.getVariable(node.variable, parameters);
+                    result+= '<jsp:useBean id="' + variableName + '" class="de.tk.web.coremedia.website.cae.base.picture.Breakpoints"/>';
+                    for (const breakpoint of data)
+                    {
+                        index++;
+                        const breakpointVariableName = variableName + '_' + index;
+                        result+= '<jsp:useBean id="' + breakpointVariableName + '" class="de.tk.web.coremedia.website.cae.base.picture.Breakpoint"/>';
+                        if (breakpoint.breakpoint)
+                        {
+                            result+= '<c:set target="${ ' + breakpointVariableName + ' }" property="name" value="' + breakpoint.breakpoint + '"/>';
+                        }
+                        result+= '<c:set target="${ ' + breakpointVariableName + ' }" property="aspect" value="' + breakpoint.aspect + '"/>';
+                        if (breakpoint.width)
+                        {
+                            result+= '<c:set target="${ ' + breakpointVariableName + ' }" property="width" value="' + breakpoint.width + '"/>';
+                        }
+                        if (breakpoint.height)
+                        {
+                            result+= '<c:set target="${ ' + breakpointVariableName + ' }" property="height" value="' + breakpoint.height + '"/>';
+                        }
+                        result+= '<c:set target="${ ' + variableName + ' }" property="' + index + '" value="${ ' + breakpointVariableName + ' }"/>';
+                    }
+                }
+                // No
+                else
+                {
+                    this.logger.error('renderSet - Error rendering array');
+                }
+            }
+            else
+            {
+                result+= this.renderComplexVariable(this.getVariable(node.variable, parameters), data, parameters);
+            }
         }
         // handle set replacements
         else if (typeof parameters.replaceSet[this.getVariable(node.variable, parameters)] !== 'undefined')

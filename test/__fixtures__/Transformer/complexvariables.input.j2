@@ -1,1 +1,24 @@
-{% set map = { name: 'foo', index: 1, options: { key: 'value' }, children:[ { name: 'bar' } ] } %}
+{% set map =
+    {
+        name: 'foo',
+        index: 1,
+        options:
+        {
+            key: 'value'
+        }
+    }
+%}
+{% set breakpoints =
+    [
+        {
+            breakpoint: 'miniTabletAndAbove',
+            aspect: '5x2',
+            width: 1680
+        },
+        {
+            breakpoint: 'phabletAndBelow',
+            aspect: '10x7',
+            width: 800
+        }
+    ]
+%}
