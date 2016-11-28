@@ -57,6 +57,7 @@ class MediaQueryFilter extends BaseFilter
         return function (value)
         {
             const mediaQueries = scope._globalConfiguration.get('mediaQueries');
+            scope.logger.info('breakpoint=' + value + ', mediaQuery=' + (mediaQueries[value] || ''));
             return mediaQueries[value] || '';
         };
     }
