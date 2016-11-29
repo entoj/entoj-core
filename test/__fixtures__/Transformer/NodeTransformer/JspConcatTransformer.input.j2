@@ -2,3 +2,4 @@
 {% set variable = model.headline + '-teaser' %}
 {% set strings = 'class' + '-teaser' %}
 {% set multiple = 'class' + '-teaser' + model.headline + 'yes' %}
+{% set className = moduleClass + '--' + type if type else '' %}

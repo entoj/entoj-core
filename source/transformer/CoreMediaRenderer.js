@@ -356,6 +356,12 @@ class CoreMediaRenderer extends BaseRenderer
                 result+= this.getVariable(node, parameters);
                 break;
 
+            case 'IfNode':
+                result+= '(' + this.renderCondition(node.condition, parameters) + ') ';
+                result+= '? (' + this.renderExpression(node.children, parameters) + ') ';
+                result+= ': (' + this.renderExpression(node.elseChildren, parameters) + ')';
+                break;
+
             default:
                 this.logger.error('renderExpression: Not Implemented', type, node);
         }

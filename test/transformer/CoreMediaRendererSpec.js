@@ -75,14 +75,6 @@ describe(CoreMediaRenderer.className, function()
 
     describe('#render()', function()
     {
-        it('should render complex variables', function()
-        {
-            return testFixture('complexvariables');
-        });
-    });
-
-    xdescribe('#render()', function()
-    {
         it('should render embedded variables', function()
         {
             return testFixture('variables');

@@ -357,6 +357,12 @@ class Parser extends BaseParser
                     result.push(this.parseFilter(node));
                     break;
 
+                case 'InlineIf':
+                    result.push(new IfNode(this.parseCondition(node.cond),
+                        [new ExpressionNode(parse(node.body))],
+                        [new ExpressionNode(parse(node.else_))]));
+                    break;
+
                 /* istanbul ignore next */
                 default:
                     this.logger.error('parseExpression: Not Implemented', type, JSON.stringify(node, null, 4));

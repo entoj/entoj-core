@@ -203,6 +203,98 @@
         {
             "type": "transformer.node/TextNode",
             "value": "\n"
+        },
+        {
+            "type": "transformer.node/SetNode",
+            "variable": {
+                "type": "transformer.node/VariableNode",
+                "fields": [
+                    "className"
+                ]
+            },
+            "value": {
+                "type": "transformer.node/ExpressionNode",
+                "children": [
+                    {
+                        "type": "transformer.node/IfNode",
+                        "children": [
+                            {
+                                "type": "transformer.node/ExpressionNode",
+                                "children": [
+                                    {
+                                        "type": "transformer.node/FilterNode",
+                                        "name": "concat",
+                                        "parameters": {
+                                            "type": "transformer.node/ParametersNode",
+                                            "children": [
+                                                {
+                                                    "type": "transformer.node/ParameterNode",
+                                                    "name": "",
+                                                    "value": {
+                                                        "type": "transformer.node/VariableNode",
+                                                        "fields": [
+                                                            "type"
+                                                        ]
+                                                    }
+                                                }
+                                            ]
+                                        },
+                                        "value": {
+                                            "type": "transformer.node/FilterNode",
+                                            "name": "concat",
+                                            "parameters": {
+                                                "type": "transformer.node/ParametersNode",
+                                                "children": [
+                                                    {
+                                                        "type": "transformer.node/ParameterNode",
+                                                        "name": "",
+                                                        "value": {
+                                                            "type": "transformer.node/LiteralNode",
+                                                            "value": "--"
+                                                        }
+                                                    }
+                                                ]
+                                            },
+                                            "value": {
+                                                "type": "transformer.node/VariableNode",
+                                                "fields": [
+                                                    "moduleClass"
+                                                ]
+                                            }
+                                        }
+                                    }
+                                ]
+                            }
+                        ],
+                        "condition": {
+                            "type": "transformer.node/ConditionNode",
+                            "children": [
+                                {
+                                    "type": "transformer.node/VariableNode",
+                                    "fields": [
+                                        "type"
+                                    ]
+                                }
+                            ]
+                        },
+                        "elseChildren": [
+                            {
+                                "type": "transformer.node/ExpressionNode",
+                                "children": [
+                                    {
+                                        "type": "transformer.node/LiteralNode",
+                                        "value": ""
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "type": "transformer.node/TextNode",
+            "value": "\n"
         }
     ]
 }
