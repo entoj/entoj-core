@@ -8,6 +8,7 @@ const BaseTask = require('./BaseTask.js').BaseTask;
 const GlobalRepository = require('../model/GlobalRepository.js').GlobalRepository;
 const CoreMediaTransformer = require('../transformer/CoreMediaTransformer.js').CoreMediaTransformer;
 const CliLogger = require('../cli/CliLogger.js').CliLogger;
+const ContentType = require('../model/ContentType.js');
 const assertParameter = require('../utils/assert.js').assertParameter;
 const pathes = require('../utils/pathes.js');
 const merge = require('../utils/objects.js').merge;
@@ -98,6 +99,7 @@ class TransformCoreMediaTask extends BaseTask
             const settings = entitySettings || {};
             const params = scope.prepareParameters(buildConfiguration, parameters);
             const macroName = settings.macro || entity.idString.lodasherize();
+            const macroParams = params.macros ? params.macros[macroName] || false : false;
             const filepath = pathes.normalizePathSeperators(templateString(params.filepathTemplate,
                 {
                     entity: entity,
@@ -124,6 +126,10 @@ class TransformCoreMediaTask extends BaseTask
                     filename+= '.jsp';
                 }
             }
+            else if (macroParams || (settings.type && settings.view))
+            {
+                filename = pathes.trimLeadingSlash(filepath + PATH_SEPERATOR + (settings.type || macroParams.type) + '.' + (settings.view || macroParams.view) + '.jsp');
+            }
             else
             {
                 filename = pathes.trimLeadingSlash(filepath + PATH_SEPERATOR + entity.idString + '.jsp');
@@ -142,6 +148,75 @@ class TransformCoreMediaTask extends BaseTask
                     contents: new Buffer(contents)
                 });
             return file;
+        });
+        return promise;
+    }
+
+
+    /**
+     * @inheritDocs
+     * @returns {Promise<Array>}
+     */
+    prepareEntities(buildConfiguration, parameters)
+    {
+        const scope = this;
+        const promise = co(function *()
+        {
+            // Prepare
+            const params = scope.prepareParameters(buildConfiguration, parameters);
+
+            // Check each entity
+            const result =
+            {
+                macros: {},
+                views: {}
+            };
+            const entities = yield scope._globalRepository.resolveEntities(params.query);
+            for (const entity of entities)
+            {
+                // Find each configured release
+                const settings = entity.properties.getByPath('release.coremedia', []);
+                for (const setting of settings)
+                {
+                    // Get macro
+                    const macroName = setting.macro || entity.idString.lodasherize();
+                    const macro = entity.documentation.find((doc) =>
+                    {
+                        return doc.contentType === ContentType.JINJA &&
+                               doc.name === macroName;
+                    });
+
+                    // Prepare macro settings
+                    if (macro)
+                    {
+                        // Set defaults
+                        result.macros[macroName] =
+                        {
+                            type: setting.type || 'CMObject',
+                            view: setting.view || macroName.replace(/\s|_/g, '-')
+                        };
+
+                        // Get type from docs when not set via settings
+                        if (!setting.type)
+                        {
+                            const modelParameter = macro.parameters.find((param) =>
+                            {
+                                return param.name === 'model';
+                            });
+                            if (modelParameter && modelParameter.type[0] != '*')
+                            {
+                                result.macros[macroName].type = modelParameter.type[0];
+                            }
+                        }
+
+                        // Add view for macro
+                        result.views[macroName] = result.macros[macroName].view;
+                    }
+                }
+            }
+
+            // Done
+            return result;
         });
         return promise;
     }
@@ -197,9 +272,11 @@ class TransformCoreMediaTask extends BaseTask
             co(function *()
             {
                 const work = scope._cliLogger.section('Transforming template files');
-                scope._cliLogger.options(scope.prepareParameters(buildConfiguration, parameters));
-                //yield scope.prepareEntities(buildConfiguration, parameters);
-                const files = yield scope.transformEntities(buildConfiguration, parameters);
+                const params = scope.prepareParameters(buildConfiguration, parameters);
+                scope._cliLogger.options(params);
+                const settings = yield scope.prepareEntities(buildConfiguration, parameters);
+                const entityParameters = merge(params, settings);
+                const files = yield scope.transformEntities(buildConfiguration, entityParameters);
                 for (const file of files)
                 {
                     resultStream.write(file);

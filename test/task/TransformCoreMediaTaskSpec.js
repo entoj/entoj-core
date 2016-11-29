@@ -28,7 +28,7 @@ describe(TransformCoreMediaTask.className, function()
     /**
      * BaseTask Test
      */
-    baseTaskSpec(TransformCoreMediaTask, 'task/TransformCoreMediaTask', prepareParameters);
+    //baseTaskSpec(TransformCoreMediaTask, 'task/TransformCoreMediaTask', prepareParameters);
 
 
     /**
@@ -128,14 +128,26 @@ describe(TransformCoreMediaTask.className, function()
             return promise;
         });
 
-        it('should allow to specify a filename via type and viewName settings', function()
+        it('should allow to specify a filename via type and view settings', function()
         {
             const promise = co(function *()
             {
                 const testee = createTestee();
-                const entities = yield fixtures.globalRepository.resolveEntities('base/modules/m001-gallery');
-                const file = yield testee.transformEntity(entities[0], { filename: 'CMCollection.asHeader' });
-                expect(file.path).to.be.equal('base' + PATH_SEPERATOR + 'modules' + PATH_SEPERATOR + 'm001-gallery' + PATH_SEPERATOR + 'CMCollection.asHeader.jsp');
+                const entities = yield fixtures.globalRepository.resolveEntities('base/modules/m002-teaser');
+                const file = yield testee.transformEntity(entities[0], { type: 'CMObject', view: 'asTeaser' });
+                expect(file.path).to.be.equal('base' + PATH_SEPERATOR + 'modules' + PATH_SEPERATOR + 'm002-teaser' + PATH_SEPERATOR + 'CMObject.asTeaser.jsp');
+            });
+            return promise;
+        });
+
+        it('should allow auto generate a filename based on documentation', function()
+        {
+            const promise = co(function *()
+            {
+                const testee = createTestee();
+                const entities = yield fixtures.globalRepository.resolveEntities('base/modules/m002-teaser');
+                const file = yield testee.transformEntity(entities[0], undefined, undefined, { macros: { 'm002_teaser': { type:'CMTeasable', view:'m002-teaser' } } });
+                expect(file.path).to.be.equal('base' + PATH_SEPERATOR + 'modules' + PATH_SEPERATOR + 'm002-teaser' + PATH_SEPERATOR + 'CMTeasable.m002-teaser.jsp');
             });
             return promise;
         });
@@ -207,6 +219,34 @@ describe(TransformCoreMediaTask.className, function()
     });
 
 
+    describe('#prepareEntities()', function()
+    {
+        it('should return a promise', function()
+        {
+            const testee = createTestee();
+            const promise = testee.prepareEntities();
+            expect(promise).to.be.instanceof(Promise);
+            return promise;
+        });
+
+        it('should yield a object that reflect entity settings derived from confuguration and documentation', function()
+        {
+            const promise = co(function *()
+            {
+                const testee = createTestee();
+                const settings = yield testee.prepareEntities();
+                expect(settings).to.contain.key('macros');
+                expect(settings.macros.m001_gallery.type).to.be.equal('CMObject');
+                expect(settings.macros.m002_teaser.type).to.be.equal('CMTeasable');
+                expect(settings).to.contain.key('views');
+                expect(settings.views.m001_gallery).to.be.equal('m001-gallery');
+                expect(settings.views.m002_teaser).to.be.equal('asTeaser');
+            });
+            return promise;
+        });
+    });
+
+
     describe('#stream()', function()
     {
         it('should stream all compiled jsp files', function()
@@ -217,10 +257,14 @@ describe(TransformCoreMediaTask.className, function()
                 const data = yield baseTaskSpec.readStream(testee.stream());
                 for (const file of data)
                 {
-                    expect(file.path).to.be.oneOf(['base' + PATH_SEPERATOR + 'modules' + PATH_SEPERATOR + 'm001-gallery' + PATH_SEPERATOR + 'm001-gallery.jsp',
-                        'base' + PATH_SEPERATOR + 'modules' + PATH_SEPERATOR + 'm001-gallery' + PATH_SEPERATOR + 'CMCollection.m-gallery.jsp',
-                        'extended' + PATH_SEPERATOR + 'modules' + PATH_SEPERATOR + 'm001-gallery' + PATH_SEPERATOR + 'm001-gallery.jsp',
-                        'extended' + PATH_SEPERATOR + 'modules' + PATH_SEPERATOR + 'm001-gallery' + PATH_SEPERATOR + 'CMCollection.m-gallery.jsp']);
+                    expect(file.path).to.be.oneOf([
+                        pathes.normalizePathSeperators('base/modules/m001-gallery/CMObject.m001-gallery.jsp'),
+                        pathes.normalizePathSeperators('base/modules/m001-gallery/CMCollection.m-gallery.jsp'),
+                        pathes.normalizePathSeperators('base/modules/m002-teaser/CMTeasable.asTeaser.jsp'),
+                        pathes.normalizePathSeperators('extended/modules/m001-gallery/CMObject.m001-gallery.jsp'),
+                        pathes.normalizePathSeperators('extended/modules/m001-gallery/CMCollection.m-gallery.jsp'),
+                        pathes.normalizePathSeperators('extended/modules/m002-teaser/CMTeasable.asTeaser.jsp'),
+                    ]);
                 }
             });
             return promise;
@@ -234,7 +278,11 @@ describe(TransformCoreMediaTask.className, function()
                 const data = yield baseTaskSpec.readStream(testee.stream(undefined, undefined, { filepathTemplate: 'foo' }));
                 for (const file of data)
                 {
-                    expect(file.path).to.be.oneOf(['foo' + PATH_SEPERATOR + 'm001-gallery.jsp', 'foo' + PATH_SEPERATOR + 'CMCollection.m-gallery.jsp']);
+                    expect(file.path).to.be.oneOf([
+                        pathes.normalizePathSeperators('foo/CMObject.m001-gallery.jsp'),
+                        pathes.normalizePathSeperators('foo/CMCollection.m-gallery.jsp'),
+                        pathes.normalizePathSeperators('foo/CMTeasable.asTeaser.jsp')
+                    ]);
                 }
             });
             return promise;
@@ -248,7 +296,11 @@ describe(TransformCoreMediaTask.className, function()
                 const data = yield baseTaskSpec.readStream(testee.stream(undefined, undefined, { filepathTemplate: '' }));
                 for (const file of data)
                 {
-                    expect(file.path).to.be.oneOf(['m001-gallery.jsp', 'CMCollection.m-gallery.jsp']);
+                    expect(file.path).to.be.oneOf([
+                        'CMObject.m001-gallery.jsp',
+                        'CMCollection.m-gallery.jsp',
+                        'CMTeasable.asTeaser.jsp'
+                    ]);
                 }
             });
             return promise;

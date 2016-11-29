@@ -1,2 +1,11 @@
 {
+    "release":
+    {
+        "coremedia":
+        [
+            {
+                "view": "asTeaser"
+            }
+        ]
+    }
 }
