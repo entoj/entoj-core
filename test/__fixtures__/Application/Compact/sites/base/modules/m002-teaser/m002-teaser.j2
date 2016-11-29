@@ -1,0 +1,16 @@
+{##
+	@param {Enumeration} type
+		s
+		m
+		l
+	@param {String} class - Adds a custom class to the gallery root element
+#}
+
+{% macro m002_teaser(
+        model=false,
+		type='',
+		class='') %}
+    {% set moduleClass = 'm002-teaser' %}
+	<div class="{{ moduleClass }} {{ type }} {{ class }}">
+	</div>
+{%  endmacro %}

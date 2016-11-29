@@ -198,6 +198,7 @@ class TransformCoreMediaTask extends BaseTask
             {
                 const work = scope._cliLogger.section('Transforming template files');
                 scope._cliLogger.options(scope.prepareParameters(buildConfiguration, parameters));
+                //yield scope.prepareEntities(buildConfiguration, parameters);
                 const files = yield scope.transformEntities(buildConfiguration, parameters);
                 for (const file of files)
                 {

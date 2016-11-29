@@ -128,6 +128,18 @@ describe(TransformCoreMediaTask.className, function()
             return promise;
         });
 
+        it('should allow to specify a filename via type and viewName settings', function()
+        {
+            const promise = co(function *()
+            {
+                const testee = createTestee();
+                const entities = yield fixtures.globalRepository.resolveEntities('base/modules/m001-gallery');
+                const file = yield testee.transformEntity(entities[0], { filename: 'CMCollection.asHeader' });
+                expect(file.path).to.be.equal('base' + PATH_SEPERATOR + 'modules' + PATH_SEPERATOR + 'm001-gallery' + PATH_SEPERATOR + 'CMCollection.asHeader.jsp');
+            });
+            return promise;
+        });
+
         it('should ensure a file extension of .jsp', function()
         {
             const promise = co(function *()

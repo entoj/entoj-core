@@ -69,7 +69,7 @@ describe(FilesRepository.className, function()
                 const testee = new FilesRepository(fixtures.entitiesRepository);
                 const files = yield testee.getBySite(fixtures.siteBase);
                 expect(files).to.be.instanceof(Array);
-                expect(files.length).to.be.equal(17);
+                expect(files.length).to.be.equal(21);
             });
             return promise;
         });
@@ -81,7 +81,7 @@ describe(FilesRepository.className, function()
                 const testee = new FilesRepository(fixtures.entitiesRepository);
                 const files = yield testee.getBySite(fixtures.siteBase, (file) => file.contentType == ContentType.SASS);
                 expect(files).to.be.instanceof(Array);
-                expect(files.length).to.be.equal(7);
+                expect(files.length).to.be.equal(8);
             });
             return promise;
         });
@@ -116,7 +116,7 @@ describe(FilesRepository.className, function()
                 const testee = new FilesRepository(fixtures.entitiesRepository);
                 const files = yield testee.getBySiteGrouped(fixtures.siteBase, false, 'groups.css', 'common');
                 expect(files.common).to.be.instanceof(Array);
-                expect(files.common).to.have.length(12);
+                expect(files.common).to.have.length(16);
                 expect(files.core).to.be.instanceof(Array);
                 expect(files.core).to.have.length(5);
             });
@@ -130,7 +130,7 @@ describe(FilesRepository.className, function()
                 const testee = new FilesRepository(fixtures.entitiesRepository);
                 const files = yield testee.getBySiteGrouped(fixtures.siteBase, (file) => file.contentType == ContentType.SASS, 'groups.css', 'common');
                 expect(files.common).to.be.instanceof(Array);
-                expect(files.common).to.have.length(6);
+                expect(files.common).to.have.length(7);
                 expect(files.core).to.be.instanceof(Array);
                 expect(files.core).to.have.length(1);
             });
