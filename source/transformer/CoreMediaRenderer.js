@@ -63,6 +63,7 @@ class CoreMediaRenderer extends BaseRenderer
         result.useSelf.macros = result.useSelf.macros || [];
         result.useSelf.values = result.useSelf.values || [];
         result.replaceSet = result.replaceSet || {};
+        result.replaceVariable = result.replaceVariable || {};
         return result;
     }
 
@@ -388,6 +389,16 @@ class CoreMediaRenderer extends BaseRenderer
             }
             else if (parameter.value && parameter.name === 'model')
             {
+                // Render type
+                let type = 'CMObject';
+                if (parameters && parameters.macros && parameters.macros[node.name])
+                {
+                    type = parameters.macros[node.name].type;
+                }
+                result+= '<%@ elvariable id="self" type="com.coremedia.blueprint.common.contentbeans.' + type + '" %>' + EOL;
+                result+= '<%@ elvariable id="model" type="com.coremedia.blueprint.common.contentbeans.' + type + '" %>' + EOL;
+
+                // Render default value
                 result+= '<c:if test="${ empty ' + parameter.name + ' }">' + EOL;
                 result+= '  <c:set var="model" value="${ self }" />' + EOL;
                 result+= '</c:if>' + EOL;
@@ -528,8 +539,34 @@ class CoreMediaRenderer extends BaseRenderer
             {
                 args.push(this.renderExpression(param.value, parameters));
             }
-            result+= '<c:set var="${ ' + this.getVariable(node.variable, parameters) + ' }" ';
+            result+= '<c:set var="' + this.getVariable(node.variable, parameters) + '" ';
             result+= 'value="${ tk:responsiveImageLink(self, pageContext, ' + args.join(', ') + ') }" />';
+        }
+        // handle navigationClass
+        else if (node.type === 'SetNode' &&
+            node.value &&
+            node.value.type === 'ExpressionNode' &&
+            node.value.children.length &&
+            node.value.children[0].type === 'FilterNode' &&
+            node.value.children[0].name === 'navigationClass')
+        {
+            const filter = node.value.children[0];
+            const args = [];
+            for (const param of filter.parameters.children)
+            {
+                args.push(this.renderExpression(param.value, parameters));
+            }
+            result+= '<c:set var="' + this.getVariable(node.variable, parameters) + '" ';
+            result+= 'value="${ bp:cssClassAppendNavigationActive(\'\', ' + args.join(', ') + ', ' + this.getVariable(filter.value, parameters) + ', model.navigationPathList) }" />';
+        }
+        // skip load filter
+        else if (node.type === 'SetNode' &&
+            node.value &&
+            node.value.type === 'ExpressionNode' &&
+            node.value.children.length &&
+            node.value.children[0].type === 'FilterNode' &&
+            node.value.children[0].name === 'load')
+        {
         }
         // handle complex variables
         else if (node.type === 'SetNode' &&
@@ -694,9 +731,15 @@ class CoreMediaRenderer extends BaseRenderer
     {
         // Prepare
         const modelParameter = node.parameters.getParameter('model');
-        const view = (node.name.endsWith('_dispatcher')) ? node.name.substr(0, node.name.length - 11) : node.name;
         const value = (modelParameter && modelParameter.value) ? this.renderExpression(modelParameter.value, parameters) : '';
         let result = '';
+
+        // Determine view
+        let view = (node.name.endsWith('_dispatcher')) ? node.name.substr(0, node.name.length - 11) : node.name;
+        if (parameters && parameters.views && parameters.views[node.name])
+        {
+            view = parameters.views[node.name];
+        }
 
         // Start
         result+= '<cm:include ';
@@ -811,6 +854,7 @@ class CoreMediaRenderer extends BaseRenderer
 
 
     /**
+     *
      */
     render(node, parameters)
     {
