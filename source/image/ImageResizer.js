@@ -35,8 +35,10 @@ class ImageResizer extends Base
         this._pathesConfiguration = pathesConfiguration;
         this._showSize = (typeof opts.showSize !== 'undefined') ? opts.showSize : true;
         this._useCache = (typeof opts.useCache !== 'undefined') ? opts.useCache : true;
+        this._resizableFileExtensions = opts.resizableFileExtensions || ['.png', '.jpg'];
         this._font = pathes.concat(__dirname, '/fonts/Dosis-Regular.ttf');
         this._cacheName = 'images';
+        this._dataName = 'images';
     }
 
 
@@ -135,7 +137,7 @@ class ImageResizer extends Base
         const scope = this;
         const promise = co(function*()
         {
-            const basePath = yield scope._pathesConfiguration.resolveData('/' + scope._cacheName);
+            const basePath = yield scope._pathesConfiguration.resolveData('/' + scope._dataName);
             const files = yield glob(pathes.concat(basePath, name));
             if (!files || !files.length)
             {
@@ -357,7 +359,15 @@ class ImageResizer extends Base
             const cachePath = yield scope._pathesConfiguration.resolveCache('/' + scope._cacheName);
             yield fs.mkdirp(cachePath);
 
+            // See if image needs to be resized
             const imageFilename = yield scope.resolveImageFilename(name);
+            if (scope._resizableFileExtensions.indexOf(path.extname(imageFilename)) === -1 ||
+                (width === 0 && height === 0))
+            {
+                return imageFilename;
+            }
+
+            // Check cache
             const cacheFilename = yield scope.resolveCacheFilename(imageFilename, width, height, false);
             if (scope._useCache)
             {
@@ -455,7 +465,15 @@ class ImageResizer extends Base
             const cachePath = yield scope._pathesConfiguration.resolveCache('/' + scope._cacheName);
             yield fs.mkdirp(cachePath);
 
+            // See if image needs to be resized
             const imageFilename = yield scope.resolveImageFilename(name);
+            if (scope._resizableFileExtensions.indexOf(path.extname(imageFilename)) === -1 ||
+                (width === 0 || height === 0))
+            {
+                return imageFilename;
+            }
+
+            // Check cache
             const cacheFilename = yield scope.resolveCacheFilename(imageFilename, width, height, forced);
             if (scope._useCache)
             {
