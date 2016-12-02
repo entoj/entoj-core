@@ -197,6 +197,7 @@ class SitesRoute extends BaseRoute
             try
             {
                 scope._nunjucks.addGlobal('site', data.site);
+                scope._nunjucks.addGlobal('request', request);
                 html = scope._nunjucks.renderString(tpl, data);
             }
             catch (e)
