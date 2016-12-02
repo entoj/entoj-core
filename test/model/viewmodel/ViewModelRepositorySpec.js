@@ -139,7 +139,6 @@ describe(ViewModelRepository.className, function()
                 const viewModel = yield testee.getByPath('base/elements/e005-button/models/lipsum-html.json');
                 expect(viewModel).to.be.instanceof(ViewModel);
                 expect(viewModel.data.copy).to.not.contain('@lipsum-html');
-                console.log(viewModel.data);
             });
             return promise;
         });
