@@ -697,7 +697,8 @@ class CoreMediaRenderer extends BaseRenderer
         result+= variableName;
         result+= '" items="${ ';
         result+= this.renderExpression(node.value, parameters).trim();
-        result+= ' }">';
+        result+= ' }"';
+        result+= ' varStatus="loop">';
 
         // Add local vars
         if (node.keyName)

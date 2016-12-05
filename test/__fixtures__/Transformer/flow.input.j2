@@ -2,3 +2,4 @@
 {% if model.copy %}COPY{% else %}NOCOPY{% endif %}
 {% for item in model.items %}COPY{% endfor %}
 {% for breakpoint, image in breakpoints %}BREAKPOINT{% endfor %}
+{% for item in model.items %}{{ loop.length }}{{ loop.index }}{{ loop.first }}{{ loop.last }}{% endfor %}
