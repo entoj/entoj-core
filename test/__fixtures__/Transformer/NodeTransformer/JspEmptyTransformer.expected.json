@@ -303,6 +303,10 @@
                 ]
             },
             "elseChildren": []
+        },
+        {
+            "type": "transformer.node/TextNode",
+            "value": "\n"
         }
     ]
 }
