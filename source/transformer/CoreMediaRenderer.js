@@ -322,6 +322,15 @@ class CoreMediaRenderer extends BaseRenderer
                 }
                 break;
 
+            case 'ArrayNode':
+                const items = [];
+                for (const child of node.children)
+                {
+                    items.push(this.renderExpression(child, parameters));
+                }
+                result+= '[' + items.join(', ') + ']';
+                break;
+
             case 'FilterNode':
                 result+= this.renderExpression(node.value, parameters);
                 result+= '.' + node.name + '(';
@@ -523,7 +532,7 @@ class CoreMediaRenderer extends BaseRenderer
             {
                 result+= '<c:set target="${ ' + mediaQueriesVariable + ' }" property="' + mediaQueryName + '" value="' + mediaQueries[mediaQueryName] + '" />';
             }
-            result+= '<c:set var="${ ' + this.getVariable(node.variable, parameters) + ' }" value="${ ' + mediaQueriesVariable + '[' + this.getVariable(filter.value, parameters) + '] }" />';
+            result+= '<c:set var="' + this.getVariable(node.variable, parameters) + '" value="${ ' + mediaQueriesVariable + '[' + this.getVariable(filter.value, parameters) + '] }" />';
         }
         // handle imageUrl
         else if (node.type === 'SetNode' &&
@@ -540,7 +549,12 @@ class CoreMediaRenderer extends BaseRenderer
                 args.push(this.renderExpression(param.value, parameters));
             }
             result+= '<c:set var="' + this.getVariable(node.variable, parameters) + '" ';
-            result+= 'value="${ tk:responsiveImageLink(self, pageContext, ' + args.join(', ') + ') }" />';
+            result+= 'value="${ tk:responsiveImageLink(self, pageContext';
+            if (args.length)
+            {
+                result+= ', ' + args.join(', ');
+            }
+            result+= ') }" />';
         }
         // handle navigationClass
         else if (node.type === 'SetNode' &&
@@ -558,6 +572,34 @@ class CoreMediaRenderer extends BaseRenderer
             }
             result+= '<c:set var="' + this.getVariable(node.variable, parameters) + '" ';
             result+= 'value="${ bp:cssClassAppendNavigationActive(\'\', ' + args.join(', ') + ', ' + this.getVariable(filter.value, parameters) + ', model.navigationPathList) }" />';
+        }
+        // handle moduleClasses
+        else if (node.type === 'SetNode' &&
+            node.value &&
+            node.value.children.length &&
+            node.value.children[0].type === 'FilterNode' &&
+            node.value.children[0].name === 'moduleClasses')
+        {
+            const filter = node.value.children[0];
+            const moduleClass = this.renderExpression(filter.parameters.children[0].value, parameters);
+            result+= '<c:set var="' + this.getVariable(node.variable, parameters) + '" ';
+            result+= 'value="${ ' + moduleClass + ' }';
+            if (filter.value.type === 'VariableNode')
+            {
+                const variable = this.getVariable(filter.value, parameters);
+                result+= ' ${ not empty ' + variable + ' ? ' + variable + ' : \'\' }';
+            }
+            if (filter.value.type === 'ArrayNode')
+            {
+                for (const child of filter.value.children)
+                {
+                    const variable = this.renderExpression(child, parameters);
+                    result+= ' ${ not empty ' + variable + ' ? ' + variable + ' : \'\' }';
+                }
+            }
+
+            result+= '" />';
+            //console.log(filter);
         }
         // skip load filter
         else if (node.type === 'SetNode' &&

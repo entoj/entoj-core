@@ -144,6 +144,38 @@
         {
             "type": "transformer.node/TextNode",
             "value": "\n"
+        },
+        {
+            "type": "transformer.node/OutputNode",
+            "children": [
+                {
+                    "type": "transformer.node/FilterNode",
+                    "name": "default",
+                    "parameters": {
+                        "type": "transformer.node/ParametersNode",
+                        "children": []
+                    },
+                    "value": {
+                        "type": "transformer.node/ArrayNode",
+                        "children": [
+                            {
+                                "type": "transformer.node/LiteralNode",
+                                "value": "one"
+                            },
+                            {
+                                "type": "transformer.node/VariableNode",
+                                "fields": [
+                                    "two"
+                                ]
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        {
+            "type": "transformer.node/TextNode",
+            "value": "\n"
         }
     ]
 }

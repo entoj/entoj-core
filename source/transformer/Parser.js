@@ -27,6 +27,7 @@ const CallNode = require('./node/CallNode.js').CallNode;
 const OutputNode = require('./node/OutputNode.js').OutputNode;
 const YieldNode = require('./node/YieldNode.js').YieldNode;
 const ComplexVariableNode = require('./node/ComplexVariableNode.js').ComplexVariableNode;
+const ArrayNode = require('./node/ArrayNode.js').ArrayNode;
 
 
 /**
@@ -491,6 +492,21 @@ class Parser extends BaseParser
     /**
      *
      */
+    parseArray(node)
+    {
+        const children = [];
+        for (const child of node.children)
+        {
+            children.push(this.parseNode(child));
+        }
+
+        return new ArrayNode(children);
+    }
+
+
+    /**
+     *
+     */
     parseList(node)
     {
         const children = [];
@@ -563,6 +579,10 @@ class Parser extends BaseParser
 
             case 'Filter':
                 result = this.parseFilter(node);
+                break;
+
+            case 'Array':
+                result = this.parseArray(node);
                 break;
 
             case 'Caller':
