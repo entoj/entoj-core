@@ -587,14 +587,14 @@ class CoreMediaRenderer extends BaseRenderer
             if (filter.value.type === 'VariableNode')
             {
                 const variable = this.getVariable(filter.value, parameters);
-                result+= ' ${ not empty ' + variable + ' ? moduleClass.concat(' + variable + ') : \'\' }';
+                result+= ' ${ not empty ' + variable + ' ? moduleClass.concat(\'--\').concat(' + variable + ') : \'\' }';
             }
             if (filter.value.type === 'ArrayNode')
             {
                 for (const child of filter.value.children)
                 {
                     const variable = this.renderExpression(child, parameters);
-                    result+= ' ${ not empty ' + variable + ' ? moduleClass.concat(' + variable + ') : \'\' }';
+                    result+= ' ${ not empty ' + variable + ' ? moduleClass.concat(\'--\').concat(' + variable + ') : \'\' }';
                 }
             }
             result+= '" />';
