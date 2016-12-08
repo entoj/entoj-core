@@ -403,6 +403,11 @@ class CoreMediaRenderer extends BaseRenderer
                 }
                 result+= '<!-- <%--@elvariable id="self" type="com.coremedia.blueprint.common.contentbeans.' + type + '"--%> -->' + EOL;
                 result+= '<!-- <%--@elvariable id="model" type="com.coremedia.blueprint.common.contentbeans.' + type + '"--%> -->' + EOL;
+
+                // Render default value
+                result+= '<c:if test="${ empty ' + parameter.name + ' }">' + EOL;
+                result+= '  <c:set var="model" value="${ self }" />' + EOL;
+                result+= '</c:if>' + EOL;
             }
         }
 
