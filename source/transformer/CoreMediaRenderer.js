@@ -392,9 +392,13 @@ class CoreMediaRenderer extends BaseRenderer
         {
             if (parameter.value && parameter.name !== 'model')
             {
-                result+= '<c:if test="${ empty ' + parameter.name + ' }">' + EOL;
-                result+= '  <c:set var="' + parameter.name + '" value="${ ' + this.renderExpression(parameter.value, parameters) + ' }" />' + EOL;
-                result+= '</c:if>' + EOL;
+                const value = this.renderExpression(parameter.value, parameters);
+                if (value !== 'false')
+                {
+                    result+= '<c:if test="${ empty ' + parameter.name + ' }">' + EOL;
+                    result+= '  <c:set var="' + parameter.name + '" value="${ ' + this.renderExpression(parameter.value, parameters) + ' }" />' + EOL;
+                    result+= '</c:if>' + EOL;
+                }
             }
             else if (parameter.value && parameter.name === 'model')
             {
@@ -404,8 +408,8 @@ class CoreMediaRenderer extends BaseRenderer
                 {
                     type = parameters.macros[node.name].type;
                 }
-                result+= '<%@ elvariable id="self" type="com.coremedia.blueprint.common.contentbeans.' + type + '" %>' + EOL;
-                result+= '<%@ elvariable id="model" type="com.coremedia.blueprint.common.contentbeans.' + type + '" %>' + EOL;
+                result+= '<!-- <%-- @elvariable id="self" type="com.coremedia.blueprint.common.contentbeans.' + type + '" --%> -->' + EOL;
+                result+= '<!-- <%-- @elvariable id="model" type="com.coremedia.blueprint.common.contentbeans.' + type + '" %> -->' + EOL;
 
                 // Render default value
                 result+= '<c:if test="${ empty ' + parameter.name + ' }">' + EOL;
