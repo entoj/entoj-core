@@ -38,6 +38,10 @@ class MarkupFilter extends BaseFilter
     {
         return function (value)
         {
+            if (value && value.indexOf('<') > -1)
+            {
+                return value;
+            }
             return '<p>' + (value || '') + '</p>';
         };
     }
