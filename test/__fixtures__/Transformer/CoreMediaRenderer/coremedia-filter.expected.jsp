@@ -7,5 +7,5 @@
 <c:set var="src" value="${ tk:responsiveImageLink(self, pageContext, image.aspect, image.width) }" />
 <c:set var="src" value="${ tk:responsiveImageLink(self, pageContext, image.aspect, image.width, image.height) }" />
 <c:set var="src" value="${ tk:imageLink(self, pageContext) }" />
-<c:set var="classes" value="${ moduleClass } ${ not empty type ? moduleClass.concat(type) : '' }" />
-<c:set var="classes" value="${ moduleClass } ${ not empty type ? moduleClass.concat(type) : '' } ${ not empty skin ? moduleClass.concat(skin) : '' }" />
+<c:set var="classes" value="${ moduleClass } ${ not empty type ? moduleClass.concat('--').concat(type) : '' }" />
+<c:set var="classes" value="${ moduleClass } ${ not empty type ? moduleClass.concat('--').concat(type) : '' } ${ not empty skin ? moduleClass.concat('--').concat(skin) : '' }" />
