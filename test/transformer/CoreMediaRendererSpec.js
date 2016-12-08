@@ -6,7 +6,9 @@
 const CoreMediaRenderer = require(SOURCE_ROOT + '/transformer/CoreMediaRenderer.js').CoreMediaRenderer;
 const Parser = require(SOURCE_ROOT + '/transformer/Parser.js').Parser;
 const GlobalConfiguration = require(SOURCE_ROOT + '/model/configuration/GlobalConfiguration.js').GlobalConfiguration;
+const GlobalRepository = require(SOURCE_ROOT + '/model/GlobalRepository.js').GlobalRepository;
 const baseRendererSpec = require(TEST_ROOT + '/transformer/BaseRendererShared.js');
+const compact = require(FIXTURES_ROOT + '/Application/Compact.js');
 const glob = require('glob');
 const fs = require('fs');
 const co = require('co');
@@ -27,7 +29,21 @@ describe(CoreMediaRenderer.className, function()
      */
     function prepareParameters(parameters)
     {
-        const mediaQueries =
+        parameters.unshift(fixtures.globalConfiguration);
+        parameters.unshift(fixtures.globalRepository);
+        return parameters;
+    };
+
+
+    /**
+     * CoreMediaRenderer Test
+     */
+    beforeEach(function()
+    {
+        fixtures = compact.createFixture();
+        fixtures.parser = fixtures.context.di.create(Parser);
+        fixtures.globalRepository = fixtures.context.di.create(GlobalRepository);
+        fixtures.mediaQueries =
         {
             applicationAndAbove: '(min-width: 1280px)',
             application: '(min-width: 1280px)',
@@ -37,15 +53,9 @@ describe(CoreMediaRenderer.className, function()
             mobileAndBelow: '(max-width: 375px)',
             mobile: '(max-width: 375px)'
         };
-        const globalConfiguration = new GlobalConfiguration({ mediaQueries: mediaQueries });
-        parameters.unshift(globalConfiguration);
-        return parameters;
-    };
+        fixtures.globalConfiguration = new GlobalConfiguration({ mediaQueries: fixtures.mediaQueries });
+    });
 
-
-    /**
-     * CoreMediaRenderer Test
-     */
     function testFixture(name)
     {
         const promise = co(function*()
@@ -123,6 +133,23 @@ describe(CoreMediaRenderer.className, function()
         it('should render complex variables', function()
         {
             return testFixture('complexvariables');
+        });
+    });
+
+    describe('#render()', function()
+    {
+        xit('should add all parameters to macro calls', function()
+        {
+            const promise = co(function *()
+            {
+                const expectedSource = fs.readFileSync(FIXTURES_ROOT + '/Transformer/CoreMediaRenderer/calls-parameters.expected.jsp', { encoding: 'utf8' });
+                const macroSource = fs.readFileSync(FIXTURES_ROOT + '/Application/Compact/sites/base/modules/m001-gallery/m001-gallery.j2', { encoding: 'utf8' });
+                const macro = yield fixtures.parser.parse(macroSource);
+                const testee = new CoreMediaRenderer(fixtures.globalRepository, fixtures.globalConfiguration);
+                const source = yield testee.render(macro);
+                expect(source).to.be.equal(expectedSource);
+            });
+            return promise;
         });
     });
 });

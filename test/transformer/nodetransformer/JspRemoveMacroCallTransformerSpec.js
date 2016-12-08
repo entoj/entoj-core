@@ -35,7 +35,7 @@ describe(JspRemoveMacroCallTransformer.className, function()
         fixtures = compact.createFixture();
         fixtures.globalRepository = fixtures.context.di.create(GlobalRepository);
         fixtures.parser = new Parser();
-        fixtures.renderer = new CoreMediaRenderer(new GlobalConfiguration());
+        fixtures.renderer = new CoreMediaRenderer(fixtures.globalRepository, new GlobalConfiguration());
         fixtures.transformer = new Transformer(fixtures.globalRepository, fixtures.parser, fixtures.renderer);
     });
 

@@ -36,7 +36,7 @@ describe(JspInlineMacroCallTransformer.className, function()
         fixtures = compact.createFixture();
         fixtures.globalRepository = fixtures.context.di.create(GlobalRepository);
         fixtures.parser = new Parser();
-        fixtures.renderer = new CoreMediaRenderer(new GlobalConfiguration());
+        fixtures.renderer = new CoreMediaRenderer(fixtures.globalRepository, new GlobalConfiguration());
         fixtures.transformer = new Transformer(fixtures.globalRepository, fixtures.parser, fixtures.renderer);
         resetUniqueId();
     });
@@ -56,9 +56,6 @@ describe(JspInlineMacroCallTransformer.className, function()
                 const result = yield testee.transform(macro, fixtures.transformer);
                 const path = FIXTURES_ROOT + '/Transformer/NodeTransformer/JspInlineMacroCallTransformer.expected.json';
                 const expected = JSON.parse(fs.readFileSync(path, { encoding: 'utf8' }));
-                //const rendered = yield fixtures.transformer.renderNode(result);
-                //console.log(rendered);
-                //console.log(JSON.stringify(result.serialize(), null, 4));
                 expect(result.serialize()).to.be.deep.equal(expected);
             });
             return promise;

@@ -6,6 +6,6 @@
 <jsp:useBean id="globalMediaQueries" class="java.util.TreeMap" /><c:set target="${ globalMediaQueries }" property="applicationAndAbove" value="(min-width: 1280px)" /><c:set target="${ globalMediaQueries }" property="application" value="(min-width: 1280px)" /><c:set target="${ globalMediaQueries }" property="tabletAndBelow" value="(max-width: 1024px)" /><c:set target="${ globalMediaQueries }" property="tabletAndAbove" value="(min-width: 1024px)" /><c:set target="${ globalMediaQueries }" property="tablet" value="(min-width: 1024px) and (max-width: 1024px)" /><c:set target="${ globalMediaQueries }" property="mobileAndBelow" value="(max-width: 375px)" /><c:set target="${ globalMediaQueries }" property="mobile" value="(max-width: 375px)" /><c:set var="mediaQuery" value="${ globalMediaQueries[breakpoint] }" />
 <c:set var="src" value="${ tk:responsiveImageLink(self, pageContext, image.aspect, image.width) }" />
 <c:set var="src" value="${ tk:responsiveImageLink(self, pageContext, image.aspect, image.width, image.height) }" />
-<c:set var="src" value="${ tk:responsiveImageLink(self, pageContext) }" />
-<c:set var="classes" value="${ moduleClass } ${ not empty type ? type : '' }" />
-<c:set var="classes" value="${ moduleClass } ${ not empty type ? type : '' } ${ not empty skin ? skin : '' }" />
+<c:set var="src" value="${ tk:imageLink(self, pageContext) }" />
+<c:set var="classes" value="${ moduleClass } ${ not empty type ? moduleClass.concat(type) : '' }" />
+<c:set var="classes" value="${ moduleClass } ${ not empty type ? moduleClass.concat(type) : '' } ${ not empty skin ? moduleClass.concat(skin) : '' }" />

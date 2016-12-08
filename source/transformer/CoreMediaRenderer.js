@@ -11,6 +11,7 @@ const GlobalConfiguration = require('../model/configuration/GlobalConfiguration.
 const assertParameter = require('../utils/assert.js').assertParameter;
 const uppercaseFirst = require('../utils/string.js').uppercaseFirst;
 const isPlainObject = require('../utils/objects.js').isPlainObject;
+const synchronize = require('../utils/synchronize.js').execute;
 const htmlencode = require('htmlencode').htmlEncode;
 const EOL = '\n';
 
@@ -23,14 +24,16 @@ class CoreMediaRenderer extends BaseRenderer
     /**
      * @ignore
      */
-    constructor(globalConfiguration)
+    constructor(globalRepository, globalConfiguration)
     {
         super();
 
         // Check params
+        assertParameter(this, 'globalRepository', globalRepository, true, GlobalRepository);
         assertParameter(this, 'globalConfiguration', globalConfiguration, true, GlobalConfiguration);
 
         // Assign options
+        this._globalRepository = globalRepository;
         this._globalConfiguration = globalConfiguration;
     }
 
@@ -40,7 +43,7 @@ class CoreMediaRenderer extends BaseRenderer
      */
     static get injections()
     {
-        return { 'parameters': [GlobalConfiguration] };
+        return { 'parameters': [GlobalRepository, GlobalConfiguration] };
     }
 
 
@@ -387,20 +390,10 @@ class CoreMediaRenderer extends BaseRenderer
         let result = '';
         result+= '<!-- Macro ' + node.name + ' -->' + EOL;
 
-        // Handle default values & model
+        // Handle model
         for (const parameter of node.parameters.children)
         {
-            if (parameter.value && parameter.name !== 'model')
-            {
-                const value = this.renderExpression(parameter.value, parameters);
-                if (value !== 'false')
-                {
-                    result+= '<c:if test="${ empty ' + parameter.name + ' }">' + EOL;
-                    result+= '  <c:set var="' + parameter.name + '" value="${ ' + this.renderExpression(parameter.value, parameters) + ' }" />' + EOL;
-                    result+= '</c:if>' + EOL;
-                }
-            }
-            else if (parameter.value && parameter.name === 'model')
+            if (parameter.value && parameter.name === 'model')
             {
                 // Render type
                 let type = 'CMObject';
@@ -410,11 +403,6 @@ class CoreMediaRenderer extends BaseRenderer
                 }
                 result+= '<!-- <%--@elvariable id="self" type="com.coremedia.blueprint.common.contentbeans.' + type + '"--%> -->' + EOL;
                 result+= '<!-- <%--@elvariable id="model" type="com.coremedia.blueprint.common.contentbeans.' + type + '"--%> -->' + EOL;
-
-                // Render default value
-                result+= '<c:if test="${ empty ' + parameter.name + ' }">' + EOL;
-                result+= '  <c:set var="model" value="${ self }" />' + EOL;
-                result+= '</c:if>' + EOL;
             }
         }
 
@@ -807,17 +795,42 @@ class CoreMediaRenderer extends BaseRenderer
         // End
         result+= '>';
 
-        // Determine parameters
-        if (modelParameter && modelParameter.value)
+        // Get defaults
+        const macro = synchronize(this._globalRepository, 'resolveMacro', ['base', node.name]);
+        const macroParameters = {};
+        if (macro)
         {
-            result+= '<cm:param name="' + modelParameter.name + '" value="${ ' + this.renderExpression(modelParameter.value, parameters) + ' }"/>';
+            for (const parameter of macro.parameters)
+            {
+                if (parameter.name !== 'model')
+                {
+                    let parameterValue = parameter.defaultValue;
+                    if (parameterValue === 'false')
+                    {
+                        parameterValue = 'null';
+                    }
+                    macroParameters[parameter.name] = '${ ' + parameterValue + ' }';
+                }
+            }
         }
+
+        // Get actual parameters
         for (const parameter of node.parameters.children)
         {
             if (parameter !== modelParameter)
             {
-                result+= '<cm:param name="' + parameter.name + '" value="${ ' + this.renderExpression(parameter.value, parameters) + ' }"/>';
+                macroParameters[parameter.name] = '${ ' + this.renderExpression(parameter.value, parameters) + ' }';
             }
+        }
+
+        // Render parameters
+        if (modelParameter && modelParameter.value)
+        {
+            result+= '<cm:param name="' + modelParameter.name + '" value="${ ' + this.renderExpression(modelParameter.value, parameters) + ' }"/>';
+        }
+        for (const parameterName in macroParameters)
+        {
+            result+= '<cm:param name="' + parameterName + '" value="' + macroParameters[parameterName] + '"/>';
         }
 
         // Close include

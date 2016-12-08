@@ -32,7 +32,7 @@ class CoreMediaTransformer extends Transformer
     {
         super(globalRepository,
             new Parser(),
-            new CoreMediaRenderer(globalConfiguration),
+            new CoreMediaRenderer(globalRepository, globalConfiguration),
             [
                 new JspConcatTransformer(),
                 new JspEmptyTransformer(),
