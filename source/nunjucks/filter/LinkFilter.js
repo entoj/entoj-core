@@ -46,6 +46,10 @@ class LinkFilter extends BaseFilter
             {
                 return value.dataUrlBlob;
             }
+            if (value && value.data)
+            {
+                return value.data;
+            }
             return 'JavaScript:;';
         }
     }
