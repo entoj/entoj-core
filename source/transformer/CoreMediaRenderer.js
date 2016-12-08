@@ -553,12 +553,15 @@ class CoreMediaRenderer extends BaseRenderer
                 args.push(this.renderExpression(param.value, parameters));
             }
             result+= '<c:set var="' + this.getVariable(node.variable, parameters) + '" ';
-            result+= 'value="${ tk:responsiveImageLink(self, pageContext';
             if (args.length)
             {
-                result+= ', ' + args.join(', ');
+                result+= 'value="${ tk:responsiveImageLink(self, pageContext, ' + args.join(', ') + ') }"';
             }
-            result+= ') }" />';
+            else
+            {
+                result+= 'value="${ tk:imageLink(self, pageContext) }"';
+            }
+            result+= ' />';
         }
         // handle navigationClass
         else if (node.type === 'SetNode' &&
@@ -591,19 +594,17 @@ class CoreMediaRenderer extends BaseRenderer
             if (filter.value.type === 'VariableNode')
             {
                 const variable = this.getVariable(filter.value, parameters);
-                result+= ' ${ not empty ' + variable + ' ? ' + variable + ' : \'\' }';
+                result+= ' ${ not empty ' + variable + ' ? moduleClass.concat(' + variable + ') : \'\' }';
             }
             if (filter.value.type === 'ArrayNode')
             {
                 for (const child of filter.value.children)
                 {
                     const variable = this.renderExpression(child, parameters);
-                    result+= ' ${ not empty ' + variable + ' ? ' + variable + ' : \'\' }';
+                    result+= ' ${ not empty ' + variable + ' ? moduleClass.concat(' + variable + ') : \'\' }';
                 }
             }
-
             result+= '" />';
-            //console.log(filter);
         }
         // skip load filter
         else if (node.type === 'SetNode' &&
@@ -621,10 +622,6 @@ class CoreMediaRenderer extends BaseRenderer
             node.value.children.length &&
             node.value.children[0].type === 'ComplexVariableNode')
         {
-            /*
-            const data = JSON.stringify(node.value.children[0].value);
-            result+= '<tk:loadJson modelAttribute="' + this.getVariable(node.variable, parameters) + '" jsonString=\'' + (data) + '\' />';
-            */
             const data = node.value.children[0].value;
             if (Array.isArray(data))
             {
