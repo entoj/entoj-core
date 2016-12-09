@@ -1,5 +1,6 @@
 <%@ page contentType="text/html; charset=UTF-8" session="false" %>
 <%@ include file="../../../../../WEB-INF/includes/taglibs.jinc" %>
+<%@ taglib prefix="tk" uri="http://www.coremedia.com/2016/tk-website" %>
 <c:if test="${ classes }"></c:if>
 <c:if test="${ classes.markup() }"></c:if>
 <c:if test="${ empty classes }"></c:if>

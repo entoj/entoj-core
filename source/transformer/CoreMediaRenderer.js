@@ -151,6 +151,7 @@ class CoreMediaRenderer extends BaseRenderer
             const filter = node.children[0];
             result+= '<cm:include';
             result+= ' self="${ ' + this.renderExpression(filter.value, parameters) + ' }"';
+            result+= ' view="tkArticle"';
             result+= ' />';
         }
         // Check default filter
@@ -545,14 +546,18 @@ class CoreMediaRenderer extends BaseRenderer
             {
                 args.push(this.renderExpression(param.value, parameters));
             }
-            result+= '<c:set var="' + this.getVariable(node.variable, parameters) + '" ';
+            result+= '<tk:image target="${ self }" var="' + this.getVariable(node.variable, parameters) + '"';
             if (args.length)
             {
-                result+= 'value="${ tk:responsiveImageLink(self, pageContext, ' + args.join(', ') + ') }"';
-            }
-            else
-            {
-                result+= 'value="${ tk:imageLink(self, pageContext) }"';
+                result+= ' aspect="${ ' + args[0] + ' }"';
+                if (args.length >= 2)
+                {
+                    result+= ' width="${ ' + args[1] + ' }"';
+                }
+                if (args.length >= 3)
+                {
+                    result+= ' height="${ ' + args[2] + ' }"';
+                }
             }
             result+= ' />';
         }
@@ -928,6 +933,7 @@ class CoreMediaRenderer extends BaseRenderer
         let source = '';
         source+= '<%@ page contentType="text/html; charset=UTF-8" session="false" %>' + EOL;
         source+= '<%@ include file="../../../../../WEB-INF/includes/taglibs.jinc" %>' + EOL;
+        source+= '<%@ taglib prefix="tk" uri="http://www.coremedia.com/2016/tk-website" %>' + EOL;
         source+= this.renderNode(node, params);
         return Promise.resolve(source);
     }
