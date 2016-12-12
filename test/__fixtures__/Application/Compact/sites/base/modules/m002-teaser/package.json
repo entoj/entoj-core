@@ -3,8 +3,10 @@
     {
         "coremedia":
         [
+            {},
             {
-                "view": "asTeaser"
+                "view": "asTeaser",
+                "defaultView": false
             }
         ]
     }

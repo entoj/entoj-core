@@ -45,7 +45,7 @@ describe(JspRemoveMacroCallTransformer.className, function()
      */
     describe('#transform()', function()
     {
-        it('should replace macro calls with inlined code', function()
+        it('should remove macro calls', function()
         {
             const promise = co(function *()
             {

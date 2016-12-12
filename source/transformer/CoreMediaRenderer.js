@@ -776,11 +776,22 @@ class CoreMediaRenderer extends BaseRenderer
         const value = (modelParameter && modelParameter.value) ? this.renderExpression(modelParameter.value, parameters) : '';
         let result = '';
 
-        // Determine view
+        // Default view
         let view = (node.name.endsWith('_dispatcher')) ? node.name.substr(0, node.name.length - 11) : node.name;
-        if (parameters && parameters.views && parameters.views[node.name])
+        if (parameters &&
+            parameters.views &&
+            parameters.views[node.name])
         {
             view = parameters.views[node.name];
+        }
+
+        // Override view?
+        if (parameters &&
+            parameters.settings &&
+            parameters.settings.views &&
+            parameters.settings.views[node.name])
+        {
+            view = parameters.settings.views[node.name];
         }
 
         // Start

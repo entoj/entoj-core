@@ -229,7 +229,7 @@ describe(TransformCoreMediaTask.className, function()
             return promise;
         });
 
-        it('should yield a object that reflect entity settings derived from confuguration and documentation', function()
+        it('should generate a map that describes all settings derived from configuration and documentation', function()
         {
             const promise = co(function *()
             {
@@ -237,10 +237,22 @@ describe(TransformCoreMediaTask.className, function()
                 const settings = yield testee.prepareEntities();
                 expect(settings).to.contain.key('macros');
                 expect(settings.macros.m001_gallery.type).to.be.equal('CMObject');
+                expect(settings.macros.m001_gallery.view).to.be.equal('m001-gallery');
                 expect(settings.macros.m002_teaser.type).to.be.equal('CMTeasable');
+                expect(settings.macros.m002_teaser.view).to.be.equal('m002-teaser');
+            });
+            return promise;
+        });
+
+        it('should generate a map that describes all known macro to view mappings', function()
+        {
+            const promise = co(function *()
+            {
+                const testee = createTestee();
+                const settings = yield testee.prepareEntities();
                 expect(settings).to.contain.key('views');
                 expect(settings.views.m001_gallery).to.be.equal('m001-gallery');
-                expect(settings.views.m002_teaser).to.be.equal('asTeaser');
+                expect(settings.views.m002_teaser).to.be.equal('m002-teaser');
             });
             return promise;
         });
@@ -261,9 +273,11 @@ describe(TransformCoreMediaTask.className, function()
                         pathes.normalizePathSeperators('base/modules/m001-gallery/CMObject.m001-gallery.jsp'),
                         pathes.normalizePathSeperators('base/modules/m001-gallery/CMCollection.m-gallery.jsp'),
                         pathes.normalizePathSeperators('base/modules/m002-teaser/CMTeasable.asTeaser.jsp'),
+                        pathes.normalizePathSeperators('base/modules/m002-teaser/CMTeasable.m002-teaser.jsp'),
                         pathes.normalizePathSeperators('extended/modules/m001-gallery/CMObject.m001-gallery.jsp'),
                         pathes.normalizePathSeperators('extended/modules/m001-gallery/CMCollection.m-gallery.jsp'),
                         pathes.normalizePathSeperators('extended/modules/m002-teaser/CMTeasable.asTeaser.jsp'),
+                        pathes.normalizePathSeperators('extended/modules/m002-teaser/CMTeasable.m002-teaser.jsp')
                     ]);
                 }
             });
@@ -281,7 +295,8 @@ describe(TransformCoreMediaTask.className, function()
                     expect(file.path).to.be.oneOf([
                         pathes.normalizePathSeperators('foo/CMObject.m001-gallery.jsp'),
                         pathes.normalizePathSeperators('foo/CMCollection.m-gallery.jsp'),
-                        pathes.normalizePathSeperators('foo/CMTeasable.asTeaser.jsp')
+                        pathes.normalizePathSeperators('foo/CMTeasable.asTeaser.jsp'),
+                        pathes.normalizePathSeperators('foo/CMTeasable.m002-teaser.jsp')
                     ]);
                 }
             });
@@ -299,7 +314,8 @@ describe(TransformCoreMediaTask.className, function()
                     expect(file.path).to.be.oneOf([
                         'CMObject.m001-gallery.jsp',
                         'CMCollection.m-gallery.jsp',
-                        'CMTeasable.asTeaser.jsp'
+                        'CMTeasable.asTeaser.jsp',
+                        'CMTeasable.m002-teaser.jsp'
                     ]);
                 }
             });

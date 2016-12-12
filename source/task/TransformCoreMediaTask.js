@@ -193,7 +193,7 @@ class TransformCoreMediaTask extends BaseTask
                         result.macros[macroName] =
                         {
                             type: setting.type || 'CMObject',
-                            view: setting.view || macroName.replace(/\s|_/g, '-')
+                            view: macroName.replace(/\s|_/g, '-')
                         };
 
                         // Get type from docs when not set via settings
@@ -210,7 +210,13 @@ class TransformCoreMediaTask extends BaseTask
                         }
 
                         // Add view for macro
-                        result.views[macroName] = result.macros[macroName].view;
+                        let view = result.macros[macroName].view;
+                        if (setting.view &&
+                            (typeof setting.defaultView === 'undefined' || setting.defaultView === true))
+                        {
+                            view = setting.view;
+                        }
+                        result.views[macroName] = view;
                     }
                 }
             }
