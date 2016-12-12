@@ -1,0 +1,9 @@
+{{ model.text|markup }}
+{% set link = model.link|link %}
+{% set text = model.text|markup %}
+{% set mediaQuery = breakpoint|mediaQuery %}
+{% set src = model|imageUrl(image.aspect, image.width) %}
+{% set src = model|imageUrl(image.aspect, image.width, image.height) %}
+{% set src = model|imageUrl() %}
+{% set classes = type|moduleClasses(moduleClass) %}
+{% set classes = [type, skin]|moduleClasses(moduleClass) %}

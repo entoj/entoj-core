@@ -21,7 +21,8 @@ describe(ForNode.className, function()
         serialized:
         {
             type: ForNode.className,
-            name: 'item',
+            valueName: 'value',
+            keyName: 'key',
             value:
             {
                 type: 'transformer.node/BaseNode'
@@ -38,7 +39,8 @@ describe(ForNode.className, function()
 
     function prepareParameters(parameters)
     {
-        parameters.push('item');
+        parameters.push('key');
+        parameters.push('value');
         parameters.push(new BaseNode());
         parameters.push([new BaseNode()]);
         return parameters;

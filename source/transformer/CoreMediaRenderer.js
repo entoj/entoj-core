@@ -7,6 +7,11 @@
 const BaseRenderer = require('./BaseRenderer.js').BaseRenderer;
 const GlobalRepository = require('../model/GlobalRepository.js').GlobalRepository;
 const ViewModelRepository = require('../model/viewmodel/ViewModelRepository.js').ViewModelRepository;
+const GlobalConfiguration = require('../model/configuration/GlobalConfiguration.js').GlobalConfiguration;
+const assertParameter = require('../utils/assert.js').assertParameter;
+const uppercaseFirst = require('../utils/string.js').uppercaseFirst;
+const isPlainObject = require('../utils/objects.js').isPlainObject;
+const synchronize = require('../utils/synchronize.js').execute;
 const htmlencode = require('htmlencode').htmlEncode;
 const EOL = '\n';
 
@@ -17,6 +22,32 @@ const EOL = '\n';
 class CoreMediaRenderer extends BaseRenderer
 {
     /**
+     * @ignore
+     */
+    constructor(globalRepository, globalConfiguration)
+    {
+        super();
+
+        // Check params
+        assertParameter(this, 'globalRepository', globalRepository, true, GlobalRepository);
+        assertParameter(this, 'globalConfiguration', globalConfiguration, true, GlobalConfiguration);
+
+        // Assign options
+        this._globalRepository = globalRepository;
+        this._globalConfiguration = globalConfiguration;
+    }
+
+
+    /**
+     * @inheritDoc
+     */
+    static get injections()
+    {
+        return { 'parameters': [GlobalRepository, GlobalConfiguration] };
+    }
+
+
+    /**
      * @inheritDoc
      */
     static get className()
@@ -26,7 +57,7 @@ class CoreMediaRenderer extends BaseRenderer
 
 
     /**
-     * Renders a variable
+     * Prepares rendering parameters
      */
     prepareParameters(parameters)
     {
@@ -35,6 +66,7 @@ class CoreMediaRenderer extends BaseRenderer
         result.useSelf.macros = result.useSelf.macros || [];
         result.useSelf.values = result.useSelf.values || [];
         result.replaceSet = result.replaceSet || {};
+        result.replaceVariable = result.replaceVariable || {};
         return result;
     }
 
@@ -119,6 +151,7 @@ class CoreMediaRenderer extends BaseRenderer
             const filter = node.children[0];
             result+= '<cm:include';
             result+= ' self="${ ' + this.renderExpression(filter.value, parameters) + ' }"';
+            result+= ' view="tkArticle"';
             result+= ' />';
         }
         // Check default filter
@@ -128,7 +161,7 @@ class CoreMediaRenderer extends BaseRenderer
         {
             const filter = node.children[0];
             const value = this.renderExpression(filter.value, parameters);
-            const defaultValue = this.renderExpression(filter.parameters.children[0].value, parameters);
+            const defaultValue = filter.parameters.children.length ? this.renderExpression(filter.parameters.children[0].value, parameters) : "''";
             result+= '${ ';
             result+=  value + ' is empty ? ' + defaultValue + ' : ' + value;
             result+= ' }';
@@ -293,6 +326,15 @@ class CoreMediaRenderer extends BaseRenderer
                 }
                 break;
 
+            case 'ArrayNode':
+                const items = [];
+                for (const child of node.children)
+                {
+                    items.push(this.renderExpression(child, parameters));
+                }
+                result+= '[' + items.join(', ') + ']';
+                break;
+
             case 'FilterNode':
                 result+= this.renderExpression(node.value, parameters);
                 result+= '.' + node.name + '(';
@@ -328,6 +370,12 @@ class CoreMediaRenderer extends BaseRenderer
                 result+= this.getVariable(node, parameters);
                 break;
 
+            case 'IfNode':
+                result+= '(' + this.renderCondition(node.condition, parameters) + ') ';
+                result+= '? (' + this.renderExpression(node.children, parameters) + ') ';
+                result+= ': (' + this.renderExpression(node.elseChildren, parameters) + ')';
+                break;
+
             default:
                 this.logger.error('renderExpression: Not Implemented', type, node);
         }
@@ -343,17 +391,21 @@ class CoreMediaRenderer extends BaseRenderer
         let result = '';
         result+= '<!-- Macro ' + node.name + ' -->' + EOL;
 
-        // Handle default values & model
+        // Handle model
         for (const parameter of node.parameters.children)
         {
-            if (parameter.value && parameter.name !== 'model')
+            if (parameter.value && parameter.name === 'model')
             {
-                result+= '<c:if test="${ empty ' + parameter.name + ' }">' + EOL;
-                result+= '  <c:set var="' + parameter.name + '" value="${ ' + this.renderExpression(parameter.value, parameters) + ' }" />' + EOL;
-                result+= '</c:if>' + EOL;
-            }
-            else if (parameter.value && parameter.name === 'model')
-            {
+                // Render type
+                let type = 'CMObject';
+                if (parameters && parameters.macros && parameters.macros[node.name])
+                {
+                    type = parameters.macros[node.name].type;
+                }
+                result+= '<!-- <%--@elvariable id="self" type="com.coremedia.blueprint.common.contentbeans.' + type + '"--%> -->' + EOL;
+                result+= '<!-- <%--@elvariable id="model" type="com.coremedia.blueprint.common.contentbeans.' + type + '"--%> -->' + EOL;
+
+                // Render default value
                 result+= '<c:if test="${ empty ' + parameter.name + ' }">' + EOL;
                 result+= '  <c:set var="model" value="${ self }" />' + EOL;
                 result+= '</c:if>' + EOL;
@@ -367,6 +419,36 @@ class CoreMediaRenderer extends BaseRenderer
         }
 
         result+= '<!-- /Macro ' + node.name + ' -->' + EOL;
+        return result;
+    }
+
+
+    /**
+     * Renders a complex variable
+     */
+    renderComplexVariable(name, data, parameters)
+    {
+        let result = '';
+        result+= '<jsp:useBean id="' + name + '" class="java.util.TreeMap" />';
+        const render = (name, data) =>
+        {
+            let result = '';
+            for (const key in data)
+            {
+                if (isPlainObject(data[key]))
+                {
+                    result+= '<jsp:useBean id="' + name + '_' + key + '" class="java.util.TreeMap" />';
+                    result+= render(name + '_' + key, data[key]);
+                    result+= '<c:set target="${ ' + name + ' }" property="' + key + '" value="${ ' + name + '_' + key + ' }" />';
+                }
+                else
+                {
+                    result+= '<c:set target="${ ' + name + ' }" property="' + key + '" value="' + data[key] + '" />';
+                }
+            }
+            return result;
+        }
+        result+= render(name, data);
         return result;
     }
 
@@ -432,15 +514,152 @@ class CoreMediaRenderer extends BaseRenderer
             result+= ' key="' + key + '"';
             result+= ' />';
         }
+        // handle breakpoints
+        else if (node.type === 'SetNode' &&
+            node.value &&
+            node.value.type === 'ExpressionNode' &&
+            node.value.children.length &&
+            node.value.children[0].type === 'FilterNode' &&
+            node.value.children[0].name === 'mediaQuery')
+        {
+            const filter = node.value.children[0];
+            const mediaQueries = this._globalConfiguration.get('mediaQueries');
+            const mediaQueriesVariable = 'globalMediaQueries'
+            result+= '<jsp:useBean id="' + mediaQueriesVariable + '" class="java.util.TreeMap" />';
+            for (const mediaQueryName in mediaQueries)
+            {
+                result+= '<c:set target="${ ' + mediaQueriesVariable + ' }" property="' + mediaQueryName + '" value="' + mediaQueries[mediaQueryName] + '" />';
+            }
+            result+= '<c:set var="' + this.getVariable(node.variable, parameters) + '" value="${ ' + mediaQueriesVariable + '[' + this.getVariable(filter.value, parameters) + '] }" />';
+        }
+        // handle imageUrl
+        else if (node.type === 'SetNode' &&
+            node.value &&
+            node.value.type === 'ExpressionNode' &&
+            node.value.children.length &&
+            node.value.children[0].type === 'FilterNode' &&
+            node.value.children[0].name === 'imageUrl')
+        {
+            const filter = node.value.children[0];
+            const args = [];
+            for (const param of filter.parameters.children)
+            {
+                args.push(this.renderExpression(param.value, parameters));
+            }
+            result+= '<tk:image target="${ self }" var="' + this.getVariable(node.variable, parameters) + '"';
+            if (args.length)
+            {
+                result+= ' aspect="${ ' + args[0] + ' }"';
+                if (args.length >= 2)
+                {
+                    result+= ' width="${ ' + args[1] + ' }"';
+                }
+                if (args.length >= 3)
+                {
+                    result+= ' height="${ ' + args[2] + ' }"';
+                }
+            }
+            result+= ' />';
+        }
+        // handle navigationClass
+        else if (node.type === 'SetNode' &&
+            node.value &&
+            node.value.type === 'ExpressionNode' &&
+            node.value.children.length &&
+            node.value.children[0].type === 'FilterNode' &&
+            node.value.children[0].name === 'navigationClass')
+        {
+            const filter = node.value.children[0];
+            const args = [];
+            for (const param of filter.parameters.children)
+            {
+                args.push(this.renderExpression(param.value, parameters));
+            }
+            result+= '<c:set var="' + this.getVariable(node.variable, parameters) + '" ';
+            result+= 'value="${ bp:cssClassAppendNavigationActive(\'\', ' + args.join(', ') + ', ' + this.getVariable(filter.value, parameters) + ', model.navigationPathList) }" />';
+        }
+        // handle moduleClasses
+        else if (node.type === 'SetNode' &&
+            node.value &&
+            node.value.children.length &&
+            node.value.children[0].type === 'FilterNode' &&
+            node.value.children[0].name === 'moduleClasses')
+        {
+            const filter = node.value.children[0];
+            const moduleClass = this.renderExpression(filter.parameters.children[0].value, parameters);
+            result+= '<c:set var="' + this.getVariable(node.variable, parameters) + '" ';
+            result+= 'value="${ ' + moduleClass + ' }';
+            if (filter.value.type === 'VariableNode')
+            {
+                const variable = this.getVariable(filter.value, parameters);
+                result+= ' ${ not empty ' + variable + ' ? moduleClass.concat(\'--\').concat(' + variable + ') : \'\' }';
+            }
+            if (filter.value.type === 'ArrayNode')
+            {
+                for (const child of filter.value.children)
+                {
+                    const variable = this.renderExpression(child, parameters);
+                    result+= ' ${ not empty ' + variable + ' ? moduleClass.concat(\'--\').concat(' + variable + ') : \'\' }';
+                }
+            }
+            result+= '" />';
+        }
+        // skip load filter
+        else if (node.type === 'SetNode' &&
+            node.value &&
+            node.value.type === 'ExpressionNode' &&
+            node.value.children.length &&
+            node.value.children[0].type === 'FilterNode' &&
+            node.value.children[0].name === 'load')
+        {
+        }
         // handle complex variables
         else if (node.type === 'SetNode' &&
             node.value &&
             node.value.type === 'ExpressionNode' &&
             node.value.children.length &&
-            node.value.children[0].type === 'DictionaryNode')
+            node.value.children[0].type === 'ComplexVariableNode')
         {
-            const data = JSON.stringify(node.value.children[0].value);
-            result+= '<tk:loadJson modelAttribute="' + this.getVariable(node.variable, parameters) + '" jsonString=\'' + (data) + '\' />';
+            const data = node.value.children[0].value;
+            if (Array.isArray(data))
+            {
+                // See if it is a breakpoint config
+                if (typeof data[0].breakpoint === 'string')
+                {
+                    let index = 0;
+                    const variableName = this.getVariable(node.variable, parameters);
+                    result+= '<jsp:useBean id="' + variableName + '" class="de.tk.web.coremedia.website.cae.base.picture.Breakpoints"/>';
+                    for (const breakpoint of data)
+                    {
+                        index++;
+                        const breakpointVariableName = variableName + '_' + index;
+                        result+= '<jsp:useBean id="' + breakpointVariableName + '" class="de.tk.web.coremedia.website.cae.base.picture.Breakpoint"/>';
+                        if (breakpoint.breakpoint)
+                        {
+                            result+= '<c:set target="${ ' + breakpointVariableName + ' }" property="name" value="' + breakpoint.breakpoint + '"/>';
+                        }
+                        result+= '<c:set target="${ ' + breakpointVariableName + ' }" property="aspect" value="' + breakpoint.aspect + '"/>';
+                        if (breakpoint.width)
+                        {
+                            result+= '<c:set target="${ ' + breakpointVariableName + ' }" property="width" value="' + breakpoint.width + '"/>';
+                        }
+                        if (breakpoint.height)
+                        {
+                            result+= '<c:set target="${ ' + breakpointVariableName + ' }" property="height" value="' + breakpoint.height + '"/>';
+                        }
+                        result+= '<c:set target="${ ' + variableName + ' }" property="' + index + '" value="${ ' + breakpointVariableName + ' }"/>';
+                    }
+                }
+                // No
+                else
+                {
+                    this.logger.error('renderSet - Error rendering array');
+                }
+            }
+            else
+            {
+                result+= this.renderComplexVariable(this.getVariable(node.variable, parameters), data, parameters);
+            }
         }
         // handle set replacements
         else if (typeof parameters.replaceSet[this.getVariable(node.variable, parameters)] !== 'undefined')
@@ -510,15 +729,38 @@ class CoreMediaRenderer extends BaseRenderer
     renderFor(node, parameters)
     {
         let result = '';
+
+        // Create iteration var
+        const variableName = node.keyName ? node.keyName + 'And' + uppercaseFirst(node.valueName) : node.valueName;
+
+        // Create iteration
         result+= '<c:forEach var="';
-        result+= node.name;
+        result+= variableName;
         result+= '" items="${ ';
         result+= this.renderExpression(node.value, parameters).trim();
-        result+= ' }">';
+        result+= ' }"';
+        result+= ' varStatus="loop">';
+
+        // Add local vars
+        if (node.keyName)
+        {
+            result+= '<c:set';
+            result+= ' var="' + node.keyName + '"';
+            result+= ' value="${ ' + variableName + '.key }"';
+            result+= ' />';
+            result+= '<c:set';
+            result+= ' var="' + node.valueName + '"';
+            result+= ' value="${ ' + variableName + '.value }"';
+            result+= ' />';
+        }
+
+        // Render children
         for (const child of node.children)
         {
             result+= this.renderNode(child, parameters);
         }
+
+        // End Iteration
         result+= '</c:forEach>';
         return result;
     }
@@ -531,9 +773,26 @@ class CoreMediaRenderer extends BaseRenderer
     {
         // Prepare
         const modelParameter = node.parameters.getParameter('model');
-        const view = (node.name.endsWith('_dispatcher')) ? node.name.substr(0, node.name.length - 11) : node.name;
         const value = (modelParameter && modelParameter.value) ? this.renderExpression(modelParameter.value, parameters) : '';
         let result = '';
+
+        // Default view
+        let view = (node.name.endsWith('_dispatcher')) ? node.name.substr(0, node.name.length - 11) : node.name;
+        if (parameters &&
+            parameters.views &&
+            parameters.views[node.name])
+        {
+            view = parameters.views[node.name];
+        }
+
+        // Override view?
+        if (parameters &&
+            parameters.settings &&
+            parameters.settings.views &&
+            parameters.settings.views[node.name])
+        {
+            view = parameters.settings.views[node.name];
+        }
 
         // Start
         result+= '<cm:include ';
@@ -557,17 +816,42 @@ class CoreMediaRenderer extends BaseRenderer
         // End
         result+= '>';
 
-        // Determine parameters
-        if (modelParameter && modelParameter.value)
+        // Get defaults
+        const macro = synchronize(this._globalRepository, 'resolveMacro', ['base', node.name]);
+        const macroParameters = {};
+        if (macro)
         {
-            result+= '<cm:param name="' + modelParameter.name + '" value="${ ' + this.renderExpression(modelParameter.value, parameters) + ' }"/>';
+            for (const parameter of macro.parameters)
+            {
+                if (parameter.name !== 'model')
+                {
+                    let parameterValue = parameter.defaultValue;
+                    if (parameterValue === 'false')
+                    {
+                        parameterValue = 'null';
+                    }
+                    macroParameters[parameter.name] = '${ ' + parameterValue + ' }';
+                }
+            }
         }
+
+        // Get actual parameters
         for (const parameter of node.parameters.children)
         {
             if (parameter !== modelParameter)
             {
-                result+= '<cm:param name="' + parameter.name + '" value="${ ' + this.renderExpression(parameter.value, parameters) + ' }"/>';
+                macroParameters[parameter.name] = '${ ' + this.renderExpression(parameter.value, parameters) + ' }';
             }
+        }
+
+        // Render parameters
+        if (modelParameter && modelParameter.value)
+        {
+            result+= '<cm:param name="' + modelParameter.name + '" value="${ ' + this.renderExpression(modelParameter.value, parameters) + ' }"/>';
+        }
+        for (const parameterName in macroParameters)
+        {
+            result+= '<cm:param name="' + parameterName + '" value="' + macroParameters[parameterName] + '"/>';
         }
 
         // Close include
@@ -648,6 +932,7 @@ class CoreMediaRenderer extends BaseRenderer
 
 
     /**
+     *
      */
     render(node, parameters)
     {
@@ -659,6 +944,7 @@ class CoreMediaRenderer extends BaseRenderer
         let source = '';
         source+= '<%@ page contentType="text/html; charset=UTF-8" session="false" %>' + EOL;
         source+= '<%@ include file="../../../../../WEB-INF/includes/taglibs.jinc" %>' + EOL;
+        source+= '<%@ taglib prefix="tk" uri="http://www.coremedia.com/2016/tk-website" %>' + EOL;
         source+= this.renderNode(node, params);
         return Promise.resolve(source);
     }

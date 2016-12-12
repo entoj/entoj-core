@@ -8,6 +8,7 @@ const BaseRoute = require('./BaseRoute.js').BaseRoute;
 const ImageResizer = require('../../image/ImageResizer.js').ImageResizer;
 const CliLogger = require('../../cli/CliLogger.js').CliLogger;
 const assertParameter = require('../../utils/assert.js').assertParameter;
+const path = require('path');
 
 
 /**
@@ -30,7 +31,6 @@ class ImagesRoute extends BaseRoute
         const opts = options || '';
         this._imageResizer = imageResizer;
         this._rootUrl = opts.rootUrl || '/images/:image/:width?/:height?/:forced?';
-        this._staticFileExtensions = opts.staticFileExtensions || ['.png', '.jpg', '.gif', '.svg'];
     }
 
 
@@ -57,14 +57,16 @@ class ImagesRoute extends BaseRoute
      */
     handleImage(request, response, next)
     {
-        const scope = this;
+        // Get size
         const width = parseInt(request.params.width, 10) || 0;
         const height = parseInt(request.params.height, 10) || 0;
+
+        // Resize
         const work = this._cliLogger.work('Serving image <' + request.params.image + '> as <' + width + '>x<' + height + '>');
-        this._imageResizer.resize(request.params.image, width, height, request.params.forced).then(function (filename)
+        this._imageResizer.resize(request.params.image, width, height, request.params.forced).then((filename) =>
         {
             response.sendFile(filename);
-            scope._cliLogger.end(work);
+            this._cliLogger.end(work);
         });
     }
 

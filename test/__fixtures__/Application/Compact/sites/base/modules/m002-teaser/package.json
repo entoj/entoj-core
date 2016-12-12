@@ -1,0 +1,13 @@
+{
+    "release":
+    {
+        "coremedia":
+        [
+            {},
+            {
+                "view": "asTeaser",
+                "defaultView": false
+            }
+        ]
+    }
+}

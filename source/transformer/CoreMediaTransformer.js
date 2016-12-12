@@ -13,8 +13,11 @@ const JspSelfTransformer = require('./nodetransformer/JspSelfTransformer.js').Js
 const JspStaticModelTransformer = require('./nodetransformer/JspStaticModelTransformer.js').JspStaticModelTransformer;
 const JspInlineMacroCallTransformer = require('./nodetransformer/JspInlineMacroCallTransformer.js').JspInlineMacroCallTransformer;
 const JspRemoveMacroCallTransformer = require('./nodetransformer/JspRemoveMacroCallTransformer.js').JspRemoveMacroCallTransformer;
+const JspForEachTransformer = require('./nodetransformer/JspForEachTransformer.js').JspForEachTransformer;
 const GlobalRepository = require('../model/GlobalRepository.js').GlobalRepository;
 const ViewModelRepository = require('../model/viewmodel/ViewModelRepository.js').ViewModelRepository;
+const GlobalConfiguration = require('../model/configuration/GlobalConfiguration.js').GlobalConfiguration;
+const assertParameter = require('../utils/assert.js').assertParameter;
 
 
 /**
@@ -25,18 +28,19 @@ class CoreMediaTransformer extends Transformer
     /**
      * @ignore
      */
-    constructor(globalRepository, viewModelRepository)
+    constructor(globalRepository, viewModelRepository, globalConfiguration)
     {
         super(globalRepository,
             new Parser(),
-            new CoreMediaRenderer(),
+            new CoreMediaRenderer(globalRepository, globalConfiguration),
             [
                 new JspConcatTransformer(),
                 new JspEmptyTransformer(),
                 new JspSelfTransformer(),
                 new JspStaticModelTransformer(viewModelRepository),
                 new JspInlineMacroCallTransformer(),
-                new JspRemoveMacroCallTransformer()
+                new JspRemoveMacroCallTransformer(),
+                new JspForEachTransformer()
             ]);
     }
 
@@ -46,7 +50,7 @@ class CoreMediaTransformer extends Transformer
      */
     static get injections()
     {
-        return { 'parameters': [GlobalRepository, ViewModelRepository] };
+        return { 'parameters': [GlobalRepository, ViewModelRepository, GlobalConfiguration] };
     }
 
 

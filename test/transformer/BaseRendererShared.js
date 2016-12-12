@@ -15,7 +15,7 @@ function spec(type, className, prepareParameters)
     /**
      * Base Test
      */
-    baseSpec(type, className);
+    baseSpec(type, className, prepareParameters);
 
 
     /**

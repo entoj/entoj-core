@@ -18,6 +18,7 @@ describe(MarkupFilter.className, function()
      */
     baseFilterSpec(MarkupFilter, 'nunjucks.filter/MarkupFilter');
 
+
     /**
      * MarkupFilter Test
      */

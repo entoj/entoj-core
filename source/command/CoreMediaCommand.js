@@ -14,6 +14,7 @@ const PathesConfiguration = require('../model/configuration/PathesConfiguration.
 const BuildConfiguration = require('../model/configuration/BuildConfiguration.js').BuildConfiguration;
 const CliLogger = require('../cli/CliLogger.js').CliLogger;
 const co = require('co');
+const fs = require('fs-extra');
 
 
 /**
@@ -88,7 +89,7 @@ class CoreMediaCommand extends BaseCommand
             const options =
             {
                 query: parameters && parameters._[2] || '*',
-                path: path,
+                writePath: path,
                 flatten: scope._options.flatten || true,
                 environment: buildConfiguration.environment
             };
@@ -97,6 +98,9 @@ class CoreMediaCommand extends BaseCommand
             const logger = scope.createLogger('command.coremedia.compile');
             const mapping = new Map();
             mapping.set(CliLogger, logger);
+
+            // Clear previous release
+            fs.emptyDirSync(path);
 
             // Run tasks
             let task = scope.context.di.create(TransformCoreMediaTask, mapping);

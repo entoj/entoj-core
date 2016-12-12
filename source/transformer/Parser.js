@@ -26,7 +26,8 @@ const MacroNode = require('./node/MacroNode.js').MacroNode;
 const CallNode = require('./node/CallNode.js').CallNode;
 const OutputNode = require('./node/OutputNode.js').OutputNode;
 const YieldNode = require('./node/YieldNode.js').YieldNode;
-const DictionaryNode = require('./node/DictionaryNode.js').DictionaryNode;
+const ComplexVariableNode = require('./node/ComplexVariableNode.js').ComplexVariableNode;
+const ArrayNode = require('./node/ArrayNode.js').ArrayNode;
 
 
 /**
@@ -193,7 +194,7 @@ class Parser extends BaseParser
     /**
      *
      */
-    parseDictionary(node)
+    parseComplexVariable(node)
     {
         const parse = (node, result) =>
         {
@@ -236,11 +237,11 @@ class Parser extends BaseParser
 
                 /* istanbul ignore next */
                 default:
-                    this.logger.error('parseDictionary: Not Implemented', type, JSON.stringify(node, null, 4));
+                    this.logger.error('parseComplexVariable: Not Implemented', type, JSON.stringify(node, null, 4));
             }
             return undefined;
         };
-        return new DictionaryNode(parse(node));
+        return new ComplexVariableNode(parse(node));
     }
 
 
@@ -349,11 +350,18 @@ class Parser extends BaseParser
                     break;
 
                 case 'Dict':
-                    result.push(this.parseDictionary(node));
+                case 'Array':
+                    result.push(this.parseComplexVariable(node));
                     break;
 
                 case 'Filter':
                     result.push(this.parseFilter(node));
+                    break;
+
+                case 'InlineIf':
+                    result.push(new IfNode(this.parseCondition(node.cond),
+                        [new ExpressionNode(parse(node.body))],
+                        [new ExpressionNode(parse(node.else_))]));
                     break;
 
                 /* istanbul ignore next */
@@ -441,7 +449,9 @@ class Parser extends BaseParser
         {
             children.push(this.parseNode(child));
         }
-        return new ForNode(node.name.value, values, children);
+        const keyName = node.name.children ? node.name.children[0].value : false;
+        const valueName = node.name.children ? node.name.children[1].value : node.name.value;
+        return new ForNode(keyName, valueName, values, children);
     }
 
 
@@ -476,6 +486,21 @@ class Parser extends BaseParser
             const parameters = this.parseParameters(node.args);
             return new CallNode(node.name.value, parameters, children);
         }
+    }
+
+
+    /**
+     *
+     */
+    parseArray(node)
+    {
+        const children = [];
+        for (const child of node.children)
+        {
+            children.push(this.parseNode(child));
+        }
+
+        return new ArrayNode(children);
     }
 
 
@@ -554,6 +579,10 @@ class Parser extends BaseParser
 
             case 'Filter':
                 result = this.parseFilter(node);
+                break;
+
+            case 'Array':
+                result = this.parseArray(node);
                 break;
 
             case 'Caller':

@@ -10,14 +10,14 @@ const ValueNode = require('./ValueNode.js').ValueNode;
 /**
  *
  */
-class DictionaryNode extends ValueNode
+class ComplexVariableNode extends ValueNode
 {
     /**
      * @inheritDoc
      */
     static get className()
     {
-        return 'transformer.node/DictionaryNode';
+        return 'transformer.node/ComplexVariableNode';
     }
 }
 
@@ -26,4 +26,4 @@ class DictionaryNode extends ValueNode
  * Exports
  * @ignore
  */
-module.exports.DictionaryNode = DictionaryNode;
+module.exports.ComplexVariableNode = ComplexVariableNode;

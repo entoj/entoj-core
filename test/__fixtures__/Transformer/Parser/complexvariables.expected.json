@@ -13,19 +13,47 @@
                 "type": "transformer.node/ExpressionNode",
                 "children": [
                     {
-                        "type": "transformer.node/DictionaryNode",
+                        "type": "transformer.node/ComplexVariableNode",
                         "value": {
                             "name": "foo",
                             "index": 1,
                             "options": {
                                 "key": "value"
-                            },
-                            "children": [
-                                {
-                                    "name": "bar"
-                                }
-                            ]
+                            }
                         }
+                    }
+                ]
+            }
+        },
+        {
+            "type": "transformer.node/TextNode",
+            "value": "\n"
+        },
+        {
+            "type": "transformer.node/SetNode",
+            "variable": {
+                "type": "transformer.node/VariableNode",
+                "fields": [
+                    "breakpoints"
+                ]
+            },
+            "value": {
+                "type": "transformer.node/ExpressionNode",
+                "children": [
+                    {
+                        "type": "transformer.node/ComplexVariableNode",
+                        "value": [
+                            {
+                                "breakpoint": "miniTabletAndAbove",
+                                "aspect": "5x2",
+                                "width": 1680
+                            },
+                            {
+                                "breakpoint": "phabletAndBelow",
+                                "aspect": "10x7",
+                                "width": 800
+                            }
+                        ]
                     }
                 ]
             }

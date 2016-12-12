@@ -5,6 +5,8 @@
  * @ignore
  */
 const BaseFilter = require('./BaseFilter.js').BaseFilter;
+const GlobalConfiguration = require('../../model/configuration/GlobalConfiguration.js').GlobalConfiguration;
+const assertParameter = require('../../utils/assert.js').assertParameter;
 
 
 /**
@@ -15,14 +17,16 @@ class MediaQueryFilter extends BaseFilter
     /**
      * @inheritDoc
      */
-    constructor(options)
+    constructor(globalConfiguration)
     {
         super();
         this._name = 'mediaQuery';
 
+        // Check params
+        assertParameter(this, 'globalConfiguration', globalConfiguration, true, GlobalConfiguration);
+
         // Assign options
-        this._options = options || {};
-        this._options.breakpoints = this._options.breakpoints || {};
+        this._globalConfiguration = globalConfiguration;
     }
 
 
@@ -31,7 +35,7 @@ class MediaQueryFilter extends BaseFilter
      */
     static get injections()
     {
-        return { 'parameters': ['nunjucks.filter/MediaQueryFilter.options'] };
+        return { 'parameters': [GlobalConfiguration] };
     }
 
 
@@ -52,36 +56,9 @@ class MediaQueryFilter extends BaseFilter
         const scope = this;
         return function (value)
         {
-            const device = value.split('And').shift().trim();
-            const breakpoint = scope._options.breakpoints[device] || {};
-            let result = '';
-            if (value.endsWith('AndBelow'))
-            {
-                if (breakpoint.maxWidth)
-                {
-                    result+= '(max-width: ' + breakpoint.maxWidth + ')';
-                }
-            }
-            else if (value.endsWith('AndAbove'))
-            {
-                if (breakpoint.minWidth)
-                {
-                    result+= '(min-width: ' + breakpoint.minWidth + ')';
-                }
-            }
-            else
-            {
-                if (breakpoint.minWidth)
-                {
-                    result+= '(min-width: ' + breakpoint.minWidth + ')';
-                }
-                if (breakpoint.maxWidth)
-                {
-                    result+= (result.length ? ' and ' : '') + '(max-width: ' + breakpoint.maxWidth + ')';
-                }
-            }
-
-            return result;
+            const mediaQueries = scope._globalConfiguration.get('mediaQueries');
+            scope.logger.info('breakpoint=' + value + ', mediaQuery=' + (mediaQueries[value] || ''));
+            return mediaQueries[value] || '';
         };
     }
 }

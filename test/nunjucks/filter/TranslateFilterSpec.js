@@ -18,6 +18,7 @@ describe(TranslateFilter.className, function()
      */
     baseFilterSpec(TranslateFilter, 'nunjucks.filter/TranslateFilter');
 
+
     /**
      * TranslateFilter Test
      */

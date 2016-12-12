@@ -85,7 +85,95 @@
                     "value": "COPY"
                 }
             ],
-            "name": "item",
+            "keyName": false,
+            "valueName": "item",
+            "value": {
+                "type": "transformer.node/VariableNode",
+                "fields": [
+                    "model",
+                    "items"
+                ]
+            }
+        },
+        {
+            "type": "transformer.node/TextNode",
+            "value": "\n"
+        },
+        {
+            "type": "transformer.node/ForNode",
+            "children": [
+                {
+                    "type": "transformer.node/TextNode",
+                    "value": "BREAKPOINT"
+                }
+            ],
+            "keyName": "breakpoint",
+            "valueName": "image",
+            "value": {
+                "type": "transformer.node/VariableNode",
+                "fields": [
+                    "breakpoints"
+                ]
+            }
+        },
+        {
+            "type": "transformer.node/TextNode",
+            "value": "\n"
+        },
+        {
+            "type": "transformer.node/ForNode",
+            "children": [
+                {
+                    "type": "transformer.node/OutputNode",
+                    "children": [
+                        {
+                            "type": "transformer.node/VariableNode",
+                            "fields": [
+                                "loop",
+                                "length"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "transformer.node/OutputNode",
+                    "children": [
+                        {
+                            "type": "transformer.node/VariableNode",
+                            "fields": [
+                                "loop",
+                                "index"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "transformer.node/OutputNode",
+                    "children": [
+                        {
+                            "type": "transformer.node/VariableNode",
+                            "fields": [
+                                "loop",
+                                "first"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "transformer.node/OutputNode",
+                    "children": [
+                        {
+                            "type": "transformer.node/VariableNode",
+                            "fields": [
+                                "loop",
+                                "last"
+                            ]
+                        }
+                    ]
+                }
+            ],
+            "keyName": false,
+            "valueName": "item",
             "value": {
                 "type": "transformer.node/VariableNode",
                 "fields": [

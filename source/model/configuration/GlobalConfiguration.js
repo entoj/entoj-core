@@ -6,6 +6,7 @@
  */
 const Base = require('../../Base.js').Base;
 const BaseMap = require('../../base/BaseMap.js').BaseMap;
+const breakpointsToMediaQueries = require('../../utils/processors.js').breakpointsToMediaQueries;
 
 
 /**
@@ -26,6 +27,10 @@ class GlobalConfiguration extends Base
         this._values = new BaseMap();
         this._values.load(this.defaults);
         this._values.load(options);
+        if (!this._values.has('mediaQueries'))
+        {
+            this._values.set('mediaQueries', breakpointsToMediaQueries(this._values.get('breakpoints')));
+        }
     }
 
 
@@ -66,6 +71,15 @@ class GlobalConfiguration extends Base
             ]
         };
         return result;
+    }
+
+
+    /**
+     * @inheritDoc
+     */
+    has(name)
+    {
+        return this._values.has(name);
     }
 
 
