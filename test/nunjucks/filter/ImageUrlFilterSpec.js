@@ -23,29 +23,16 @@ describe(ImageUrlFilter.className, function()
      */
     describe('#filter', function()
     {
-        describe('mode=default', function()
+        it('should return a image url for the given filename', function()
         {
-            it('should return a image url for the given filename', function()
-            {
-                const testee = new ImageUrlFilter();
-                expect(testee.filter()('test.png')).to.contain('/images/test.png/0/0/0');
-            });
-
-            it('should allow to specify width, height and force', function()
-            {
-                const testee = new ImageUrlFilter();
-                expect(testee.filter()('test.png', 200, 200, 1)).to.contain('/images/test.png/200/200/1');
-            });
+            const testee = new ImageUrlFilter();
+            expect(testee.filter()('test.png')).to.contain('/images/test.png/0/0/0');
         });
 
-
-        describe('mode=default', function()
+        it('should allow to specify width, height and force', function()
         {
-            it('should return a umbraco image helper', function()
-            {
-                const testee = new ImageUrlFilter({ mode: 'umbraco' });
-                expect(testee.filter()('test.png', 200, 200)).to.contain('@image.GetCropUrl(width: 200, height: 200)');
-            });
+            const testee = new ImageUrlFilter();
+            expect(testee.filter()('test.png', 200, 200, 1)).to.contain('/images/test.png/200/200/1');
         });
     });
 });
