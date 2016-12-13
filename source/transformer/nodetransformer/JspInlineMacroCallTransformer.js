@@ -70,9 +70,11 @@ class JspInlineMacroCallTransformer extends NodeTransformer
                     rootNode.children.push(setNode);
                 }
 
-                // Add macro body to list
+                // Make variables unique
                 const variablesTransformer = new JspDecorateVariablesTransformer();
                 const preparedMacro = synchronize.execute(variablesTransformer, 'transform', [macroNode, transformer, { suffix: suffix }]);
+
+                // Add macro body to list
                 rootNode.children.load(preparedMacro.children);
 
                 return rootNode;
