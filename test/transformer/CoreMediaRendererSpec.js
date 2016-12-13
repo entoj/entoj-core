@@ -152,7 +152,7 @@ describe(CoreMediaRenderer.className, function()
             return promise;
         });
 
-        it('should allow to override view names via settings.views', function()
+        xit('should allow to override view names via settings.views', function()
         {
             const promise = co(function *()
             {
