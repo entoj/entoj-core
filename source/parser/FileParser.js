@@ -164,7 +164,7 @@ class FileParser extends Parser
         })
         .catch(function(error)
         {
-            throw new Error('FileParser - ' + error);
+            throw new Error('FileParser (filename: ' + content + ') - ' + error);
         });
         return promise;
     }
