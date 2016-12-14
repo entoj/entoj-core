@@ -81,7 +81,7 @@ class PostprocessCssTask extends BaseTask
             {
                 postcssProcessors.push(urlrewrite(
                     {
-                        properties: ['background', 'src'],
+                        properties: ['background', 'src', 'background-image'],
                         rules: urlRewrite
                     }));
             }
