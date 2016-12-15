@@ -9,9 +9,16 @@ const Context = require('../application/Context.js').Context;
 const EntityId = require('../model/entity/EntityId.js').EntityId;
 const PathesConfiguration = require('../model/configuration/PathesConfiguration.js').PathesConfiguration;
 const GlobalConfiguration = require('../model/configuration/GlobalConfiguration.js').GlobalConfiguration;
+const BuildConfiguration = require('../model/configuration/BuildConfiguration.js').BuildConfiguration;
 const Site = require('../model/site/Site.js').Site;
 const SitesRepository = require('../model/site/SitesRepository.js').SitesRepository;
 const IdParser = require('../parser/entity/IdParser.js').IdParser;
+const ReadFilesTask = require('../task/ReadFilesTask.js').ReadFilesTask;
+const RenameFilesTask = require('../task/RenameFilesTask.js').RenameFilesTask;
+const RemoveFilesTask = require('../task/RemoveFilesTask.js').RemoveFilesTask;
+const TemplateTask = require('../task/TemplateTask.js').TemplateTask;
+const WriteFilesTask = require('../task/WriteFilesTask.js').WriteFilesTask;
+const CliLogger = require('../cli/CliLogger.js').CliLogger;
 const co = require('co');
 const inquirer = require('inquirer');
 
@@ -19,7 +26,7 @@ const inquirer = require('inquirer');
 /**
  * @memberOf command
  */
-class ScaffoldCommand extends BaseCommand
+class ScaffoldEntityCommand extends BaseCommand
 {
     /**
      */
@@ -39,7 +46,7 @@ class ScaffoldCommand extends BaseCommand
      */
     static get injections()
     {
-        return { 'parameters': [Context, 'command/ScaffoldCommand.options'] };
+        return { 'parameters': [Context, 'command/ScaffoldEntityCommand.options'] };
     }
 
 
@@ -48,7 +55,7 @@ class ScaffoldCommand extends BaseCommand
      */
     static get className()
     {
-        return 'command/ScaffoldCommand';
+        return 'command/ScaffoldEntityCommand';
     }
 
 
@@ -64,12 +71,8 @@ class ScaffoldCommand extends BaseCommand
             actions:
             [
                 {
-                    name: 'entity [siteName] entityName',
-                    description: 'Scaffolds a entity\nExample: entoj.sh ' + this._name + ' entity base e001-link'
-                },
-                {
-                    name: 'breakpoint',
-                    description: 'Scaffolds all breakpoint related files\nExample: entoj.sh ' + this._name + ' breakpoint'
+                    name: 'entity [siteName] [entityName] [--javascript|--no-javascript]',
+                    description: 'Scaffolds a entity'
                 }
             ]
         };
@@ -79,18 +82,16 @@ class ScaffoldCommand extends BaseCommand
 
     /**
      * @inheritDocs
-     * @returns {Promise<Server>}
+     * @returns {Promise<Object>}
      */
-    entity(parameters)
+    askQuestions(logger, parameters)
     {
         const scope = this;
-        const logger = scope.createLogger('command.scaffold.entity');
         const promise = co(function *()
         {
             // Prepare
             const entityIdParser = scope.context.di.create(IdParser);
             const sitesRepository = scope.context.di.create(SitesRepository);
-            const section = logger.section('Creating entity scaffolding');
             const sites = yield sitesRepository.getItems();
 
             // Parse & prepare parameters
@@ -98,8 +99,7 @@ class ScaffoldCommand extends BaseCommand
             {
                 site: undefined,
                 entityId: undefined,
-                javascript: parameters.javascript,
-                entityPath: undefined
+                javascript: parameters.javascript
             };
             if (parameters._.length == 1)
             {
@@ -166,28 +166,22 @@ class ScaffoldCommand extends BaseCommand
                     default: true,
                     when: function()
                     {
-                        const hasData = (values.javascript);
+                        const hasData = (typeof values.javascript !== 'undefined');
                         return Promise.resolve(!hasData);
                     }
                 }
             ];
             const answers = yield inquirer.prompt(questions);
 
-            // Update values
-            values.javascript = answers.javascript;
-
-            // Create tasks
-            const mapping = new Map();
-            mapping.set(CliLogger, logger);
-            const pathesConfiguration = scope.context.di.create(PathesConfiguration);
-            const templatePath = yield pathesConfiguration.resolveCache('/css');
-            const buildConfiguration = scope.context.di.create(BuildConfiguration);
-            yield scope.context.di.create(TemplateTask, mapping)
-                .pipe(scope.context.di.create(Task, mapping))
-                .run(buildConfiguration, { readPath: path });
-
-            // Done
-            logger.end(section);
+            // Prepare result
+            values.entityId.entityId.site = values.site;
+            const result =
+            {
+                entityId: values.entityId.entityId,
+                site: values.site,
+                javascript: (typeof answers.javascript !== 'undefined') ? answers.javascript : values.javascript
+            };
+            return result;
         })
         .catch(function(error)
         {
@@ -203,7 +197,61 @@ class ScaffoldCommand extends BaseCommand
      */
     doExecute(parameters)
     {
-        return this.entity(parameters);
+        if (parameters.action !== 'entity')
+        {
+            return Promise.resolve(false);
+        }
+
+        const scope = this;
+        const logger = scope.createLogger('command.scaffold.entity');
+        const promise = co(function *()
+        {
+            // Prepare
+            const section = logger.section('Scaffolding entity');
+            const configuration = yield scope.askQuestions(logger, parameters);
+
+            // Create tasks
+            const mapping = new Map();
+            mapping.set(CliLogger, logger);
+            const pathesConfiguration = scope.context.di.create(PathesConfiguration);
+            const buildConfiguration = scope.context.di.create(BuildConfiguration);
+            const options =
+            {
+                writePath: yield pathesConfiguration.resolveEntityId(configuration.entityId),
+                readPath: scope._templatePath + '/**/*.*',
+                readPathBase: scope._templatePath,
+                templateData:
+                {
+                    entityId: configuration.entityId,
+                    site: configuration.site,
+                    javascript: configuration.javascript
+                },
+                renameFiles:
+                {
+                    '(.*)entityId\.(.*)': '$1' + configuration.entityId.asString('id') + '.$2'
+                },
+                removeFiles: []
+            };
+            if (!configuration.javascript)
+            {
+                options.removeFiles.push('(.*)\.js$');
+            }
+            logger.options(options);
+            yield scope.context.di.create(ReadFilesTask, mapping)
+                .pipe(scope.context.di.create(TemplateTask, mapping))
+                .pipe(scope.context.di.create(RenameFilesTask, mapping))
+                .pipe(scope.context.di.create(RemoveFilesTask, mapping))
+                .pipe(scope.context.di.create(WriteFilesTask, mapping))
+                .run(buildConfiguration, options);
+
+            // Done
+            logger.end(section);
+        })
+        .catch(function(error)
+        {
+            logger.error(error);
+        });
+        return promise;
     }
 }
 
@@ -212,4 +260,4 @@ class ScaffoldCommand extends BaseCommand
  * Exports
  * @ignore
  */
-module.exports.ScaffoldCommand = ScaffoldCommand;
+module.exports.ScaffoldEntityCommand = ScaffoldEntityCommand;

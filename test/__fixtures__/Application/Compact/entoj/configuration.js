@@ -128,7 +128,7 @@ configuration.commands =
         }
     },
     {
-        type: require(SOURCE_ROOT + '/command/ScaffoldCommand.js').ScaffoldCommand,
+        type: require(SOURCE_ROOT + '/command/ScaffoldEntityCommand.js').ScaffoldEntityCommand,
         options:
         {
             templatePath: __dirname + '/templates/scaffolding'
