@@ -1,0 +1,9 @@
+{% extends "/base/templates/t-example" %}
+
+    {% block content %}
+        {% call example_group(label='Default') %}
+            {% call example(label='Default', dimmed=false) %}
+                {{ <$ entityId.asString('id').lodasherize() $>() }}
+            {% endcall %}
+        {% endcall %}
+    {% endblock %}
