@@ -13,8 +13,6 @@ const co = require('co');
 const compact = require(FIXTURES_ROOT + '/Entities/Compact.js');
 
 
-
-
 /**
  * Spec
  */
@@ -23,7 +21,7 @@ describe(TemplateTask.className, function()
     /**
      * BaseTask Test
      */
-    //baseTaskSpec(TemplateTask, 'task/TemplateTask', prepareParameters);
+    baseTaskSpec(TemplateTask, 'task/TemplateTask', prepareParameters);
 
     /**
      */
@@ -41,7 +39,7 @@ describe(TemplateTask.className, function()
     {
         fixtures = compact.createFixture();
         fixtures.cliLogger = new CliLogger();
-        fixtures.cliLogger.muted = false;
+        fixtures.cliLogger.muted = true;
         fixtures.path = pathes.concat(FIXTURES_ROOT, '/Tasks/TemplateTask/entity/**/*.*');
     });
 
@@ -68,7 +66,7 @@ describe(TemplateTask.className, function()
             return promise;
         });
 
-        it('should process all files as templates', function()
+        it('should process files as templates', function()
         {
             const promise = co(function *()
             {
