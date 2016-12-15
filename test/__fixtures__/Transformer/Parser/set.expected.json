@@ -25,7 +25,7 @@
                     },
                     {
                         "type": "transformer.node/LiteralNode",
-                        "value": "-teaser"
+                        "value": "\"-teaser\""
                     }
                 ]
             }

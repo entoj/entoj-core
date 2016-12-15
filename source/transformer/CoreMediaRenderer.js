@@ -105,12 +105,11 @@ class CoreMediaRenderer extends BaseRenderer
         let result = '';
         if (typeof node.value == 'string')
         {
-            result+= '\'';
+            result+= '\'' + node.value.replace(/\"/g, '\\"') + '\'';
         }
-        result+= node.value;
-        if (typeof node.value == 'string')
+        else
         {
-            result+= '\'';
+            result+= node.value;
         }
         return result;
     }
