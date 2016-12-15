@@ -10,6 +10,8 @@ const columnify = require('columnify');
 const chalk = require('chalk');
 const strip = require('strip-ansi');
 const shorten = require('../utils/string.js').shortenLeft;
+const isPlainObject = require('../utils/objects.js').isPlainObject;
+const util = require('util');
 require('date-format-lite');
 
 
@@ -264,7 +266,19 @@ class CliLogger extends Base
         this.write('  Options');
         for (const key in values)
         {
-            this.write('    ' + key + ': ' + chalk.cyan(values[key]));
+            if (isPlainObject(values[key]))
+            {
+                const lines = util.inspect(values[key]).split('\n');
+                this.write('    ' + key + ': ' + chalk.cyan(lines.shift()));
+                while(lines.length)
+                {
+                    this.write('        ' + chalk.cyan(lines.shift()));
+                }
+            }
+            else
+            {
+                this.write('    ' + key + ': ' + chalk.cyan(values[key]));
+            }
         }
     }
 
