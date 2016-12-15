@@ -12,5 +12,16 @@
 		class='') %}
     {% set moduleClass = 'm002-teaser' %}
 	<div class="{{ moduleClass }} {{ type }} {{ class }}">
+        {{ m002_teaser_image() }}
 	</div>
+{%  endmacro %}
+
+
+{% macro m002_teaser_image(
+        model=false,
+        type='',
+        class='') %}
+    {% set moduleClass = 'm002-teaserimage' %}
+    <div class="{{ moduleClass }} {{ type }} {{ class }}">
+    </div>
 {%  endmacro %}
