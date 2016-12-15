@@ -33,7 +33,7 @@ class WriteFilesTask extends BaseTask
         }
 
         const path = parameters.path || parameters.writePath;
-        const work = this._cliLogger.work('Writing files to filesystem at <' + path + '>');
+        const work = this._cliLogger.section('Writing files to filesystem at <' + path + '>');
         const resultStream = stream.pipe(gulp.dest(path));
         resultStream.on('finish', () =>
         {
