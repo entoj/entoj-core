@@ -1,0 +1,10 @@
+
+/**
+ * Base styles -------------------------------------------------
+ */
+
+.<$ entityId.asString('id') $>
+{
+    background-color: $color-wireframe;
+    padding: 10px;
+}
