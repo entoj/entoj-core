@@ -28,7 +28,7 @@ describe(TransformCoreMediaTask.className, function()
     /**
      * BaseTask Test
      */
-    //baseTaskSpec(TransformCoreMediaTask, 'task/TransformCoreMediaTask', prepareParameters);
+    baseTaskSpec(TransformCoreMediaTask, 'task/TransformCoreMediaTask', prepareParameters);
 
 
     /**
