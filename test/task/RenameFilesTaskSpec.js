@@ -11,8 +11,7 @@ const co = require('co');
 const through2 = require('through2');
 const VinylFile = require('vinyl');
 const fs = require('fs-extra');
-const sinon = require('sinon');
-
+const PATH_SEPERATOR = require('path').sep;
 
 
 /**
@@ -54,7 +53,7 @@ describe(RenameFilesTask.className, function()
                 const testee = new RenameFilesTask(fixtures.cliLogger);
                 const file = new VinylFile(
                 {
-                    path: '/path/to/test.html',
+                    path: PATH_SEPERATOR + 'path' + PATH_SEPERATOR + 'to' + PATH_SEPERATOR + 'test.html',
                     contents: new Buffer('')
                 });
                 const resultFile = yield testee.renameFile(file);
@@ -78,7 +77,7 @@ describe(RenameFilesTask.className, function()
                 };
                 const file1 = new VinylFile(
                 {
-                    path: '/path/to/test.html',
+                    path: PATH_SEPERATOR + 'path' + PATH_SEPERATOR + 'to' + PATH_SEPERATOR + 'test.html',
                     contents: new Buffer('')
                 });
                 const file2 = new VinylFile(
@@ -87,7 +86,7 @@ describe(RenameFilesTask.className, function()
                     contents: new Buffer('')
                 });
                 const resultFile1 = yield testee.renameFile(file1, undefined, parameters);
-                expect(resultFile1.path).to.be.equal('/path/to/example.txt');
+                expect(resultFile1.path).to.be.equal(PATH_SEPERATOR + 'path' + PATH_SEPERATOR + 'to' + PATH_SEPERATOR + 'example.txt');
                 const resultFile2 = yield testee.renameFile(file2, undefined, parameters);
                 expect(resultFile2.path).to.be.equal('example.txt');
             });
