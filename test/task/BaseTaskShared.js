@@ -10,6 +10,7 @@ const baseSpec = require(TEST_ROOT + '/BaseShared.js');
 const sinon = require('sinon');
 const co = require('co');
 const memoryStream = require('memory-streams');
+const gulp = require('gulp');
 
 
 /**
@@ -40,7 +41,7 @@ function spec(type, className, prepareParameters, options)
 
 
     /**
-     * Reads the given strean and resolves to an array of all chunks
+     * Reads the given stream and resolves to an array of all chunks
      */
     function readStream(stream)
     {
@@ -65,6 +66,16 @@ function spec(type, className, prepareParameters, options)
         return promise;
     }
     spec.readStream = readStream;
+
+
+    /**
+     * Creates a stream of files
+     */
+    function filesStream(glob)
+    {
+        return gulp.src(glob);
+    }
+    spec.filesStream = filesStream;
 
 
     describe('#pipe()', function()
