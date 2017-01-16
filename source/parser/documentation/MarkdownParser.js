@@ -97,6 +97,7 @@ class MarkdownParser extends Parser
         result.contentType = ContentType.MARKDOWN;
         result.contentKind = ContentKind.TEXT;
         result.sections = sections;
+        result.tokens = tokens;
 
         return Promise.resolve(result);
     }
