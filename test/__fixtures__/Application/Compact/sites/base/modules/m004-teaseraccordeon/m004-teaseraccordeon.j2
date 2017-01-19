@@ -1,0 +1,8 @@
+{##
+#}
+{% macro m004_teaseraccordeon() %}
+    {% call m003_accordeon() %}
+        {{ m002_teaser() }}
+        {{ m002_teaser() }}
+    {% endcall %}
+{% endmacro %}

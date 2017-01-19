@@ -12,7 +12,7 @@ const assertParameter = require('../utils/assert.js').assertParameter;
 const uppercaseFirst = require('../utils/string.js').uppercaseFirst;
 const isPlainObject = require('../utils/objects.js').isPlainObject;
 const synchronize = require('../utils/synchronize.js').execute;
-const htmlencode = require('htmlencode').htmlEncode;
+const htmlspecialchars = require('htmlspecialchars');
 const EOL = '\n';
 
 
@@ -442,7 +442,7 @@ class CoreMediaRenderer extends BaseRenderer
                 }
                 else
                 {
-                    result+= '<c:set target="${ ' + name + ' }" property="' + key + '" value="' + data[key] + '" />';
+                    result+= '<c:set target="${ ' + name + ' }" property="' + key + '" value="' + htmlspecialchars(data[key] || '') + '" />';
                 }
             }
             return result;
@@ -776,7 +776,7 @@ class CoreMediaRenderer extends BaseRenderer
         let result = '';
 
         // Default view
-        let view = (node.name.endsWith('_dispatcher')) ? node.name.substr(0, node.name.length - 11) : node.name;
+        let view = (node.name.endsWith('_dispatcher')) ? node.name.substr(0, node.name.length - 11).replace('_', '-') : node.name;
         if (parameters &&
             parameters.views &&
             parameters.views[node.name])

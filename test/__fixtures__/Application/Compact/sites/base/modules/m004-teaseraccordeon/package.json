@@ -1,0 +1,15 @@
+{
+    "release":
+    {
+        "settings":
+        {
+            "macros":
+            {
+                "m003_accordeon":
+                {
+                    "mode": "inline"
+                }
+            }
+        }
+    }
+}
