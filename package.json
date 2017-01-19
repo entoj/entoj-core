@@ -39,6 +39,7 @@
     "gulp-uglify": "*",
     "gulp-util": "*",
     "htmlencode": "*",
+    "htmlspecialchars": "*",
     "htmlparser2": "*",
     "inquirer": "*",
     "intel": "*",
