@@ -102,6 +102,24 @@ class BaseArray extends Array
      * @param {*} item
      * @returns {Boolean}
      */
+    replace(reference, item)
+    {
+        const index = this.indexOf(reference);
+        if (index !== -1)
+        {
+            this.insertBefore(reference, item);
+            this.remove(reference);
+            return true;
+        }
+        return false;
+    }
+
+
+    /**
+     * @param {*} reference
+     * @param {*} item
+     * @returns {Boolean}
+     */
     insertBefore(reference, item)
     {
         const index = this.indexOf(reference);
@@ -111,6 +129,7 @@ class BaseArray extends Array
         }
         return (index !== -1);
     }
+
 
     /**
      * @param {*} reference
