@@ -41,7 +41,9 @@ class BeautifyHtmlTask extends BaseTask
             mode: 'beautify',
             commline: true,
             force_indent: true,
-            wrap: 0
+            spaceclose: true,
+            force_attribute: false,
+            wrap: 80
         };
         const resultStream = new Stream.Transform({ objectMode: true });
         resultStream._transform = (file, encoding, callback) =>
