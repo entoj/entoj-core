@@ -603,6 +603,23 @@ class CoreMediaRenderer extends BaseRenderer
             }
             result+= '" />';
         }
+        // handle objectType
+        else if (node.type === 'SetNode' &&
+            node.value &&
+            node.value.type === 'ExpressionNode' &&
+            node.value.children.length &&
+            node.value.children[0].type === 'FilterNode' &&
+            node.value.children[0].name === 'objectType')
+        {
+            const filter = node.value.children[0];
+            const args = [];
+            for (const param of filter.parameters.children)
+            {
+                args.push(this.renderExpression(param.value, parameters));
+            }
+            result+= '<c:set var="' + this.getVariable(node.variable, parameters) + '" ';
+            result+= 'value="${ ' + this.getVariable(filter.value, parameters) + '[\'class\'].simpleName }" />';
+        }
         // skip load filter
         else if (node.type === 'SetNode' &&
             node.value &&
