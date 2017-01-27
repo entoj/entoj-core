@@ -10,3 +10,5 @@
 <tk:image target="${ self }" var="src" />
 <c:set var="classes" value="${ moduleClass } ${ not empty type ? moduleClass.concat('--').concat(type) : '' }" />
 <c:set var="classes" value="${ moduleClass } ${ not empty type ? moduleClass.concat('--').concat(type) : '' } ${ not empty skin ? moduleClass.concat('--').concat(skin) : '' }" />
+<fmt:formatDate value="${ model.date.time }" type="date" pattern="dd.MM.yyyy" />
+<fmt:formatDate value="${ model.date.time }" type="date" pattern="dd.MM.yyyy" />
