@@ -153,6 +153,21 @@ class CoreMediaRenderer extends BaseRenderer
             result+= ' view="tkArticle"';
             result+= ' />';
         }
+        // Check date filter
+        else if (node.children.length &&
+            node.children[0].type === 'FilterNode' &&
+            node.children[0].name === 'date')
+        {
+            let key = '';
+            const filter = node.children[0];
+            //console.log("Date Filter", filter);
+
+            result+= '<fmt:formatDate';
+            result+= ' value="${ ' + this.renderExpression(filter.value, parameters) + '.time }"'; // Will be Gregorian calender so we require .time to format the date
+            result+= ' type="date" pattern="dd.MM.yyyy"';
+            result+= ' />';
+
+        }
         // Check default filter
         else if (node.children.length &&
             node.children[0].type === 'FilterNode' &&

@@ -7,3 +7,5 @@
 {% set src = model|imageUrl() %}
 {% set classes = type|moduleClasses(moduleClass) %}
 {% set classes = [type, skin]|moduleClasses(moduleClass) %}
+{{ model.date|date }}
+{{ model.date|date('dd.MM.yyyy') }}
