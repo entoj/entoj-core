@@ -71,7 +71,7 @@
     "signals": "*",
     "spdy": "*",
     "strip-ansi": "*",
-    "systemjs-builder": "*",
+    "systemjs-builder": "^0.15.35",
     "through2": "*",
     "thunkify": "*",
     "transliteration": "*",
