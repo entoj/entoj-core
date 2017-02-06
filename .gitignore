@@ -9,3 +9,4 @@ crash.log
 /test/__fixtures__/Commands
 /test/__fixtures__/Tasks/ChainingTasks
 /test/__fixtures__/Tasks/WriteFilesTask
+/.idea/
