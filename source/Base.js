@@ -126,7 +126,7 @@ class Base
      */
     toString()
     {
-        return `[${this.className}]`;
+        return `[${this.className}#${this.instanceId}]`;
     }
 }
 

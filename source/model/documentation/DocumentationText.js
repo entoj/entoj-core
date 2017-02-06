@@ -21,6 +21,7 @@ class DocumentationText extends DocumentationBase
 
         // Add initial values
         this._sections = [];
+        this._tokens = [];
     }
 
 
@@ -30,6 +31,20 @@ class DocumentationText extends DocumentationBase
     static get className()
     {
         return 'model.documentation/DocumentationText';
+    }
+
+
+    /**
+     * @property {Array}
+     */
+    get tokens()
+    {
+        return this._tokens;
+    }
+
+    set tokens(value)
+    {
+        this._tokens = value;
     }
 
 
@@ -72,6 +87,15 @@ class DocumentationText extends DocumentationBase
     get functional()
     {
         return this.getByKind(DocumentationTextSection.FUNCTIONAL);
+    }
+
+
+    /**
+     * @property {Array}
+     */
+    getTokens(skip)
+    {
+        return this._tokens.slice(skip || 0);
     }
 }
 

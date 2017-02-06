@@ -60,7 +60,6 @@ class ViewModelRepository extends Base
     }
 
 
-
     /**
      * @param {String} parameters
      * @returns {Promise}
@@ -235,7 +234,7 @@ class ViewModelRepository extends Base
 
 
     /**
-     * Resolves to a ViewModel
+     * Resolves to a Object
      *
      * @param {String} path - The model path in the form of entity/modelName
      */

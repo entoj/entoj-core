@@ -6,6 +6,7 @@
  */
 const BaseFilter = require('./BaseFilter.js').BaseFilter;
 const DocumentationTextSection = require('../../model/documentation/DocumentationTextSection.js').DocumentationTextSection;
+const DocumentationText = require('../../model/documentation/DocumentationText.js').DocumentationText;
 const marked = require('marked');
 
 
@@ -88,19 +89,55 @@ class MarkdownFilter extends BaseFilter
                 }
             }
 
+            // Text
+            if (value instanceof DocumentationText)
+            {
+                tokens = value.getTokens();
+                if (!tokens.links)
+                {
+                    tokens.links = {};
+                }
+            }
+
             // Render
             if (!tokens || !tokens.links)
             {
                 return '';
             }
 
-            // Prepare headline offset
+            // Options
             const options =
             {
+                renderer: new marked.Renderer()
             };
+
+            // Add table classes
+            options.renderer.table = function(header, body)
+            {
+                return '<table class="ui celled padded table">\n'
+                    + '<thead>\n'
+                    + header
+                    + '</thead>\n'
+                    + '<tbody>\n'
+                    + body
+                    + '</tbody>\n'
+                    + '</table>\n';
+            };
+            options.renderer.tablerow = function(content)
+            {
+                return '<tr class="top aligned">\n' + content + '</tr>\n';
+            };
+
+            // Add list classes
+            options.renderer.list = function(body, ordered)
+            {
+                var type = ordered ? 'ol' : 'ul';
+                return '<' + type + ' class="ui list">\n' + body + '</' + type + '>\n';
+            };
+
+            // Prepare headline offset
             if (headlineOffset && headlineOffset != 0)
             {
-                options.renderer = new marked.Renderer();
                 options.renderer.heading = function(text, level)
                 {
                     const h = Math.min(5, Math.max(1, level + headlineOffset));

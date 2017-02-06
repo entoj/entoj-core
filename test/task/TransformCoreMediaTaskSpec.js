@@ -176,6 +176,18 @@ describe(TransformCoreMediaTask.className, function()
             return promise;
         });
 
+        it('should allow to override macro view names via entity specific parameters', function()
+        {
+            const promise = co(function *()
+            {
+                const testee = createTestee();
+                const entities = yield fixtures.globalRepository.resolveEntities('base/modules/m002-teaser');
+                const file = yield testee.transformEntity(entities[0], { settings: { views: { 'm002_teaser_image' : 'asTeaserImage' }}});
+                expect(file.contents.toString()).to.contain('view="asTeaserImage"');
+            });
+            return promise;
+        });
+
         it('should allow to pass global parameters to the renderer', function()
         {
             const promise = co(function *()

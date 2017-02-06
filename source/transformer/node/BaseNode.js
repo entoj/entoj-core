@@ -39,17 +39,6 @@ class BaseNode extends Base
      * @param {Object} properties - Node properties
      * @return {Bool}
      */
-    isNode(type, properties)
-    {
-        return this.is(type, properties);
-    }
-
-
-    /**
-     * @param {String} type - Node type
-     * @param {Object} properties - Node properties
-     * @return {Bool}
-     */
     is(type, properties)
     {
         // Check type
@@ -63,6 +52,21 @@ class BaseNode extends Base
         }
 
         return true;
+    }
+
+
+    /**
+     * @param {String} type - Node type
+     * @param {Object} properties - Node properties
+     * @return {Bool}
+     */
+    find(type, properties)
+    {
+        if (this.is(type, properties))
+        {
+            return this;
+        }
+        return false;
     }
 
 

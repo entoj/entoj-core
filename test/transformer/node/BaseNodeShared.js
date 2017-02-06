@@ -37,7 +37,7 @@ function spec(type, className, fixture, prepareParameters)
         it('should return true when no type or properties are given', function()
         {
             const testee = createTestee();
-            expect(testee.isNode()).to.be.ok;
+            expect(testee.is()).to.be.ok;
         });
 
         it('should allow to check the node type', function()

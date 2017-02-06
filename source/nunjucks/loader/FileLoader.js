@@ -51,7 +51,7 @@ const FileLoader = Loader.extend(
 
 
         /**
-         * Updates the search pathes
+         * Updates search pathes
          */
         setSearchPaths: function(searchPathes)
         {

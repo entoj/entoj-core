@@ -392,7 +392,7 @@ class BaseRepository extends Base
         {
             const result = data.find(function(item)
             {
-                for(const p of properties)
+                for (const p of properties)
                 {
                     const itemValue = (typeof item[p] == 'string') ? item[p].toLowerCase() : item[p];
                     let isMatch = itemValue === searchValue;

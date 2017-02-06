@@ -151,18 +151,5 @@ describe(CoreMediaRenderer.className, function()
             });
             return promise;
         });
-
-        xit('should allow to override view names via settings.views', function()
-        {
-            const promise = co(function *()
-            {
-                const macroSource = fs.readFileSync(FIXTURES_ROOT + '/Application/Compact/sites/base/modules/m001-gallery/m001-gallery.j2', { encoding: 'utf8' });
-                const macro = yield fixtures.parser.parse(macroSource);
-                const testee = new CoreMediaRenderer(fixtures.globalRepository, fixtures.globalConfiguration);
-                const source = yield testee.render(macro);
-                expect(source).to.be.equal(expectedSource);
-            });
-            return promise;
-        });
     });
 });

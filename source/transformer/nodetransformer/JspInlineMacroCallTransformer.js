@@ -74,6 +74,18 @@ class JspInlineMacroCallTransformer extends NodeTransformer
                 const variablesTransformer = new JspDecorateVariablesTransformer();
                 const preparedMacro = synchronize.execute(variablesTransformer, 'transform', [macroNode, transformer, { suffix: suffix }]);
 
+                // Add children to yield?
+                if (node.children && node.children.length)
+                {
+                    const yieldNode = preparedMacro.find('YieldNode');
+                    if (yieldNode)
+                    {
+                        const yieldNodes = new NodeList();
+                        yieldNodes.children.load(node.children);
+                        preparedMacro.replace(yieldNode, yieldNodes);
+                    }
+                }
+
                 // Add macro body to list
                 rootNode.children.load(preparedMacro.children);
 
