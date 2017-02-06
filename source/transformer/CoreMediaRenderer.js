@@ -443,14 +443,13 @@ class CoreMediaRenderer extends BaseRenderer
         {
             for (const parameter of macro.parameters)
             {
-                if (parameter.name !== 'model')
+                if (parameter.name !== 'model' && typeof parameter.defaultValue !== 'undefined')
                 {
                     let parameterValue = parameter.defaultValue;
-                    if (parameterValue === 'false')
+                    if (parameterValue !== 'false' && parameterValue !== false)
                     {
-                        parameterValue = 'null';
+                        macroParameters[parameter.name] = '${ ' + parameterValue + ' }';
                     }
-                    macroParameters[parameter.name] = '${ ' + parameterValue + ' }';
                 }
             }
         }
@@ -460,7 +459,11 @@ class CoreMediaRenderer extends BaseRenderer
         {
             if (parameter.value && parameter.name !== 'model')
             {
-                macroParameters[parameter.name] = '${ ' + this.renderExpression(parameter.value, parameters) + ' }';
+                let parameterValue = this.renderExpression(parameter.value, parameters);
+                if (parameterValue !== 'false' && parameterValue !== false)
+                {
+                    macroParameters[parameter.name] = '${ ' + parameterValue + ' }';
+                }
             }
         }
 
