@@ -436,6 +436,43 @@ class CoreMediaRenderer extends BaseRenderer
             }
         }
 
+        // Handle default parameters
+        const macro = synchronize(this._globalRepository, 'resolveMacro', ['base', node.name]);
+        const macroParameters = {};
+        if (macro)
+        {
+            for (const parameter of macro.parameters)
+            {
+                if (parameter.name !== 'model')
+                {
+                    let parameterValue = parameter.defaultValue;
+                    if (parameterValue === 'false')
+                    {
+                        parameterValue = 'null';
+                    }
+                    macroParameters[parameter.name] = '${ ' + parameterValue + ' }';
+                }
+            }
+        }
+
+        // Get actual parameters
+        for (const parameter of node.parameters.children)
+        {
+            if (!parameter.value && parameter.name !== 'model')
+            {
+                macroParameters[parameter.name] = '${ ' + this.renderExpression(parameter.value, parameters) + ' }';
+            }
+        }
+
+        // Render default parameters
+        for (const parameterName of Object.keys(macroParameters))
+        {
+            const parameterValue = macroParameters[parameterName];
+            result+= '<c:if test="${ empty ' + parameterName + ' }">' + EOL;
+            result+= '  <c:set var="' + parameterName + '" value="' + parameterValue + '" />' + EOL;
+            result+= '</c:if>' + EOL;
+        }
+
         // Render contents
         for (const child of node.children)
         {
