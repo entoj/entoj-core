@@ -458,7 +458,7 @@ class CoreMediaRenderer extends BaseRenderer
         // Get actual parameters
         for (const parameter of node.parameters.children)
         {
-            if (!parameter.value && parameter.name !== 'model')
+            if (parameter.value && parameter.name !== 'model')
             {
                 macroParameters[parameter.name] = '${ ' + this.renderExpression(parameter.value, parameters) + ' }';
             }
@@ -468,6 +468,7 @@ class CoreMediaRenderer extends BaseRenderer
         for (const parameterName of Object.keys(macroParameters))
         {
             const parameterValue = macroParameters[parameterName];
+            if (parameterValue)
             result+= '<c:if test="${ empty ' + parameterName + ' }">' + EOL;
             result+= '  <c:set var="' + parameterName + '" value="' + parameterValue + '" />' + EOL;
             result+= '</c:if>' + EOL;
