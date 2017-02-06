@@ -9,3 +9,4 @@
 {% set classes = [type, skin]|moduleClasses(moduleClass) %}
 {{ model.date|date }}
 {{ model.date|date('dd.MM.yyyy') }}
+{{ model.text|hyphenate }}
