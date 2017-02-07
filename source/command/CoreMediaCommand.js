@@ -88,7 +88,7 @@ class CoreMediaCommand extends BaseCommand
             const buildConfiguration = scope.context.di.create(BuildConfiguration);
             const options =
             {
-                query: parameters && parameters._[2] || '*',
+                query: parameters && parameters._[0] || '*',
                 writePath: path,
                 flatten: scope._options.flatten || true,
                 environment: buildConfiguration.environment
