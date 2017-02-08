@@ -4,6 +4,15 @@
 
 
 <!-- Macro m001_gallery -->
+<c:if test="${ empty type }">
+  <c:set var="type" value="${ '' }" />
+</c:if>
+<c:if test="${ empty paginationMode }">
+  <c:set var="paginationMode" value="${ 'graphical' }" />
+</c:if>
+<c:if test="${ empty class }">
+  <c:set var="class" value="${ '' }" />
+</c:if>
 
     <c:set var="content" value="${ 'default' }" />
     <c:set var="moduleClass" value="${ 'm001-gallery' }" />
@@ -16,6 +25,12 @@
 
 
 <!-- Macro m001_gallery_page -->
+<c:if test="${ empty type }">
+  <c:set var="type" value="${ '' }" />
+</c:if>
+<c:if test="${ empty class }">
+  <c:set var="class" value="${ '' }" />
+</c:if>
 
     <div class="m001-gallery-page ${ type } ${ class }"></div>
 <!-- /Macro m001_gallery_page -->

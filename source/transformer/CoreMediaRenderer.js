@@ -436,6 +436,47 @@ class CoreMediaRenderer extends BaseRenderer
             }
         }
 
+        // Handle default parameters
+        const macro = synchronize(this._globalRepository, 'resolveMacro', ['base', node.name]);
+        const macroParameters = {};
+        if (macro)
+        {
+            for (const parameter of macro.parameters)
+            {
+                if (parameter.name !== 'model' && typeof parameter.defaultValue !== 'undefined')
+                {
+                    let parameterValue = parameter.defaultValue;
+                    if (parameterValue !== 'false' && parameterValue !== false)
+                    {
+                        macroParameters[parameter.name] = '${ ' + parameterValue + ' }';
+                    }
+                }
+            }
+        }
+
+        // Get actual parameters
+        for (const parameter of node.parameters.children)
+        {
+            if (parameter.value && parameter.name !== 'model')
+            {
+                let parameterValue = this.renderExpression(parameter.value, parameters);
+                if (parameterValue !== 'false' && parameterValue !== false)
+                {
+                    macroParameters[parameter.name] = '${ ' + parameterValue + ' }';
+                }
+            }
+        }
+
+        // Render default parameters
+        for (const parameterName of Object.keys(macroParameters))
+        {
+            const parameterValue = macroParameters[parameterName];
+            if (parameterValue)
+            result+= '<c:if test="${ empty ' + parameterName + ' }">' + EOL;
+            result+= '  <c:set var="' + parameterName + '" value="' + parameterValue + '" />' + EOL;
+            result+= '</c:if>' + EOL;
+        }
+
         // Render contents
         for (const child of node.children)
         {
@@ -537,6 +578,19 @@ class CoreMediaRenderer extends BaseRenderer
             result+= ' var="' + this.getVariable(node.variable, parameters) + '"';
             result+= ' key="' + key + '"';
             result+= ' />';
+        }
+        // handle settings
+        else if (node.type === 'SetNode' &&
+            node.value &&
+            node.value.type === 'ExpressionNode' &&
+            node.value.children.length &&
+            node.value.children[0].type === 'FilterNode' &&
+            node.value.children[0].name === 'settings')
+        {
+            const filter = node.value.children[0];
+            const key = filter.value.value;
+            result+= '<c:set var="' + this.getVariable(node.variable, parameters) + '"';
+            result+= ' value="${ bp:setting(' + this.renderExpression(filter.parameters.children[0].value, parameters) + ', \'' + key + '\') }" />';
         }
         // handle breakpoints
         else if (node.type === 'SetNode' &&
