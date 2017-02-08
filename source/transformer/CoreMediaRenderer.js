@@ -1038,6 +1038,7 @@ class CoreMediaRenderer extends BaseRenderer
         const params = this.prepareParameters(parameters);
         let source = '';
         source+= '<%@ page contentType="text/html; charset=UTF-8" session="false" %>' + EOL;
+        source+= '<%@ page trimDirectiveWhitespaces="true" %>' + EOL;
         source+= '<%@ include file="../../../../../WEB-INF/includes/taglibs.jinc" %>' + EOL;
         source+= '<%@ taglib prefix="tk" uri="http://www.coremedia.com/2016/tk-website" %>' + EOL;
         source+= this.renderNode(node, params);
