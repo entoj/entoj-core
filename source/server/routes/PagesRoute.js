@@ -158,12 +158,14 @@ class PagesRoute extends BaseRoute
             type:
             {
                 DocumentationText: 'DocumentationText',
-                DocumentationExample: 'DocumentationExample'
+                DocumentationExample: 'DocumentationExample',
+                DocumentationDatamodel: 'DocumnentationDatamodel'
             },
             kind:
             {
                 MACRO: 'macro',
-                EXAMPLE: 'example'
+                EXAMPLE: 'example',
+                DATAMODEL: 'datamodel'
             },
             location:
             {
@@ -196,6 +198,10 @@ class PagesRoute extends BaseRoute
         if (entity)
         {
             model.location.entity = entity.entity;
+        }
+
+        if (request.params.modelFile) {
+            model.location.modelFile = request.params.modelFile;
         }
 
         // Check if valid page

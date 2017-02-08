@@ -48,6 +48,14 @@ class ContentKind
     /**
      * @inheritDoc
      */
+    static get DATAMODEL()
+    {
+        return 'datamodel';
+    }
+
+    /**
+     * @inheritDoc
+     */
     static get TEXT()
     {
         return 'text';

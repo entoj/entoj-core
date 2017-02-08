@@ -54,6 +54,7 @@ class EntityAspect extends BaseValueObject
         const examples = {};
         const macros = {};
         const texts = [];
+        const datamodels = [];
         for (const s of this._extendedSites)
         {
             // Files
@@ -64,6 +65,13 @@ class EntityAspect extends BaseValueObject
             for (const siteExample of siteExamples)
             {
                 examples[siteExample.file.basename] = siteExample;
+            }
+
+            // Models
+            const siteDatamodels = this._entity.documentation.filter(doc => doc.contentKind === ContentKind.DATAMODEL);
+            for (const siteDatamodel of siteDatamodels)
+            {
+                datamodels.push(siteDatamodel);
             }
 
             // Macros
@@ -86,6 +94,7 @@ class EntityAspect extends BaseValueObject
         }
         this.properties.load(properties);
         this.documentation.load(examples);
+        this.documentation.load(datamodels);
         this.documentation.load(macros);
         this.documentation.load(texts);
     }

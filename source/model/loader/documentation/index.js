@@ -4,6 +4,7 @@
  */
 module.exports =
 {
+    DatamodelPlugin: require('./DatamodelPlugin.js').DatamodelPlugin,
     ExamplePlugin: require('./ExamplePlugin.js').ExamplePlugin,
     JinjaPlugin: require('./JinjaPlugin.js').JinjaPlugin,
     JsPlugin: require('./JsPlugin.js').JsPlugin,

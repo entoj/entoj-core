@@ -45,7 +45,7 @@ describe(JsFileParser.className, function()
 
     describe('#parse', function()
     {
-        it('should parse each sass file that matches the glob patterns', function()
+        it('should parse each js file that matches the glob patterns', function()
         {
             let promise = co(function*()
             {
