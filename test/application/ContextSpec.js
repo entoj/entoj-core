@@ -90,7 +90,7 @@ describe(Context.className, function()
             const testee = new Context(fixtures.configuration);
             const entities = testee.di.create(EntitiesRepository);
             expect(entities.loader).to.be.instanceof(fixtures.configuration.entities.loader.type);
-            expect(entities.loader.plugins).to.have.length(6);
+            expect(entities.loader.plugins).to.have.length(7);
         });
 
         it('should map each Command configured via configuration.commands', function()
