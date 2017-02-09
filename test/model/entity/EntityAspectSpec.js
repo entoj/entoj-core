@@ -91,6 +91,7 @@ describe(EntityAspect.className, function()
         it('should contain all files that are owned and extended by the aspect', function()
         {
             const testee = new EntityAspect(fixtures.entityGallery, fixtures.siteExtended, fixtures.entityIdTemplate);
+
             expect(testee.files.filter(file => file.contentType == ContentType.JINJA)).to.have.length(2);
             expect(testee.files.find(file => file.site === fixtures.siteBase && file.basename == 'm001-gallery.j2')).to.be.ok;
             expect(testee.files.find(file => file.site === fixtures.siteBase && file.basename == 'overview.j2')).to.be.ok;
@@ -98,6 +99,13 @@ describe(EntityAspect.className, function()
             expect(testee.files.find(file => file.site === fixtures.siteBase && file.basename == 'm001-gallery.scss')).to.be.ok;
             expect(testee.files.find(file => file.site === fixtures.siteExtended && file.basename == 'm001-gallery.scss')).to.be.ok;
         });
+
+        it('should contain all datamodels that are owned by the aspect', function()
+        {
+            const testee = new EntityAspect(fixtures.entityGallery, fixtures.siteBase, fixtures.entityIdTemplate);
+            expect(testee.files.filter(file => file.contentKind == ContentKind.DATAMODEL)).to.have.length(1);
+        });
+
     });
 
 
@@ -133,6 +141,13 @@ describe(EntityAspect.className, function()
             const testee = new EntityAspect(fixtures.entityGallery, fixtures.siteExtended, fixtures.entityIdTemplate);
             expect(testee.documentation.filter(doc => doc.contentKind == ContentKind.EXAMPLE)).to.have.length(1);
             expect(testee.documentation.find(doc => doc.name == 'overview.j2')).to.be.ok;
+        });
+
+        it('should contain all datamodels that are owned by the aspect', function()
+        {
+            const testee = new EntityAspect(fixtures.entityGallery, fixtures.siteBase, fixtures.entityIdTemplate);
+            expect(testee.documentation.filter(doc => doc.contentKind == ContentKind.DATAMODEL)).to.have.length(1);
+            expect(testee.documentation.find(doc => doc.name == 'default.json')).to.be.ok;
         });
 
         it('should contain all macros that are owned by the aspect', function()

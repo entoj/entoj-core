@@ -32,6 +32,14 @@ class ContentType
     /**
      * @inheritDoc
      */
+    static get JSON()
+    {
+        return 'json';
+    }
+
+    /**
+     * @inheritDoc
+     */
     static get JINJA()
     {
         return 'jinja';

@@ -35,14 +35,14 @@ describe(LoadTag.className, function()
     {
         it('should load the given json file as variables into the current context', function()
         {
-            let testee = fixtures.environment.renderString("{% load '/default/modules/m001-gallery/model/default.json' %}Type:{{ type }}, PaginationMode:{{ paginationMode }}");
+            let testee = fixtures.environment.renderString("{% load '/default/modules/m001-gallery/models/default.json' %}Type:{{ type }}, PaginationMode:{{ paginationMode }}");
             expect(testee).to.contain('Type:default');
             expect(testee).to.contain('PaginationMode:graphical');
         });
 
         it('should do nothing if file does not exist', function()
         {
-            let testee = fixtures.environment.renderString("{% load '/error/default/modules/m001-gallery/model/default.json' %}Type:'{{ type }}'");
+            let testee = fixtures.environment.renderString("{% load '/error/default/modules/m001-gallery/models/default.json' %}Type:'{{ type }}'");
             expect(testee).to.contain('Type:\'\'');
         });
     });
@@ -52,14 +52,14 @@ describe(LoadTag.className, function()
     {
         it('should load the given json file into the given variables in the current context', function()
         {
-            let testee = fixtures.environment.renderString("{% load '/default/modules/m001-gallery/model/default.json' into 'model' %}Type:{{ model.type }}, PaginationMode:{{ model.paginationMode }}");
+            let testee = fixtures.environment.renderString("{% load '/default/modules/m001-gallery/models/default.json' into 'model' %}Type:{{ model.type }}, PaginationMode:{{ model.paginationMode }}");
             expect(testee).to.contain('Type:default');
             expect(testee).to.contain('PaginationMode:graphical');
         });
 
         it('should do nothing if file does not exist', function()
         {
-            let testee = fixtures.environment.renderString("{% load '/error/default/modules/m001-gallery/model/default.json' into 'model' %}Type:'{{ model.type }}'");
+            let testee = fixtures.environment.renderString("{% load '/error/default/modules/m001-gallery/models/default.json' into 'model' %}Type:'{{ model.type }}'");
             expect(testee).to.contain('Type:\'\'');
         });
     });

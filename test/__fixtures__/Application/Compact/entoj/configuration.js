@@ -179,7 +179,8 @@ configuration.entities.loader =
         require(SOURCE_ROOT + '/model/loader/documentation').MarkdownPlugin,
         require(SOURCE_ROOT + '/model/loader/documentation').JinjaPlugin,
         require(SOURCE_ROOT + '/model/loader/documentation').SassPlugin,
-        require(SOURCE_ROOT + '/model/loader/documentation').ExamplePlugin
+        require(SOURCE_ROOT + '/model/loader/documentation').ExamplePlugin,
+        require(SOURCE_ROOT + '/model/loader/documentation').DatamodelPlugin
     ]
 }
 
