@@ -808,7 +808,7 @@ class CoreMediaRenderer extends BaseRenderer
             const filter = node.value.children[0];
             const variable = this.getVariable(node.variable, parameters);
             const name = this.renderExpression(filter.value, parameters);
-            result+= '<c:set var="' + variable + '" value="/static/tkde/assets/base/icons/${ ' + name + ' }.svg#icon" />';
+            result+= '<c:set var="' + variable + '" value="${ pageContext.request.contextPath }/static/tkde/assets/base/icons/${ ' + name + ' }.svg#icon" />';
         }
         else if (node.type === 'SetNode' &&
             node.value &&
