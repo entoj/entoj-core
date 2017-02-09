@@ -8,11 +8,15 @@ const BaseRenderer = require('./BaseRenderer.js').BaseRenderer;
 const GlobalRepository = require('../model/GlobalRepository.js').GlobalRepository;
 const ViewModelRepository = require('../model/viewmodel/ViewModelRepository.js').ViewModelRepository;
 const GlobalConfiguration = require('../model/configuration/GlobalConfiguration.js').GlobalConfiguration;
+const PathesConfiguration = require('../model/configuration/PathesConfiguration.js').PathesConfiguration;
 const assertParameter = require('../utils/assert.js').assertParameter;
 const uppercaseFirst = require('../utils/string.js').uppercaseFirst;
 const isPlainObject = require('../utils/objects.js').isPlainObject;
 const synchronize = require('../utils/synchronize.js').execute;
 const htmlspecialchars = require('htmlspecialchars');
+const glob = require('glob');
+const path = require('path');
+const fs = require('fs');
 const EOL = '\n';
 
 
@@ -24,17 +28,20 @@ class CoreMediaRenderer extends BaseRenderer
     /**
      * @ignore
      */
-    constructor(globalRepository, globalConfiguration)
+    constructor(globalRepository, globalConfiguration, pathesConfiguration)
     {
         super();
 
         // Check params
         assertParameter(this, 'globalRepository', globalRepository, true, GlobalRepository);
         assertParameter(this, 'globalConfiguration', globalConfiguration, true, GlobalConfiguration);
+        assertParameter(this, 'pathesConfiguration', pathesConfiguration, true, PathesConfiguration);
 
         // Assign options
         this._globalRepository = globalRepository;
         this._globalConfiguration = globalConfiguration;
+        this._pathesConfiguration = pathesConfiguration;
+        this._svgs = false;
     }
 
 
@@ -43,7 +50,7 @@ class CoreMediaRenderer extends BaseRenderer
      */
     static get injections()
     {
-        return { 'parameters': [GlobalRepository, GlobalConfiguration] };
+        return { 'parameters': [GlobalRepository, GlobalConfiguration, PathesConfiguration] };
     }
 
 
@@ -68,6 +75,40 @@ class CoreMediaRenderer extends BaseRenderer
         result.replaceSet = result.replaceSet || {};
         result.replaceVariable = result.replaceVariable || {};
         return result;
+    }
+
+
+    /**
+     *
+     */
+    getSvgs()
+    {
+        if (!this._svgs)
+        {
+            const files = glob.sync(this._pathesConfiguration.sites + '/base/global/assets/icons/*.svg');
+            this._svgs =
+            {
+                viewBoxes: {},
+                urls: {}
+            };
+            for (const file of files)
+            {
+                const name = path.basename(file, '.svg');
+
+                // Url
+                this._svgs.urls[name] = '/static/tkde/assets/base/icons/' + name + '.svg#icon';
+
+                // Viewbox
+                this._svgs.viewBoxes[name] = '0 0 0 0';
+                const icon = fs.readFileSync(file, { encoding: 'utf8' });
+                const viewbox = icon.match(/viewBox="([^"]*)"/i);
+                if (viewbox && viewbox[1])
+                {
+                    this._svgs.viewBoxes[name] = viewbox[1];
+                }
+            }
+        }
+        return this._svgs;
     }
 
 
@@ -756,6 +797,36 @@ class CoreMediaRenderer extends BaseRenderer
                 result+= this.renderComplexVariable(this.getVariable(node.variable, parameters), data, parameters);
             }
         }
+        // handle svg
+        else if (node.type === 'SetNode' &&
+            node.value &&
+            node.value.type === 'ExpressionNode' &&
+            node.value.children.length &&
+            node.value.children[0].type === 'FilterNode' &&
+            node.value.children[0].name === 'svgUrl')
+        {
+            const filter = node.value.children[0];
+            const variable = this.getVariable(node.variable, parameters);
+            const name = this.renderExpression(filter.value, parameters);
+            result+= '<c:set var="' + variable + '" value="/static/tkde/assets/base/icons/${ ' + name + ' }.svg#icon" />';
+        }
+        else if (node.type === 'SetNode' &&
+            node.value &&
+            node.value.type === 'ExpressionNode' &&
+            node.value.children.length &&
+            node.value.children[0].type === 'FilterNode' &&
+            node.value.children[0].name === 'svgViewBox')
+        {
+            const filter = node.value.children[0];
+            const variable = this.getVariable(node.variable, parameters);
+            const name = this.renderExpression(filter.value, parameters);
+            result+= '<c:choose>';
+            for (const svgName in this.getSvgs().viewBoxes)
+            {
+                result+= '<c:when test="${' + name + ' == \'' + svgName + '\'}"><c:set var="' + variable + '" value="' + this.getSvgs().viewBoxes[svgName] + '" /></c:when>';
+            }
+            result+= '</c:choose>';
+        }
         // handle set replacements
         else if (typeof parameters.replaceSet[this.getVariable(node.variable, parameters)] !== 'undefined')
         {
@@ -1038,7 +1109,6 @@ class CoreMediaRenderer extends BaseRenderer
         const params = this.prepareParameters(parameters);
         let source = '';
         source+= '<%@ page contentType="text/html; charset=UTF-8" session="false" %>' + EOL;
-        source+= '<%@ page trimDirectiveWhitespaces="true" %>' + EOL;
         source+= '<%@ include file="../../../../../WEB-INF/includes/taglibs.jinc" %>' + EOL;
         source+= '<%@ taglib prefix="tk" uri="http://www.coremedia.com/2016/tk-website" %>' + EOL;
         source+= this.renderNode(node, params);

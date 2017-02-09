@@ -11,6 +11,7 @@ const Transformer = require(SOURCE_ROOT + '/transformer/Transformer.js').Transfo
 const GlobalRepository = require(SOURCE_ROOT + '/model/GlobalRepository.js').GlobalRepository;
 const CoreMediaRenderer = require(SOURCE_ROOT + '/transformer/CoreMediaRenderer.js').CoreMediaRenderer;
 const GlobalConfiguration = require(SOURCE_ROOT + '/model/configuration/GlobalConfiguration.js').GlobalConfiguration;
+const PathesConfiguration = require(SOURCE_ROOT + '/model/configuration/PathesConfiguration.js').PathesConfiguration;
 const compact = require(FIXTURES_ROOT + '/Application/Compact.js');
 const nodeTransformerSpec = require(TEST_ROOT + '/transformer/NodeTransformerShared.js');
 const co = require('co');
@@ -35,8 +36,9 @@ describe(JspInlineMacroCallTransformer.className, function()
     {
         fixtures = compact.createFixture();
         fixtures.globalRepository = fixtures.context.di.create(GlobalRepository);
+        fixtures.pathesConfiguration = fixtures.context.di.create(PathesConfiguration);
         fixtures.parser = new Parser();
-        fixtures.renderer = new CoreMediaRenderer(fixtures.globalRepository, new GlobalConfiguration());
+        fixtures.renderer = new CoreMediaRenderer(fixtures.globalRepository, new GlobalConfiguration(), fixtures.pathesConfiguration);
         fixtures.transformer = new Transformer(fixtures.globalRepository, fixtures.parser, fixtures.renderer);
         resetUniqueId();
     });

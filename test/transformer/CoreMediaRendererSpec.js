@@ -6,6 +6,7 @@
 const CoreMediaRenderer = require(SOURCE_ROOT + '/transformer/CoreMediaRenderer.js').CoreMediaRenderer;
 const Parser = require(SOURCE_ROOT + '/transformer/Parser.js').Parser;
 const GlobalConfiguration = require(SOURCE_ROOT + '/model/configuration/GlobalConfiguration.js').GlobalConfiguration;
+const PathesConfiguration = require(SOURCE_ROOT + '/model/configuration/PathesConfiguration.js').PathesConfiguration;
 const GlobalRepository = require(SOURCE_ROOT + '/model/GlobalRepository.js').GlobalRepository;
 const baseRendererSpec = require(TEST_ROOT + '/transformer/BaseRendererShared.js');
 const compact = require(FIXTURES_ROOT + '/Application/Compact.js');
@@ -29,6 +30,7 @@ describe(CoreMediaRenderer.className, function()
      */
     function prepareParameters(parameters)
     {
+        parameters.unshift(fixtures.pathesConfiguration);
         parameters.unshift(fixtures.globalConfiguration);
         parameters.unshift(fixtures.globalRepository);
         return parameters;
@@ -42,6 +44,7 @@ describe(CoreMediaRenderer.className, function()
     {
         fixtures = compact.createFixture();
         fixtures.parser = fixtures.context.di.create(Parser);
+        fixtures.pathesConfiguration = fixtures.context.di.create(PathesConfiguration);
         fixtures.globalRepository = fixtures.context.di.create(GlobalRepository);
         fixtures.mediaQueries =
         {
@@ -145,7 +148,7 @@ describe(CoreMediaRenderer.className, function()
                 const expectedSource = fs.readFileSync(FIXTURES_ROOT + '/Transformer/CoreMediaRenderer/calls-parameters.expected.jsp', { encoding: 'utf8' });
                 const macroSource = fs.readFileSync(FIXTURES_ROOT + '/Application/Compact/sites/base/modules/m001-gallery/m001-gallery.j2', { encoding: 'utf8' });
                 const macro = yield fixtures.parser.parse(macroSource);
-                const testee = new CoreMediaRenderer(fixtures.globalRepository, fixtures.globalConfiguration);
+                const testee = new CoreMediaRenderer(fixtures.globalRepository, fixtures.globalConfiguration, fixtures.pathesConfiguration);
                 const source = yield testee.render(macro);
                 expect(source).to.be.equal(expectedSource);
             });

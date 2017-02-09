@@ -17,6 +17,7 @@ const JspForEachTransformer = require('./nodetransformer/JspForEachTransformer.j
 const GlobalRepository = require('../model/GlobalRepository.js').GlobalRepository;
 const ViewModelRepository = require('../model/viewmodel/ViewModelRepository.js').ViewModelRepository;
 const GlobalConfiguration = require('../model/configuration/GlobalConfiguration.js').GlobalConfiguration;
+const PathesConfiguration = require('../model/configuration/PathesConfiguration.js').PathesConfiguration;
 const assertParameter = require('../utils/assert.js').assertParameter;
 
 
@@ -28,11 +29,11 @@ class CoreMediaTransformer extends Transformer
     /**
      * @ignore
      */
-    constructor(globalRepository, viewModelRepository, globalConfiguration)
+    constructor(globalRepository, viewModelRepository, globalConfiguration, pathesConfiguration)
     {
         super(globalRepository,
             new Parser(),
-            new CoreMediaRenderer(globalRepository, globalConfiguration),
+            new CoreMediaRenderer(globalRepository, globalConfiguration, pathesConfiguration),
             [
                 new JspConcatTransformer(),
                 new JspEmptyTransformer(),
@@ -50,7 +51,7 @@ class CoreMediaTransformer extends Transformer
      */
     static get injections()
     {
-        return { 'parameters': [GlobalRepository, ViewModelRepository, GlobalConfiguration] };
+        return { 'parameters': [GlobalRepository, ViewModelRepository, GlobalConfiguration, PathesConfiguration] };
     }
 
 
