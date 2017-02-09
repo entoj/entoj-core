@@ -838,9 +838,14 @@ class CoreMediaRenderer extends BaseRenderer
         // handle standard set
         else if (node.variable.type == 'VariableNode')
         {
+            let value = this.renderExpression(node.value, parameters);
+            if (value === 'false')
+            {
+                value = 'null';
+            }
             result+= '<c:set';
             result+= ' var="' + this.getVariable(node.variable, parameters) + '"';
-            result+= ' value="${ ' + this.renderExpression(node.value, parameters) + ' }"';
+            result+= ' value="${ ' + value + ' }"';
             result+= ' />';
         }
         return result;
