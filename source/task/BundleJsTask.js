@@ -18,9 +18,10 @@ const through2 = require('through2');
 const VinylFile = require('vinyl');
 const difference = require('lodash.difference');
 const co = require('co');
-const PATH_SEPERATOR = require('path').sep;
 const fs = require('co-fs-extra');
 const templateString = require('es6-template-strings');
+const PATH_SEPERATOR = require('path').sep;
+const isWin32 = require('os').platform() == 'win32';
 
 
 /**
@@ -185,29 +186,31 @@ class BundleJsTask extends BaseTask
         const scope = this;
         const promise = co(function *()
         {
-            // Prepare builder
-            const builderConfig =
+            // Load config
+            let builderConfig = false;
+            const context =
             {
-                transpiler: 'babel',
-                babelOptions:
+                System:
                 {
-                    'optional':
-                    [
-                        'runtime'
-                    ]
-                },
-                paths:
-                {
-                    'jspm_packages/*': scope._pathesConfiguration.entoj + '/jspm_packages/*'
+                    config: (config) => builderConfig = config
                 }
+            };
+            const builderConfigSource = yield fs.readFile(pathes.concat(scope._pathesConfiguration.entoj, 'jspm.js'), { encoding: 'utf8' });
+            require('vm').runInNewContext(builderConfigSource, context);
+
+            // Prepare config
+            builderConfig.paths =
+            {
+                'jspm_packages/*': 'entoj/jspm_packages/*',
+                'base/*': 'sites/base/*',
+                'github:*': 'entoj/jspm_packages/github/*',
+                'npm:*': 'entoj/jspm_packages/npm/*'
             };
             const sites = yield scope._sitesRepository.getItems();
             for (const site of sites)
             {
-                builderConfig.paths[site.name.urlify() + '/*'] = scope._pathesConfiguration.sites + '/' + site.name.urlify() + '/*';
+                builderConfig.paths[site.name.urlify() + '/*'] = 'sites/' + site.name.urlify() + '/*';
             }
-            const builder = new Builder(scope._pathesConfiguration.entoj, scope._pathesConfiguration.entoj + '/jspm.js');
-            builder.config(builderConfig);
 
             // Prepare bundler config
             const bundlerConfig =
@@ -231,6 +234,7 @@ class BundleJsTask extends BaseTask
             };
 
             // Build bundles
+            const builder = new Builder((isWin32 ? 'file:///' : '') + scope._pathesConfiguration.root, builderConfig);
             const result = [];
             for (const name in bundles)
             {
