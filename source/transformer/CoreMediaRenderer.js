@@ -219,6 +219,22 @@ class CoreMediaRenderer extends BaseRenderer
             result+= '${ tk:hyphenate(' + this.renderExpression(filter.value, parameters) + ') }';
 
         }
+        // Check metdata filter
+        else if (node.children.length &&
+            node.children[0].type === 'FilterNode' &&
+            node.children[0].name === 'metadata')
+        {
+            const filter = node.children[0];
+            const key = filter.value.value;
+            if (key === 'entity')
+            {
+                result+= '<cm:metadata value="${ self.content }" />';
+            }
+            else
+            {
+                result+= '<cm:metadata value="properties.' + key + '" />';
+            }
+        }
         // Check default filter
         else if (node.children.length &&
             node.children[0].type === 'FilterNode' &&
