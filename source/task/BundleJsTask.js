@@ -13,6 +13,7 @@ const Site = require('../model/site/Site.js').Site;
 const CliLogger = require('../cli/CliLogger.js').CliLogger;
 const assertParameter = require('../utils/assert.js').assertParameter;
 const pathes = require('../utils/pathes.js');
+const urls = require('../utils/urls.js');
 const Builder = require('systemjs-builder');
 const through2 = require('through2');
 const VinylFile = require('vinyl');
@@ -124,7 +125,8 @@ class BundleJsTask extends BaseTask
                 {
                     for (const file of sourceFiles[group])
                     {
-                        all.push(file.filename.replace(scope._pathesConfiguration.sites + PATH_SEPERATOR, ''));
+                        const module = urls.normalizePathSeperators(file.filename.replace(scope._pathesConfiguration.sites + PATH_SEPERATOR, ''));
+                        all.push(module);
                     }
                 }
 
@@ -146,8 +148,8 @@ class BundleJsTask extends BaseTask
                     // Add include
                     for (const file of sourceFiles[group])
                     {
-                        const url = file.filename.replace(scope._pathesConfiguration.sites + PATH_SEPERATOR, '');
-                        bundle.include.push(url);
+                        const module = urls.normalizePathSeperators(file.filename.replace(scope._pathesConfiguration.sites + PATH_SEPERATOR, ''));
+                        bundle.include.push(module);
                     }
 
                     // Generate exclude
@@ -213,6 +215,7 @@ class BundleJsTask extends BaseTask
             }
 
             // Prepare bundler config
+            const loadedFiles = [];
             const bundlerConfig =
             {
                 runtime: false,
@@ -223,10 +226,18 @@ class BundleJsTask extends BaseTask
                 {
                     const promise = co(function *()
                     {
-                        const filename = yield scope._pathesConfiguration.shorten(load.name);
+                        const sourceFilename = pathes.normalize(load.name.replace('file:///', ''));
+                        const filename = yield scope._pathesConfiguration.shorten(sourceFilename);
                         const work = scope._cliLogger.work(filename);
                         const result = yield fetch(load);
-                        scope._cliLogger.end(work, false, 'Added ' + filename);
+                        if (loadedFiles.indexOf(load.name) === -1)
+                        {
+                            const stats = fs.statSync(sourceFilename);
+                            const size = stats["size"] / 1024;
+                            scope._cliLogger.end(work, false, 'Added ' + filename + ' <' + size.toFixed(1) + 'kb>');
+                            loadedFiles.push(load.name);
+                        }
+
                         return result;
                     });
                     return promise;
@@ -324,3 +335,4 @@ class BundleJsTask extends BaseTask
  * @ignore
  */
 module.exports.BundleJsTask = BundleJsTask;
+
