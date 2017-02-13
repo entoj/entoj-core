@@ -8,6 +8,7 @@ const BaseTask = require('./BaseTask.js').BaseTask;
 const gulp = require('gulp');
 const Stream = require('stream');
 const VinylFile = require('vinyl');
+const pathes = require('../utils/pathes.js');
 
 
 /**
@@ -41,14 +42,19 @@ class ReadFilesTask extends BaseTask
         const resultStream = new Stream.Transform({ objectMode: true });
         resultStream._transform = (file, encoding, callback) =>
         {
-            const resultFile = new VinylFile(
+            const filePath = parameters.readPathBase ? file.path.replace(parameters.readPathBase + '/', '') : file.path;
+            if (filePath != '')
             {
-                path: parameters.readPathBase ? file.path.replace(parameters.readPathBase + '/', '') : file.path,
-                contents: file.contents
-            });
-            const work = this._cliLogger.work('Reading file <' + resultFile.path + '>');
-            resultStream.push(resultFile);
-            this._cliLogger.end(work);
+                const resultFile = new VinylFile(
+                {
+                    path: filePath,
+                    contents: file.contents
+                });
+
+                const work = this._cliLogger.work('Reading file <' + file.path + '>');
+                resultStream.push(resultFile);
+                this._cliLogger.end(work);
+            }
             callback();
         };
 
