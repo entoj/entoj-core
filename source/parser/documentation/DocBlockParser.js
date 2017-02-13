@@ -69,7 +69,10 @@ class DocBlockParser extends Parser
                 break;
         }
 
-        result = upperFirst(result);
+        if (result.indexOf('.') < 0)
+        {
+            result = upperFirst(result);
+        }
 
         return result;
     }
