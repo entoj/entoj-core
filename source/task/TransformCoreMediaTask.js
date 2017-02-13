@@ -128,7 +128,20 @@ class TransformCoreMediaTask extends BaseTask
             }
             else if (macroParams || (settings.type && settings.view))
             {
-                filename = pathes.trimLeadingSlash(filepath + PATH_SEPERATOR + (settings.type || macroParams.type) + '.' + (settings.view || macroParams.view) + '.jsp');
+                let typePath = (settings.type || macroParams.type);
+                if (buildConfiguration.get('coremedia.namespaces', true) === true)
+                {
+                    typePath = typePath.replace(/\.([\w\d]+)$/g, '/$1');
+                }
+                else
+                {
+                    const typeName = typePath.match(/([\w\d]+)$/g);
+                    if (typeName && typeName.length)
+                    {
+                        typePath = typeName[0];
+                    }
+                }
+                filename = pathes.trimLeadingSlash(filepath + PATH_SEPERATOR + pathes.normalizePathSeperators(typePath) + '.' + (settings.view || macroParams.view) + '.jsp');
             }
             else
             {
