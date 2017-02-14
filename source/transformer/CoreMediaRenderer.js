@@ -483,8 +483,8 @@ class CoreMediaRenderer extends BaseRenderer
                 {
                     type = parameters.macros[node.name].type;
                 }
-                result+= '<!-- <%--@elvariable id="self" type="com.coremedia.blueprint.common.contentbeans.' + type + '"--%> -->' + EOL;
-                result+= '<!-- <%--@elvariable id="model" type="com.coremedia.blueprint.common.contentbeans.' + type + '"--%> -->' + EOL;
+                result+= '<!-- <%--@elvariable id="self" type="' + type + '"--%> -->' + EOL;
+                result+= '<!-- <%--@elvariable id="model" type="' + type + '"--%> -->' + EOL;
 
                 // Render default value
                 result+= '<c:if test="${ empty ' + parameter.name + ' }">' + EOL;
