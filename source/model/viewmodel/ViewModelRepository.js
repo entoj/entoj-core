@@ -8,9 +8,11 @@ const Base = require('../../Base.js').Base;
 const ViewModel = require('./ViewModel.js').ViewModel;
 const EntitiesRepository = require('../entity/EntitiesRepository.js').EntitiesRepository;
 const PathesConfiguration = require('../configuration/PathesConfiguration.js').PathesConfiguration;
+const path = require('path');
 const pathes = require('../../utils/pathes.js');
 const assertParameter = require('../../utils/assert.js').assertParameter;
 const uppercaseFirst = require('../../utils/string.js').uppercaseFirst;
+const glob = require('../../utils/glob.js');
 const co = require('co');
 const fs = require('fs');
 const isObject = require('lodash.isobject');
@@ -168,6 +170,28 @@ class ViewModelRepository extends Base
 
 
     /**
+     * @param {String} parameters
+     * @returns {Promise}
+     */
+    imageMacro(parameters, site)
+    {
+        const scope = this;
+        const promise = co(function*()
+        {
+            const basePath = yield scope._pathesConfiguration.resolveData('/images');
+            const files = yield glob(pathes.concat(basePath, parameters));
+            if (!files || !files.length)
+            {
+                return parameters;
+            }
+            const index = Math.round(Math.random() * (files.length - 1));
+            return path.basename(files[index]);
+        });
+        return promise;
+    }
+
+
+    /**
      * Recursively scan data for macro calls (@macro:options)
      *
      * @param {*} value
@@ -220,7 +244,12 @@ class ViewModelRepository extends Base
                             break;
 
                         case 'include':
+                        case 'import':
                             return scope.includeMacro(macro[2] || '', site);
+                            break;
+
+                        case 'image':
+                            return scope.imageMacro(macro[2] || '', site);
                             break;
                     }
                 }
