@@ -224,6 +224,10 @@ class Parser extends BaseParser
                     return node.value;
                     break;
 
+                case 'Symbol':
+                    return new VariableNode([node.value]);
+                    break;
+
                 case 'Pair':
                     if (result)
                     {
