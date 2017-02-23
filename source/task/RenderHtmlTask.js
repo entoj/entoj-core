@@ -181,6 +181,8 @@ class RenderHtmlTask extends BaseTask
             // Compile
             const work = scope._cliLogger.work('Rendering template to html for <' + entity.idString + '> as <' + filename + '>');
             const data = { site: entity.site, entity: entity };
+            scope._nunjucks.addGlobal('site', data.site);
+            scope._nunjucks.addGlobal('request', false);
             const contents = scope._nunjucks.renderString(template, data);
             scope._cliLogger.end(work);
 

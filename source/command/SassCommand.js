@@ -94,15 +94,20 @@ class SassCommand extends BaseCommand
         const promise = co(function *()
         {
             const logger = scope.createLogger('command.sass.compile');
+            const pathesConfiguration = scope.context.di.create(PathesConfiguration);
+            const buildConfiguration = scope.context.di.create(BuildConfiguration);
+            const path = yield pathesConfiguration.resolveCache('/css');
+            const options =
+            {
+                query: parameters && parameters._[0] || '*',
+                writePath: path
+            }
             const mapping = new Map();
             mapping.set(CliLogger, logger);
-            const pathesConfiguration = scope.context.di.create(PathesConfiguration);
-            const path = yield pathesConfiguration.resolveCache('/css');
-            const buildConfiguration = scope.context.di.create(BuildConfiguration);
             yield scope.context.di.create(CompileSassTask, mapping)
                 .pipe(scope.context.di.create(PostprocessCssTask, mapping))
                 .pipe(scope.context.di.create(WriteFilesTask, mapping))
-                .run(buildConfiguration, { writePath: path });
+                .run(buildConfiguration, options);
         });
         return promise;
     }

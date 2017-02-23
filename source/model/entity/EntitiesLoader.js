@@ -164,6 +164,13 @@ class EntitiesLoader extends PluggableLoader
                 {
                     continue;
                 }
+                if (entityId.site && entityId.site.extends && typeof ids[entityId.idString] === 'undefined')
+                {
+                    scope.logger.debug('loadItems - we need to load load the source entity');
+                    entityId.site = entityId.site.extends;
+                    entityId.entityId.site = entityId.site;
+                    entityId.siteName = entityId.site.name.urlify();
+                }
 
                 let entity;
                 // Check entity
