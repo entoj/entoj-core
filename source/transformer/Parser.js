@@ -228,6 +228,10 @@ class Parser extends BaseParser
                     return new VariableNode([node.value]);
                     break;
 
+                case 'LookupVal':
+                    return this.parseVariable(node);
+                    break;
+
                 case 'Pair':
                     if (result)
                     {
