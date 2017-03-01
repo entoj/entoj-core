@@ -1135,7 +1135,6 @@ class CoreMediaRenderer extends BaseRenderer
         source+= '<%@ taglib prefix="cm" uri="http://www.coremedia.com/2004/objectserver-1.0-2.0"%>' + EOL;
         source+= '<%@ taglib prefix="bp" uri="http://www.coremedia.com/2012/blueprint"%>' + EOL;
         source+= '<%@ taglib prefix="tk" uri="http://www.coremedia.com/2016/tk-website" %>' + EOL;
-        source+= '<%@ taglib prefix="tk" uri="http://www.coremedia.com/2016/tk-website" %>' + EOL;
         source+= this.renderNode(node, params);
         return Promise.resolve(source);
     }
