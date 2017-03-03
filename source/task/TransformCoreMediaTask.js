@@ -129,7 +129,7 @@ class TransformCoreMediaTask extends BaseTask
             else if (macroParams || (settings.type && settings.view))
             {
                 let typePath = (settings.type || macroParams.type);
-                if (buildConfiguration.get('coremedia.namespaces', true) === true)
+                if (buildConfiguration && buildConfiguration.get('coremedia.namespaces', true) === true)
                 {
                     typePath = typePath.replace(/\.([\w\d]+)$/g, '/$1');
                 }

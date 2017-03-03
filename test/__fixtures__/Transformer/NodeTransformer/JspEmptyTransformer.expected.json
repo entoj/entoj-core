@@ -307,6 +307,67 @@
         {
             "type": "transformer.node/TextNode",
             "value": "\n"
+        },
+        {
+            "type": "transformer.node/IfNode",
+            "children": [],
+            "condition": {
+                "type": "transformer.node/ConditionNode",
+                "children": [
+                    {
+                        "type": "transformer.node/VariableNode",
+                        "fields": [
+                            "model",
+                            "headline"
+                        ]
+                    },
+                    {
+                        "type": "transformer.node/OperandNode",
+                        "value": "=="
+                    },
+                    {
+                        "type": "transformer.node/VariableNode",
+                        "fields": [
+                            "model",
+                            "copy"
+                        ]
+                    }
+                ]
+            },
+            "elseChildren": []
+        },
+        {
+            "type": "transformer.node/TextNode",
+            "value": "\n"
+        },
+        {
+            "type": "transformer.node/IfNode",
+            "children": [],
+            "condition": {
+                "type": "transformer.node/ConditionNode",
+                "children": [
+                    {
+                        "type": "transformer.node/VariableNode",
+                        "fields": [
+                            "model",
+                            "headline"
+                        ]
+                    },
+                    {
+                        "type": "transformer.node/OperandNode",
+                        "value": "=="
+                    },
+                    {
+                        "type": "transformer.node/LiteralNode",
+                        "value": false
+                    }
+                ]
+            },
+            "elseChildren": []
+        },
+        {
+            "type": "transformer.node/TextNode",
+            "value": "\n"
         }
     ]
 }

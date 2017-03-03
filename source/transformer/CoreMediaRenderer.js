@@ -417,18 +417,29 @@ class CoreMediaRenderer extends BaseRenderer
                 break;
 
             case 'FilterNode':
-                result+= this.renderExpression(node.value, parameters);
-                result+= '.' + node.name + '(';
-                const filterParameters = [];
-                if (node.parameters)
+                if (node.name == 'empty')
                 {
-                    for (const parameter of node.parameters.children)
-                    {
-                        filterParameters.push(this.renderExpression(parameter.value, parameters));
-                    }
+                    result+= ' empty ' + this.renderExpression(node.value, parameters);
                 }
-                result+= filterParameters.join(', ');
-                result+= ')';
+                else if (node.name == 'notempty')
+                {
+                    result+= ' not empty ' + this.renderExpression(node.value, parameters);
+                }
+                else
+                {
+                    result+= this.renderExpression(node.value, parameters);
+                    result+= '.' + node.name + '(';
+                    const filterParameters = [];
+                    if (node.parameters)
+                    {
+                        for (const parameter of node.parameters.children)
+                        {
+                            filterParameters.push(this.renderExpression(parameter.value, parameters));
+                        }
+                    }
+                    result+= filterParameters.join(', ');
+                    result+= ')';
+                }
                 break;
 
             case 'ExpressionNode':

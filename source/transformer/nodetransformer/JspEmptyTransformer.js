@@ -53,23 +53,25 @@ class JspEmptyTransformer extends NodeTransformer
     {
         if (node.type === 'ConditionNode')
         {
-            this.logger.debug('Node Serialized',JSON.stringify(node.serialize(), null, 4));
+            this.logger.debug('Node Serialized', JSON.stringify(node.serialize(), null, 4));
             const it = new NodeIterator(node);
             while (it.next())
             {
                 if (it.currentNode.type != 'FilterNode')
                 {
                     // if a -> not empty a
-                    if (it.currentNode.type == 'VariableNode' && (!it.nextNode || it.nextNode.type == 'BooleanOperandNode' ))
+                    if (it.currentNode.type == 'VariableNode' &&
+                        (!it.nextNode || (it.nextNode.type == 'BooleanOperandNode')) &&
+                        (!it.previousNode || (it.previousNode.type != 'OperandNode')))
                     {
-                        this.logger.debug('if a',it.currentNode, it.nextNode);
+                        this.logger.debug('if a', it.currentNode, it.previousNode, it.nextNode);
                         node.children.insertAfter(it.currentNode, this.createNotEmptyFilterNode(it.currentNode) );
                         node.children.remove(it.currentNode);
                     }
                     // if not a -> empty a
                     else if (it.currentNode.is('BooleanOperandNode',{ value : ['not'] }) && it.nextNode && it.nextNode.type == 'VariableNode' )
                     {
-                        this.logger.debug('if not a',it.currentNode, it.nextNode);
+                        this.logger.debug('if not a', it.currentNode, it.nextNode);
                         const variableNode = it.nextNode;
                         node.children.insertAfter(it.currentNode, this.createEmptyFilterNode(variableNode) );
                         node.children.remove(variableNode);

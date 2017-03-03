@@ -87,7 +87,7 @@ describe(TransformCoreMediaTask.className, function()
                 const entities = yield fixtures.globalRepository.resolveEntities('base/modules/m001-gallery');
                 const file = yield testee.transformEntity(entities[0]);
                 expect(file).to.be.instanceof(VinylFile);
-                expect(file.contents.toString()).to.be.contain('<%@ include');
+                expect(file.contents.toString()).to.be.contain('<%@ taglib');
             });
             return promise;
         });
@@ -222,7 +222,7 @@ describe(TransformCoreMediaTask.className, function()
                 for (const file of files)
                 {
                     expect(file).to.be.instanceof(VinylFile);
-                    expect(file.contents.toString()).to.contain('<%@ include');
+                    expect(file.contents.toString()).to.contain('<%@ taglib');
                     expect(file.path).to.match(/^([^\/\\]*)(\/|\\)([^\/\\]*(\/|\\))+([^\/\\]*)$/ig);
                 }
             });

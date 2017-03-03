@@ -12,6 +12,7 @@ const JspEmptyTransformer = require('./nodetransformer/JspEmptyTransformer.js').
 const JspSelfTransformer = require('./nodetransformer/JspSelfTransformer.js').JspSelfTransformer;
 const JspStaticModelTransformer = require('./nodetransformer/JspStaticModelTransformer.js').JspStaticModelTransformer;
 const JspInlineMacroCallTransformer = require('./nodetransformer/JspInlineMacroCallTransformer.js').JspInlineMacroCallTransformer;
+const resetUniqueId = require('./nodetransformer/JspInlineMacroCallTransformer.js').resetUniqueId;
 const JspRemoveMacroCallTransformer = require('./nodetransformer/JspRemoveMacroCallTransformer.js').JspRemoveMacroCallTransformer;
 const JspForEachTransformer = require('./nodetransformer/JspForEachTransformer.js').JspForEachTransformer;
 const GlobalRepository = require('../model/GlobalRepository.js').GlobalRepository;
@@ -61,6 +62,16 @@ class CoreMediaTransformer extends Transformer
     static get className()
     {
         return 'transformer/CoreMediaTransformer';
+    }
+
+
+    /**
+     * @returns {Promise<BaseNode>}
+     */
+    transformMacro(siteQuery, macroQuery, parameters)
+    {
+        resetUniqueId();
+        return super.transformMacro(siteQuery, macroQuery, parameters);
     }
 }
 
