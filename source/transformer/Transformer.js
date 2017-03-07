@@ -90,6 +90,37 @@ class Transformer extends Base
     }
 
 
+
+    /**
+     * @returns {Promise<BaseNode>}
+     */
+    parseTemplate(siteQuery, entity, parameters)
+    {
+        const scope = this;
+        const promise = co(function *()
+        {
+            // Get template
+            const template = entity.files.find((file) => file.contentType == 'jinja');
+            if (!template || !template.contents)
+            {
+                /* istanbul ignore next */
+                throw new Error(scope.className + '::parseTemplate - could not find template ' + entity.id.pathString);
+            }
+
+            // Parse file
+            const rootNode = yield scope.parseString(template.contents, parameters);
+            if (!rootNode)
+            {
+                /* istanbul ignore next */
+                throw new Error(scope.className + '::parseTemplate - could not parse source of template ' + entity.id.pathString);
+            }
+
+            return rootNode;
+        });
+        return promise;
+    }
+
+
     /**
      * @returns {Promise<BaseNode>}
      */
@@ -236,6 +267,38 @@ class Transformer extends Base
             {
                 /* istanbul ignore next */
                 throw new Error(scope.className + '::transform - could not parse source');
+            }
+
+            // Transform parsed nodes
+            const transformedRootNode = yield scope.transformNode(rootNode, parameters);
+            if (!transformedRootNode)
+            {
+                /* istanbul ignore next */
+                throw new Error(scope.className + ':transform - could not transform parsed node');
+            }
+
+            // Render transformed nodes
+            const result = yield scope.renderNode(transformedRootNode, parameters);
+            return result;
+        });
+        return promise;
+    }
+
+
+    /**
+     * @returns {Promise<BaseNode>}
+     */
+    transformTemplate(siteQuery, entity, parameters)
+    {
+        const scope = this;
+        const promise = co(function *()
+        {
+            // Parse macro
+            const rootNode = yield scope.parseTemplate(siteQuery, entity, parameters);
+            if (rootNode === false)
+            {
+                /* istanbul ignore next */
+                throw new Error(scope.className + '::transform - could not parse macro');
             }
 
             // Transform parsed nodes

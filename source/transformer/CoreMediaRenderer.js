@@ -159,6 +159,15 @@ class CoreMediaRenderer extends BaseRenderer
     /**
      *
      */
+    renderComment(text)
+    {
+        return '<tk:debug><!-- ' + text + ' --></tk:debug>';
+    }
+
+
+    /**
+     *
+     */
     renderOutput(node, parameters)
     {
         let result = '';
@@ -481,7 +490,7 @@ class CoreMediaRenderer extends BaseRenderer
     renderMacro(node, parameters)
     {
         let result = '';
-        result+= '<!-- Macro ' + node.name + ' -->' + EOL;
+        result+= this.renderComment('Macro ' + node.name);
 
         // Handle model
         for (const parameter of node.parameters.children)
@@ -551,7 +560,7 @@ class CoreMediaRenderer extends BaseRenderer
             result+= this.renderNode(child, parameters);
         }
 
-        result+= '<!-- /Macro ' + node.name + ' -->' + EOL;
+        result+= this.renderComment('/Macro ' + node.name);
         return result;
     }
 
@@ -1071,6 +1080,30 @@ class CoreMediaRenderer extends BaseRenderer
     /**
      *
      */
+    renderBlock(node, parameters)
+    {
+        let result = this.renderComment('Block ' + node.name + ' start');
+        if (node.children.length)
+        {
+            for (const child of node.children)
+            {
+                result+= this.renderNode(child, parameters);
+            }
+        }
+        else
+        {
+            result+= '<c:if test="${ not empty self.placementMap.' + node.name + '.items }">';
+            result+= '<cm:include self="${ self.placementMap.' + node.name + ' }" view="' + node.name + '"/>';
+            result+= '</c:if>';
+        }
+        result+= this.renderComment('Block ' + node.name + ' end');
+        return result;
+    }
+
+
+    /**
+     *
+     */
     renderNode(node, parameters)
     {
         let result = '';
@@ -1086,6 +1119,10 @@ class CoreMediaRenderer extends BaseRenderer
 
             case 'OutputNode':
                 result+= this.renderOutput(node, parameters);
+                break;
+
+            case 'BlockNode':
+                result+= this.renderBlock(node, parameters);
                 break;
 
             case 'TextNode':

@@ -28,6 +28,7 @@ const OutputNode = require('./node/OutputNode.js').OutputNode;
 const YieldNode = require('./node/YieldNode.js').YieldNode;
 const ComplexVariableNode = require('./node/ComplexVariableNode.js').ComplexVariableNode;
 const ArrayNode = require('./node/ArrayNode.js').ArrayNode;
+const BlockNode = require('./node/BlockNode.js').BlockNode;
 
 
 /**
@@ -515,6 +516,24 @@ class Parser extends BaseParser
     /**
      *
      */
+    parseBlock(node)
+    {
+        const children = [];
+        if (node.body && node.body.children)
+        {
+            for (const child of node.body.children)
+            {
+                children.push(this.parseNode(child));
+            }
+        }
+
+        return new BlockNode(node.name.value, children);
+    }
+
+
+    /**
+     *
+     */
     parseList(node)
     {
         const children = [];
@@ -593,7 +612,12 @@ class Parser extends BaseParser
                 result = this.parseArray(node);
                 break;
 
+            case 'Block':
+                result = this.parseBlock(node);
+                break;
+
             case 'Caller':
+            case 'Extends':
                 // Just ignore this
                 break;
 

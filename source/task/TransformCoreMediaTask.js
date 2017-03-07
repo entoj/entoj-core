@@ -151,7 +151,16 @@ class TransformCoreMediaTask extends BaseTask
             // Compile
             const work = scope._cliLogger.work('Compiling CoreMedia template for <' + entity.idString + '> as <' + filename + '>');
             const transformerOptions = merge(params, settings);
-            const contents = yield scope._transformer.transformMacro(entity.id.site, macroName, transformerOptions);
+
+            let contents;
+            if (entity.id.category.shortName == 't' && !settings.macro)
+            {
+                contents = yield scope._transformer.transformTemplate(entity.id.site, entity, transformerOptions);
+            }
+            else
+            {
+                contents = yield scope._transformer.transformMacro(entity.id.site, macroName, transformerOptions);
+            }
             scope._cliLogger.end(work);
 
             // Done
