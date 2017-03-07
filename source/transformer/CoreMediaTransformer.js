@@ -68,6 +68,16 @@ class CoreMediaTransformer extends Transformer
     /**
      * @returns {Promise<BaseNode>}
      */
+    transformTemplate(siteQuery, entity, parameters)
+    {
+        resetUniqueId();
+        return super.transformTemplate(siteQuery, entity, parameters);
+    }
+
+
+    /**
+     * @returns {Promise<BaseNode>}
+     */
     transformMacro(siteQuery, macroQuery, parameters)
     {
         resetUniqueId();
