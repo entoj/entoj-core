@@ -9,6 +9,7 @@ const gulp = require('gulp');
 const Stream = require('stream');
 const VinylFile = require('vinyl');
 const pathes = require('../utils/pathes.js');
+const PATH_SEPERATOR = require('path').sep;
 
 
 /**
@@ -42,7 +43,7 @@ class ReadFilesTask extends BaseTask
         const resultStream = new Stream.Transform({ objectMode: true });
         resultStream._transform = (file, encoding, callback) =>
         {
-            const filePath = parameters.readPathBase ? file.path.replace(parameters.readPathBase + '/', '') : file.path;
+            const filePath = parameters.readPathBase ? file.path.replace(parameters.readPathBase + PATH_SEPERATOR, '') : file.path;
             if (filePath != '')
             {
                 const resultFile = new VinylFile(
