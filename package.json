@@ -38,6 +38,7 @@
     "gulp-svg-sprite": "*",
     "gulp-uglify": "*",
     "gulp-util": "*",
+    "gulp-zip": "*",
     "htmlencode": "*",
     "htmlspecialchars": "*",
     "htmlparser2": "*",
