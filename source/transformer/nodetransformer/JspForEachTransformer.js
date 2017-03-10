@@ -35,6 +35,13 @@ class JspForEachTransformer extends NodeTransformer
             {
                 node.fields[1] = 'count';
             }
+            // See if variable is loop.index0
+            if (node.fields.length === 2 &&
+                node.fields[0] === 'loop' &&
+                node.fields[1] === 'index0')
+            {
+                node.fields[1] = 'index';
+            }
         }
         return node;
     }
