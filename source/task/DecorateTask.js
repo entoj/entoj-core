@@ -38,6 +38,23 @@ class DecorateTask extends BaseTask
 
 
     /**
+     * @protected
+     * @returns {Promise<Array>}
+     */
+    prepareParameters(buildConfiguration, parameters)
+    {
+        const params = parameters || {};
+        const result =
+        {
+            decorateVariables: params.decorateVariables || {},
+            decoratePrepend: params.decoratePrepend || this._prependTemplate,
+            decorateAppend: params.decorateAppend || this._appendTemplate
+        };
+        return result;
+    }
+
+
+    /**
      * @returns {Stream}
      */
     stream(stream, buildConfiguration, parameters)
@@ -48,6 +65,7 @@ class DecorateTask extends BaseTask
         }
 
         // Render stream
+        const params = this.prepareParameters(buildConfiguration, parameters);
         const resultStream = new Stream.Transform({ objectMode: true });
         resultStream._transform = (file, encoding, callback) =>
         {
@@ -59,9 +77,8 @@ class DecorateTask extends BaseTask
             }
 
             const work = this._cliLogger.work('Adding banner to file <' + file.path + '>');
-            const params = parameters || {};
-            const prepend = templateString(this._prependTemplate, params);
-            const append = templateString(this._appendTemplate, params);
+            const prepend = templateString(params.decoratePrepend, params.decorateVariables);
+            const append = templateString(params.decorateAppend, params.decorateVariables);
             const contents = new Buffer(prepend + file.contents.toString() + append);
             const resultFile = new VinylFile({ path: file.path, contents: contents });
             resultStream.push(resultFile);
