@@ -100,7 +100,7 @@ class Transformer extends Base
         const promise = co(function *()
         {
             // Get template
-            const template = entity.files.find((file) => file.contentType == 'jinja');
+            const template = entity.files.find((file) => file.contentType == 'jinja' && file.basename == entity.id.idString + '.j2');
             if (!template || !template.contents)
             {
                 /* istanbul ignore next */
@@ -298,7 +298,7 @@ class Transformer extends Base
             if (rootNode === false)
             {
                 /* istanbul ignore next */
-                throw new Error(scope.className + '::transform - could not parse macro');
+                throw new Error(scope.className + '::transformTemplate - could not parse template');
             }
 
             // Transform parsed nodes
@@ -306,7 +306,7 @@ class Transformer extends Base
             if (!transformedRootNode)
             {
                 /* istanbul ignore next */
-                throw new Error(scope.className + ':transform - could not transform parsed node');
+                throw new Error(scope.className + ':transformTemplate - could not transform parsed node');
             }
 
             // Render transformed nodes
@@ -330,7 +330,7 @@ class Transformer extends Base
             if (rootNode === false)
             {
                 /* istanbul ignore next */
-                throw new Error(scope.className + '::transform - could not parse macro');
+                throw new Error(scope.className + '::transformMacro - could not parse macro');
             }
 
             // Transform parsed nodes
@@ -338,7 +338,7 @@ class Transformer extends Base
             if (!transformedRootNode)
             {
                 /* istanbul ignore next */
-                throw new Error(scope.className + ':transform - could not transform parsed node');
+                throw new Error(scope.className + ':transformMacro - could not transform parsed node');
             }
 
             // Render transformed nodes

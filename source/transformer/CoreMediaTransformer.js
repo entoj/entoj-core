@@ -19,7 +19,6 @@ const GlobalRepository = require('../model/GlobalRepository.js').GlobalRepositor
 const ViewModelRepository = require('../model/viewmodel/ViewModelRepository.js').ViewModelRepository;
 const GlobalConfiguration = require('../model/configuration/GlobalConfiguration.js').GlobalConfiguration;
 const PathesConfiguration = require('../model/configuration/PathesConfiguration.js').PathesConfiguration;
-const assertParameter = require('../utils/assert.js').assertParameter;
 
 
 /**
