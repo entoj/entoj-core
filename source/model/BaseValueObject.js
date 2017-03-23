@@ -6,7 +6,9 @@
  */
 const Base = require('../Base.js').Base;
 const DocumentationArray = require('./documentation/DocumentationArray.js').DocumentationArray;
+const TestArray = require('./test/TestArray.js').TestArray;
 const BaseArray = require('../base/BaseArray.js').BaseArray;
+const BaseMap = require('../base/BaseMap.js').BaseMap;
 const map = require('../utils/map.js');
 
 /**
@@ -22,9 +24,10 @@ class BaseValueObject extends Base
         super();
 
         // Add initial values
-        this._properties = map.create();
+        this._properties = new BaseMap();
         this._documentation = new DocumentationArray();
         this._files = new BaseArray();
+        this._tests = new TestArray();
     }
 
 
@@ -70,6 +73,15 @@ class BaseValueObject extends Base
     get files()
     {
         return this._files;
+    }
+
+
+    /**
+     * @property {Array}
+     */
+    get tests()
+    {
+        return this._tests;
     }
 
 

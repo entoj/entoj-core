@@ -29,7 +29,7 @@ class EntityAspect extends BaseValueObject
         //Check params
         assertParameter(this, 'entity', entity, true, Entity);
         assertParameter(this, 'site', site, true, Site);
-        assertParameter(this, 'entityIdTemplate', entityIdTemplate, true, EntityIdTemplate);
+        //assertParameter(this, 'entityIdTemplate', entityIdTemplate, true, EntityIdTemplate);
 
         // Add initial values
         this._entity = entity;
@@ -49,12 +49,13 @@ class EntityAspect extends BaseValueObject
             currentSite = currentSite.extends;
         }
 
-        // Extend files & properties & documentation
+        // Extend files, properties, documentation & tests
         const properties = new BaseMap();
         const examples = {};
         const macros = {};
         const texts = [];
         const datamodels = [];
+        const tests = [];
         for (const s of this._extendedSites)
         {
             // Files
@@ -91,6 +92,9 @@ class EntityAspect extends BaseValueObject
             // Properties
             const siteProperties = this._entity.properties.getByPath(s.name.toLowerCase(), {});
             properties.merge(siteProperties);
+
+            // Tests
+            this.tests.load(this._entity.tests.filter(test => test.site === s));
         }
         this.properties.load(properties);
         this.documentation.load(examples);
@@ -141,7 +145,7 @@ class EntityAspect extends BaseValueObject
      */
     get idString()
     {
-        return this._entityIdTemplate.id(this._entityId);
+        return this._entityId.idString;
     }
 
 
@@ -150,7 +154,7 @@ class EntityAspect extends BaseValueObject
      */
     get pathString()
     {
-        return this._entityIdTemplate.path(this._entityId);
+        return this._entityId.pathString;
     }
 
 

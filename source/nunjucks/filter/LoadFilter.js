@@ -64,8 +64,10 @@ class LoadFilter extends BaseFilter
             {
                 return value;
             }
-            const site = (this && this.env && this.env.globals && this.env.globals.site) ? this.env.globals.site : false;
-            const viewModel = synchronize.execute(scope._viewModelRepository, 'getByPath', [value, site]);
+            const globals = (this && this.env && this.env.globals) ? this.env.globals : {};
+            const site = globals.site || false;
+            const staticMode = (globals.request) ? (typeof globals.request.query.static !== 'undefined') : false;
+            const viewModel = synchronize.execute(scope._viewModelRepository, 'getByPath', [value, site, staticMode]);
             return viewModel.data;
         };
     }

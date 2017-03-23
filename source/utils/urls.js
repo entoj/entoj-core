@@ -4,7 +4,7 @@ const tr = require('transliteration').transliterate;
 
 
 /**
- * Makes a vali ascii only url
+ * Makes a valid ascii only url
  *
  * @memberOf utils
  */

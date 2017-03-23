@@ -50,7 +50,6 @@ class Environment extends nunjucks.Environment
         this._filters = filters || [];
         this._path = path;
         this._loader = loader;
-        this._static = this._buildConfiguration.get('nunjucks.static', false);
         this._template = new Template(this._entitiesRepository, this._path, this._buildConfiguration.environment);
 
         // Add globals
@@ -127,30 +126,6 @@ class Environment extends nunjucks.Environment
         this._path = value;
         this._loader.setSearchPaths(this._path);
         this._template._basePath = this._path;
-    }
-
-
-    /**
-     * Returns true if the rendered content should contain
-     * no random elements.
-     *
-     * @type {string}
-     */
-    get isStatic()
-    {
-        return this._static;
-    }
-
-
-    /**
-     * @type {string}
-     */
-    set isStatic(value)
-    {
-        if (this._buildConfiguration.get('nunjucks.static', false) === false)
-        {
-            this._static = value;
-        }
     }
 
 

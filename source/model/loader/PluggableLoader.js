@@ -67,6 +67,10 @@ class PluggableLoader extends BaseLoader
                 yield plugin.execute(item);
             }
             return true;
+        })
+        .catch((e) =>
+        {
+            this.logger.error(e);
         });
         return promise;
     }

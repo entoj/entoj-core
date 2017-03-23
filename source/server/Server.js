@@ -15,6 +15,7 @@ const http = require('http');
 const spdy = require('spdy');
 const basicAuth = require('basic-auth-connect');
 const compression = require('compression');
+const bodyParser = require('body-parser');
 
 
 /**
@@ -48,6 +49,7 @@ class Server extends Base
 
         // Add settings
         this._express.use(compression());
+        this._express.use(bodyParser.json());
 
         // Add basic auth
         if (opts.authentication === true)

@@ -226,9 +226,9 @@ class PagesRoute extends BaseRoute
             return;
         }
 
-        this._nunjucks.isStatic = (typeof request.query.static !== 'undefined');
-        const work = this._cliLogger.work('Serving ' + (this._nunjucks.isStatic ? '<static>' : ' ') + 'template <' + route.template + '> as <' + request.url + '>');
+        const work = this._cliLogger.work('Serving template <' + route.template + '> for <' + request.url + '>');
         const tpl = fs.readFileSync(this._templateRoot + '/' + route.template, { encoding: 'utf8' });
+        this._nunjucks.addGlobal('request', request);
         const html = this._nunjucks.renderString(tpl, { global: model });
         response.send(html);
         this._cliLogger.end(work);
@@ -244,9 +244,10 @@ class PagesRoute extends BaseRoute
 
         for (const route of this._routes)
         {
-            express.all(route.url, this.handlePage.bind(this, route));
+            this._cliLogger.info('Adding rout <' + route.url + '>');
+            express.get(route.url, this.handlePage.bind(this, route));
         }
-        express.all(this._staticRoute + '/*', this.handleStatic.bind(this));
+        express.get(this._staticRoute + '/*', this.handleStatic.bind(this));
         express.all('*', this.handle404.bind(this));
 
         this._cliLogger.end(work);

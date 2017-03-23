@@ -108,10 +108,8 @@ class ExamplesRoute extends BaseRoute
             const entity = yield scope._entitiesRepository.getById(match.entityId);
             try
             {
-                //scope._nunjucks.isStatic = true;
                 const template = yield scope._examplesArgumentBuilder.buildTemplate(entity);
                 const html = scope._nunjucks.renderString(template, match);
-                scope._nunjucks.isStatic = false;
                 response.send(html);
                 scope._cliLogger.end(work);
             }

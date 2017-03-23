@@ -188,7 +188,6 @@ class SitesRoute extends BaseRoute
             }
 
             // Render template
-            scope._nunjucks.isStatic = (typeof request.query.static !== 'undefined');
             const data = yield scope._urlsConfiguration.matchEntity(request.path, true);
             const filenameShort = shortenLeft(synchronize.execute(scope._pathesConfiguration, 'shorten', [filename]), 60);
             const tpl = fs.readFileSync(filename, { encoding: 'utf8' });

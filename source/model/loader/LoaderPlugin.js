@@ -58,7 +58,7 @@ class LoaderPlugin extends Base
         })
         .catch(function(e)
         {
-            throw new Error('Failed executinng plugin : ' + e.message);
+            throw new Error('Failed executing plugin : ' + e.message);
         });
         return promise;
     }
