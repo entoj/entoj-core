@@ -99,7 +99,7 @@ class TransformCoreMediaTask extends BaseTask
             const settings = entitySettings || {};
             const params = scope.prepareParameters(buildConfiguration, parameters);
             const macroName = settings.macro || entity.idString.lodasherize();
-            const macroParams = params.macros ? params.macros[macroName] || false : false;
+            const macroParams = params.macros ? params.macros[macroName] || {} : {};
             const filepath = pathes.normalizePathSeperators(templateString(params.filepathTemplate,
                 {
                     entity: entity,
@@ -126,9 +126,9 @@ class TransformCoreMediaTask extends BaseTask
                     filename+= '.jsp';
                 }
             }
-            else if (macroParams || (settings.type && settings.view))
+            else
             {
-                let typePath = (settings.type || macroParams.type);
+                let typePath = settings.type || macroParams.type || '';
                 if (buildConfiguration && buildConfiguration.get('coremedia.namespaces', true) === true)
                 {
                     typePath = typePath.replace(/\.([\w\d]+)$/g, '/$1');
@@ -141,11 +141,8 @@ class TransformCoreMediaTask extends BaseTask
                         typePath = typeName[0];
                     }
                 }
-                filename = pathes.trimLeadingSlash(filepath + PATH_SEPERATOR + pathes.normalizePathSeperators(typePath) + '.' + (settings.view || macroParams.view) + '.jsp');
-            }
-            else
-            {
-                filename = pathes.trimLeadingSlash(filepath + PATH_SEPERATOR + entity.idString + '.jsp');
+                const view = settings.view || macroParams.view || entity.idString;
+                filename = pathes.trimLeadingSlash(filepath + PATH_SEPERATOR + pathes.normalizePathSeperators(typePath) + '.' + view + '.jsp');
             }
 
             // Compile
