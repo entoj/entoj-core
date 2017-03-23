@@ -30,7 +30,7 @@ class ExamplesRoute extends BaseRoute
      * @param {UrlsConfiguration} urlsConfiguration
      * @param {object} [options]
      */
-    constructor(cliLogger, entitiesRepository, globalConfiguration, pathesConfiguration, urlsConfiguration, buildConfiguration, options)
+    constructor(cliLogger, entitiesRepository, globalConfiguration, pathesConfiguration, urlsConfiguration, buildConfiguration, nunjucks, options)
     {
         super(cliLogger.createPrefixed('routes.examplesroute'));
 
@@ -51,8 +51,11 @@ class ExamplesRoute extends BaseRoute
         this._rootPath = opts.rootPath || pathesConfiguration.sites;
         this._rootUrl = opts.rootUrl || '/:site/:entityCategory/:entityId/styleguide';
         this._formatHtml = opts.formatHtml || false;
-        this._nunjucks = new Environment(this._entitiesRepository, globalConfiguration, this._pathesConfiguration, this._buildConfiguration, { rootPath: this._rootPath });
+        this._nunjucks = nunjucks;
         this._htmlFormatter = new HtmlFormatter();
+
+        // Configure nunjucks
+        this._nunjucks.path = this._rootPath;
     }
 
 
@@ -62,7 +65,7 @@ class ExamplesRoute extends BaseRoute
     static get injections()
     {
         return { 'parameters': [CliLogger, EntitiesRepository, GlobalConfiguration,
-            PathesConfiguration, UrlsConfiguration, BuildConfiguration, 'server.routes/ExamplesRoute.options'] };
+            PathesConfiguration, UrlsConfiguration, BuildConfiguration, Environment, 'server.routes/ExamplesRoute.options'] };
     }
 
 
@@ -101,7 +104,7 @@ class ExamplesRoute extends BaseRoute
                 return false;
             }
 
-            const work = scope._cliLogger.work('Serving styleguide for <' + match.entityId.asString() + '> as <' + request.url + '>');
+            const work = scope._cliLogger.work('Serving example for <' + match.entityId.asString() + '> as <' + request.url + '>');
             const entity = yield scope._entitiesRepository.getById(match.entityId);
             try
             {
