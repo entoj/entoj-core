@@ -63,7 +63,6 @@
     "mz": "*",
     "node-sass": "*",
     "nunjucks": "^2.5.2",
-    "nightmare": "*",
     "postcss-cssnext": "*",
     "postcss-discard-comments": "*",
     "postcss-urlrewrite": "*",
