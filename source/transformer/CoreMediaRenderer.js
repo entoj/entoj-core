@@ -705,7 +705,8 @@ class CoreMediaRenderer extends BaseRenderer
             {
                 args.push(this.renderExpression(param.value, parameters));
             }
-            result+= '<tk:image target="${ self }" var="' + this.getVariable(node.variable, parameters) + '"';
+            const model = this.renderExpression(node.value.children[0].value, parameters);
+            result+= '<tk:image target="${ ' + model + ' }" var="' + this.getVariable(node.variable, parameters) + '"';
             if (args.length)
             {
                 result+= ' aspect="${ ' + args[0] + ' }"';
