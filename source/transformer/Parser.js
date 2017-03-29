@@ -316,6 +316,12 @@ class Parser extends BaseParser
                     parse(node.right, result);
                     break;
 
+                case 'Mod':
+                    parse(node.left, result);
+                    result.push(new OperandNode('%'));
+                    parse(node.right, result);
+                    break;
+
                 case 'Filter':
                     result.push(this.parseFilter(node));
                     break;

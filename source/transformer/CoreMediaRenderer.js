@@ -196,7 +196,6 @@ class CoreMediaRenderer extends BaseRenderer
             node.children[0].type === 'FilterNode' &&
             node.children[0].name === 'markup')
         {
-            let key = '';
             const filter = node.children[0];
             result+= '<cm:include';
             result+= ' self="${ ' + this.renderExpression(filter.value, parameters) + ' }"';
@@ -208,9 +207,7 @@ class CoreMediaRenderer extends BaseRenderer
             node.children[0].type === 'FilterNode' &&
             node.children[0].name === 'date')
         {
-            let key = '';
             const filter = node.children[0];
-
             result+= '<fmt:formatDate';
             result+= ' value="${ ' + this.renderExpression(filter.value, parameters) + '.time }"'; // Will be Gregorian calender so we require .time to format the date
             result+= ' type="date" pattern="dd.MM.yyyy"';
@@ -222,10 +219,17 @@ class CoreMediaRenderer extends BaseRenderer
             node.children[0].type === 'FilterNode' &&
             node.children[0].name === 'hyphenate')
         {
-            let key = '';
             const filter = node.children[0];
-
             result+= '${ tk:hyphenate(' + this.renderExpression(filter.value, parameters) + ') }';
+
+        }
+        // Check escape filter
+        else if (node.children.length &&
+            node.children[0].type === 'FilterNode' &&
+            node.children[0].name === 'escape')
+        {
+            const filter = node.children[0];
+            result+= '<c:out value="' + this.renderExpression(filter.value, parameters) + '"/>';
 
         }
         // Check metdata filter
@@ -251,7 +255,7 @@ class CoreMediaRenderer extends BaseRenderer
         {
             const filter = node.children[0];
             const value = this.renderExpression(filter.value, parameters);
-            const defaultValue = filter.parameters.children.length ? this.renderExpression(filter.parameters.children[0].value, parameters) : "''";
+            const defaultValue = filter.parameters.children.length ? this.renderExpression(filter.parameters.children[0].value, parameters) : '\'\'';
             result+= '${ ';
             result+=  value + ' is empty ? ' + defaultValue + ' : ' + value;
             result+= ' }';
