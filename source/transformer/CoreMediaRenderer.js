@@ -248,6 +248,15 @@ class CoreMediaRenderer extends BaseRenderer
                 result+= '<cm:metadata value="properties.' + key + '" />';
             }
         }
+        // handle asset
+        else if (node.children.length &&
+            node.children[0].type === 'FilterNode' &&
+            node.children[0].name === 'assetUrl')
+        {
+            const filter = node.children[0];
+            const value = this.renderExpression(filter.value, parameters);
+            result+= '${ pageContext.request.contextPath }/static/tkde/assets/base/${ ' + value + ' }';
+        }
         // Check default filter
         else if (node.children.length &&
             node.children[0].type === 'FilterNode' &&
@@ -646,19 +655,34 @@ class CoreMediaRenderer extends BaseRenderer
             node.value.children[0].name === 'translate')
         {
             let key = '';
+            let variableStart = 0;
             const filter = node.value.children[0];
-            if (filter.parameters.children.length)
-            {
-                key = filter.parameters.children[0].value.children[0].value;
-            }
-            else if (filter.value.type === 'LiteralNode')
+            const variables = filter.parameters.children;
+            if (filter.value.type === 'LiteralNode')
             {
                 key = filter.value.value;
+            }
+            else if (variables.length)
+            {
+                key = variables[0].children[0].value;
+                variableStart++;
             }
             result+= '<fmt:message';
             result+= ' var="' + this.getVariable(node.variable, parameters) + '"';
             result+= ' key="' + key + '"';
-            result+= ' />';
+            if (variables.length > variableStart)
+            {
+                result+= ' >';
+                for (let variableIndex = variableStart; variableIndex < variables.length; variableIndex++)
+                {
+                    result+= '<fmt:param value="${ ' + this.renderExpression(variables[variableIndex].value, parameters) + ' }"/>';
+                }
+                result+= '</fmt:message>';
+            }
+            else
+            {
+                result+= ' />';
+            }
         }
         // handle settings
         else if (node.type === 'SetNode' &&

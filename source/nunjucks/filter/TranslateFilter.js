@@ -50,10 +50,16 @@ class TranslateFilter extends BaseFilter
     filter()
     {
         const scope = this;
-        return function (value, key)
+        return function (value, ...variables)
         {
+            console.log('translate', value, variables);
+
             // Use value or key for translations
-            const translationKey = key || value;
+            let translationKey = value;
+            if (!translationKey && variables)
+            {
+                translationKey = variables.shift();
+            }
             if (!translationKey || typeof translationKey !== 'string')
             {
                 return '';
@@ -65,7 +71,16 @@ class TranslateFilter extends BaseFilter
                 scope.logger.error('Missing translation for ' + translationKey);
                 return translationKey;
             }
-            return scope._options.translations[translationKey];
+            let result = scope._options.translations[translationKey];
+            if (variables && variables.length)
+            {
+                for (let index = 0; index < variables.length; index++)
+                {
+                    console.log(index, variables[index]);
+                    result = result.replace('{' + index + '}', variables[index]);
+                }
+            }
+            return result;
         };
     }
 }
