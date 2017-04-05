@@ -36,7 +36,7 @@ class MarkupFilter extends BaseFilter
      */
     filter()
     {
-        return function (value)
+        return function (value, style)
         {
             if (value && value.indexOf('<') > -1)
             {

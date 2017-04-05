@@ -197,9 +197,14 @@ class CoreMediaRenderer extends BaseRenderer
             node.children[0].name === 'markup')
         {
             const filter = node.children[0];
+            let view = 'tkArticle';
+            if (filter.parameters.children.length)
+            {
+                view = filter.parameters.children[0].value.children[0].value;
+            }
             result+= '<cm:include';
             result+= ' self="${ ' + this.renderExpression(filter.value, parameters) + ' }"';
-            result+= ' view="tkArticle"';
+            result+= ' view="' + view + '"';
             result+= ' />';
         }
         // Check date filter
