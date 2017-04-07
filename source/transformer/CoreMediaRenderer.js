@@ -6,7 +6,6 @@
  */
 const BaseRenderer = require('./BaseRenderer.js').BaseRenderer;
 const GlobalRepository = require('../model/GlobalRepository.js').GlobalRepository;
-const ViewModelRepository = require('../model/viewmodel/ViewModelRepository.js').ViewModelRepository;
 const GlobalConfiguration = require('../model/configuration/GlobalConfiguration.js').GlobalConfiguration;
 const PathesConfiguration = require('../model/configuration/PathesConfiguration.js').PathesConfiguration;
 const assertParameter = require('../utils/assert.js').assertParameter;
@@ -353,17 +352,16 @@ class CoreMediaRenderer extends BaseRenderer
                     result+= ' not empty ';
                     result+= this.renderExpression(node.value, parameters);
                 }
+                else if (node.name == 'length')
+                {
+                    result+= this.renderCondition(node.value, parameters);
+                    result+= '.size()';
+                }
                 else
                 {
-                    if (node.value.type === 'FilterNode')
-                    {
-                        result+= '(';
-                    }
+                    result+= '(';
                     result+= this.renderCondition(node.value, parameters);
-                    if (node.value.type === 'FilterNode')
-                    {
-                        result+= ')';
-                    }
+                    result+= ')';
                     result+= '.' + node.name + '()';
                 }
                 break;
