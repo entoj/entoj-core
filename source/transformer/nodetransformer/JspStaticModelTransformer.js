@@ -70,7 +70,8 @@ class JspStaticModelTransformer extends NodeTransformer
             node.parameters.getParameter('model'))
         {
             const model = node.parameters.getParameter('model');
-            if (model.value.children.length === 1 &&
+            if (model.value &&
+                model.value.children.length === 1 &&
                 model.value.children[0].type === 'LiteralNode' &&
                 model.value.children[0].valueType === 'string')
             {
