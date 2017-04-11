@@ -77,6 +77,7 @@ class TransformCoreMediaTask extends BaseTask
         const result = super.prepareParameters(buildConfiguration, parameters);
         result.query = result.query || '*';
         result.filepathTemplate = typeof result.filepathTemplate === 'string' ? result.filepathTemplate : '${entity.pathString}';
+        result.staticPrefix = result.staticPrefix || false;
         return result;
     }
 

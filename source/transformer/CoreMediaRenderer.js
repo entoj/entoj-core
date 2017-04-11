@@ -80,7 +80,7 @@ class CoreMediaRenderer extends BaseRenderer
     /**
      *
      */
-    getSvgs()
+    getSvgs(parameters)
     {
         if (!this._svgs)
         {
@@ -95,7 +95,8 @@ class CoreMediaRenderer extends BaseRenderer
                 const name = path.basename(file, '.svg');
 
                 // Url
-                this._svgs.urls[name] = '/static/tkde/assets/base/icons/' + name + '.svg#icon';
+                const staticPrefix = parameters.staticPrefix || 'static';
+                this._svgs.urls[name] = '/' + staticPrefix + '/tkde/assets/base/icons/' + name + '.svg#icon';
 
                 // Viewbox
                 this._svgs.viewBoxes[name] = '0 0 0 0';
@@ -257,9 +258,10 @@ class CoreMediaRenderer extends BaseRenderer
             node.children[0].type === 'FilterNode' &&
             node.children[0].name === 'assetUrl')
         {
+            const staticPrefix = parameters.staticPrefix || 'static';
             const filter = node.children[0];
             const value = this.renderExpression(filter.value, parameters);
-            result+= '${ pageContext.request.contextPath }/static/tkde/assets/base/${ ' + value + ' }';
+            result+= '${ pageContext.request.contextPath }/' + staticPrefix + '/tkde/assets/base/${ ' + value + ' }';
         }
         // Check default filter
         else if (node.children.length &&
@@ -538,7 +540,7 @@ class CoreMediaRenderer extends BaseRenderer
             {
                 if (parameter.name !== 'model' && typeof parameter.defaultValue !== 'undefined')
                 {
-                    let parameterValue = parameter.defaultValue;
+                    const parameterValue = parameter.defaultValue;
                     if (parameterValue !== 'false' && parameterValue !== false)
                     {
                         macroParameters[parameter.name] = '${ ' + parameterValue + ' }';
@@ -552,7 +554,7 @@ class CoreMediaRenderer extends BaseRenderer
         {
             if (parameter.value && parameter.name !== 'model')
             {
-                let parameterValue = this.renderExpression(parameter.value, parameters);
+                const parameterValue = this.renderExpression(parameter.value, parameters);
                 if (parameterValue !== 'false' && parameterValue !== false)
                 {
                     macroParameters[parameter.name] = '${ ' + parameterValue + ' }';
@@ -565,7 +567,7 @@ class CoreMediaRenderer extends BaseRenderer
         {
             const parameterValue = macroParameters[parameterName];
             if (parameterValue)
-            result+= '<c:if test="${ empty ' + parameterName + ' }">' + EOL;
+                result+= '<c:if test="${ empty ' + parameterName + ' }">' + EOL;
             result+= '  <c:set var="' + parameterName + '" value="' + parameterValue + '" />' + EOL;
             result+= '</c:if>' + EOL;
         }
@@ -605,7 +607,7 @@ class CoreMediaRenderer extends BaseRenderer
                 }
             }
             return result;
-        }
+        };
         result+= render(name, data);
         return result;
     }
@@ -710,7 +712,7 @@ class CoreMediaRenderer extends BaseRenderer
         {
             const filter = node.value.children[0];
             const mediaQueries = this._globalConfiguration.get('mediaQueries');
-            const mediaQueriesVariable = 'globalMediaQueries'
+            const mediaQueriesVariable = 'globalMediaQueries';
             result+= '<jsp:useBean id="' + mediaQueriesVariable + '" class="java.util.TreeMap" />';
             for (const mediaQueryName in mediaQueries)
             {
@@ -873,10 +875,11 @@ class CoreMediaRenderer extends BaseRenderer
             node.value.children[0].type === 'FilterNode' &&
             node.value.children[0].name === 'svgUrl')
         {
+            const staticPrefix = parameters.staticPrefix || 'static';
             const filter = node.value.children[0];
             const variable = this.getVariable(node.variable, parameters);
             const name = this.renderExpression(filter.value, parameters);
-            result+= '<c:set var="' + variable + '" value="${ pageContext.request.contextPath }/static/tkde/assets/base/icons/${ ' + name + ' }.svg#icon" />';
+            result+= '<c:set var="' + variable + '" value="${ pageContext.request.contextPath }/' + staticPrefix + '/tkde/assets/base/icons/${ ' + name + ' }.svg#icon" />';
         }
         else if (node.type === 'SetNode' &&
             node.value &&
@@ -889,9 +892,9 @@ class CoreMediaRenderer extends BaseRenderer
             const variable = this.getVariable(node.variable, parameters);
             const name = this.renderExpression(filter.value, parameters);
             result+= '<c:choose>';
-            for (const svgName in this.getSvgs().viewBoxes)
+            for (const svgName in this.getSvgs(parameters).viewBoxes)
             {
-                result+= '<c:when test="${' + name + ' == \'' + svgName + '\'}"><c:set var="' + variable + '" value="' + this.getSvgs().viewBoxes[svgName] + '" /></c:when>';
+                result+= '<c:when test="${' + name + ' == \'' + svgName + '\'}"><c:set var="' + variable + '" value="' + this.getSvgs(parameters).viewBoxes[svgName] + '" /></c:when>';
             }
             result+= '</c:choose>';
         }
