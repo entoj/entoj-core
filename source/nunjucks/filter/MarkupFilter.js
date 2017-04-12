@@ -38,6 +38,10 @@ class MarkupFilter extends BaseFilter
     {
         return function (value, style)
         {
+            if (style == 'plain' || style == 'tkPlain')
+            {
+                return value;
+            }
             if (value && value.indexOf('<') > -1)
             {
                 return value;
