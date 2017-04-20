@@ -8,6 +8,7 @@ const BaseCommand = require('./BaseCommand.js').BaseCommand;
 const CompileSassTask = require('../task/CompileSassTask.js').CompileSassTask;
 const PostprocessCssTask = require('../task/PostprocessCssTask.js').PostprocessCssTask;
 const WriteFilesTask = require('../task/WriteFilesTask.js').WriteFilesTask;
+const DecorateTask = require('../task/DecorateTask.js').DecorateTask;
 const PathesConfiguration = require('../model/configuration/PathesConfiguration.js').PathesConfiguration;
 const BuildConfiguration = require('../model/configuration/BuildConfiguration.js').BuildConfiguration;
 const ModelSynchronizer = require('../watch/ModelSynchronizer.js').ModelSynchronizer;
@@ -100,12 +101,14 @@ class SassCommand extends BaseCommand
             const options =
             {
                 query: parameters && parameters._[0] || '*',
-                writePath: path
-            }
+                writePath: path,
+                decoratePrepend: '/** generated ' + (new Date()) + ' **/\n'
+            };
             const mapping = new Map();
             mapping.set(CliLogger, logger);
             yield scope.context.di.create(CompileSassTask, mapping)
                 .pipe(scope.context.di.create(PostprocessCssTask, mapping))
+                .pipe(scope.context.di.create(DecorateTask, mapping))
                 .pipe(scope.context.di.create(WriteFilesTask, mapping))
                 .run(buildConfiguration, options);
         });
