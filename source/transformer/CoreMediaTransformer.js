@@ -15,6 +15,7 @@ const JspInlineMacroCallTransformer = require('./nodetransformer/JspInlineMacroC
 const resetUniqueId = require('./nodetransformer/JspInlineMacroCallTransformer.js').resetUniqueId;
 const JspRemoveMacroCallTransformer = require('./nodetransformer/JspRemoveMacroCallTransformer.js').JspRemoveMacroCallTransformer;
 const JspForEachTransformer = require('./nodetransformer/JspForEachTransformer.js').JspForEachTransformer;
+const JspRemoveYieldTransformer = require('./nodetransformer/JspRemoveYieldTransformer.js').JspRemoveYieldTransformer;
 const GlobalRepository = require('../model/GlobalRepository.js').GlobalRepository;
 const ViewModelRepository = require('../model/viewmodel/ViewModelRepository.js').ViewModelRepository;
 const GlobalConfiguration = require('../model/configuration/GlobalConfiguration.js').GlobalConfiguration;
@@ -42,7 +43,8 @@ class CoreMediaTransformer extends Transformer
                 new JspInlineMacroCallTransformer(),
                 new JspRemoveMacroCallTransformer(),
                 new JspForEachTransformer()
-            ]);
+            ],
+            [new JspRemoveYieldTransformer()]);
     }
 
 

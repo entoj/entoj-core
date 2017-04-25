@@ -603,7 +603,12 @@ class CoreMediaRenderer extends BaseRenderer
                 }
                 else
                 {
-                    result+= '<c:set target="${ ' + name + ' }" property="' + key + '" value="' + htmlspecialchars(data[key] || '') + '" />';
+                    let value = htmlspecialchars(data[key] || '');
+                    if (typeof data[key] == 'object')
+                    {
+                        value = this.renderNode(data[key], parameters);
+                    }
+                    result+= '<c:set target="${ ' + name + ' }" property="' + key + '" value="' + value + '" />';
                 }
             }
             return result;
@@ -818,6 +823,83 @@ class CoreMediaRenderer extends BaseRenderer
             node.value.children[0].type === 'FilterNode' &&
             node.value.children[0].name === 'load')
         {
+        }
+        // handle setProperty
+        else if (node.type === 'SetNode' &&
+            node.value &&
+            node.value.type === 'ExpressionNode' &&
+            node.value.children.length &&
+            node.value.children[0].type === 'FilterNode' &&
+            node.value.children[0].name === 'setProperty')
+        {
+            const filter = node.value.children[0];
+            const variableName = this.getVariable(node.variable, parameters);
+            const propertyName = this.renderExpression(filter.parameters.children[0].value, parameters);
+            const propertyValue = this.renderExpression(filter.parameters.children[1].value, parameters);
+            // Check if map exists
+            result+= '<c:if test="${ ' + variableName + ' is empty }">';
+            result+= '<jsp:useBean id="' + variableName + '" class="java.util.TreeMap"/>';
+            result+= '</c:if>';
+            // Update property
+            result+= '<c:set ';
+            result+= 'var="' + variableName + '" ';
+            result+= 'property="${ ' + propertyName + ' }" ';
+            result+= 'value="${ ' + propertyValue + ' }" ';
+            result+= '/>';
+        }
+        // handle customAttributes
+        else if (node.type === 'SetNode' &&
+            node.value &&
+            node.value.type === 'ExpressionNode' &&
+            node.value.children.length &&
+            node.value.children[0].type === 'FilterNode' &&
+            node.value.children[0].name === 'customAttributes')
+        {
+            const filter = node.value.children[0];
+            const sourceName = this.getVariable(filter.value, parameters);
+            const variableName = this.getVariable(node.variable, parameters);
+            const prefixName = filter.parameters.children.length
+                ? this.renderExpression(filter.parameters.children[0].value, parameters).replace(/\'/g, '') + '-'
+                : '';
+
+            // Init property
+            result+= '<c:set ';
+            result+= 'var="' + variableName + '" ';
+            result+= 'value="" ';
+            result+= '/>';
+
+            // Loop source
+            result+= '<c:forEach var="' + variableName + '_iterator" items="${ ' + sourceName + ' }">';
+            result+= '<c:set ';
+            result+= 'var="' + variableName + '" ';
+            result+= 'value="${ ' + variableName + ' }' + prefixName + '${ ' + variableName + '_iterator.key }=&quot;${ ' + variableName + '_iterator.value }&quot; " ';
+            result+= '></c:set>';
+            result+= '</c:forEach>';
+        }
+        // handle unique
+        else if (node.type === 'SetNode' &&
+            node.value &&
+            node.value.type === 'ExpressionNode' &&
+            node.value.children.length &&
+            node.value.children[0].type === 'FilterNode' &&
+            node.value.children[0].name === 'unique')
+        {
+            const filter = node.value.children[0];
+            const variableName = this.getVariable(node.variable, parameters);
+            const filterValue = this.renderExpression(filter.value, parameters);
+            const separator = '-';
+
+            // Check if id exists
+            result+= '<c:if test="${ entojUniqueIdFilter is empty }">';
+            result+= '<c:set var="entojUniqueIdFilter" value="0" scope="page" />';
+            result+= '</c:if>';
+            // Increment id
+            result+= '<c:set var="entojUniqueIdFilter" value="${ entojUniqueIdFilter +  1 }" scope="page" />';
+            // Create id
+            result+= '<c:set ';
+            result+= 'var="' + variableName + '" ';
+            result+= 'value="${ ' + filterValue + ' }' + separator + '${ entojUniqueIdFilter }" ';
+            result+= '></c:set>';
         }
         // handle complex variables
         else if (node.type === 'SetNode' &&

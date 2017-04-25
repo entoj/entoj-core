@@ -6,6 +6,7 @@
  */
 const NodeTransformer = require('../NodeTransformer.js').NodeTransformer;
 const JspDecorateVariablesTransformer = require('./JspDecorateVariablesTransformer.js').JspDecorateVariablesTransformer;
+const JspPreferYieldTransformer = require('./JspPreferYieldTransformer.js').JspPreferYieldTransformer;
 const NodeList = require('../node/NodeList.js').NodeList;
 const SetNode = require('../node/SetNode.js').SetNode;
 const VariableNode = require('../node/VariableNode.js').VariableNode;
@@ -51,13 +52,14 @@ class JspInlineMacroCallTransformer extends NodeTransformer
         {
             // See if call needs to be inlined
             const macroSettings = synchronize.execute(transformer, 'getMacroSettings', [undefined, node.name]);
-            if (macroSettings.getByPath('mode', false) === 'inline')
+            if (macroSettings.getByPath('mode', false) === 'inline' ||
+                (node.children && node.children.length))
             {
                 // Prepare
                 const suffix = '_u' + (uniqueId++);
                 const rootNode = new NodeList();
 
-                // Get called maccro
+                // Get called macro
                 const rawMacroNode = synchronize.execute(transformer, 'parseMacro', [undefined, node.name]);
                 const macroNode = synchronize.execute(transformer, 'transformNode', [rawMacroNode]);
 
@@ -72,7 +74,7 @@ class JspInlineMacroCallTransformer extends NodeTransformer
 
                 // Make variables unique
                 const variablesTransformer = new JspDecorateVariablesTransformer();
-                const preparedMacro = synchronize.execute(variablesTransformer, 'transform', [macroNode, transformer, { suffix: suffix }]);
+                let preparedMacro = synchronize.execute(variablesTransformer, 'transform', [macroNode, transformer, { suffix: suffix }]);
 
                 // Add children to yield?
                 if (node.children && node.children.length)
@@ -83,6 +85,9 @@ class JspInlineMacroCallTransformer extends NodeTransformer
                         const yieldNodes = new NodeList();
                         yieldNodes.children.load(node.children);
                         preparedMacro.replace(yieldNode, yieldNodes);
+
+                        const preferYieldTransformer = new JspPreferYieldTransformer();
+                        preparedMacro = synchronize.execute(preferYieldTransformer, 'transform', [preparedMacro, transformer]);
                     }
                 }
 

@@ -52,8 +52,6 @@ class TranslateFilter extends BaseFilter
         const scope = this;
         return function (value, ...variables)
         {
-            console.log('translate', value, variables);
-
             // Use value or key for translations
             let translationKey = value;
             if (!translationKey && variables)
@@ -76,7 +74,6 @@ class TranslateFilter extends BaseFilter
             {
                 for (let index = 0; index < variables.length; index++)
                 {
-                    console.log(index, variables[index]);
                     result = result.replace('{' + index + '}', variables[index]);
                 }
             }

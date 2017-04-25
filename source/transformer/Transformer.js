@@ -23,7 +23,7 @@ class Transformer extends Base
     /**
      * @ignore
      */
-    constructor(globalRepository, parser, renderer, nodeTransformers)
+    constructor(globalRepository, parser, renderer, nodeTransformers, nodeFinalTransformers)
     {
         super();
 
@@ -37,6 +37,7 @@ class Transformer extends Base
         this._parser = parser;
         this._renderer = renderer;
         this._nodeTransformers = nodeTransformers || [];
+        this._nodeFinalTransformers = nodeFinalTransformers || [];
 
         // Setup cache
         this._cache = new Map();
@@ -341,8 +342,15 @@ class Transformer extends Base
                 throw new Error(scope.className + ':transformMacro - could not transform parsed node');
             }
 
+            // Final transform parsed nodes
+            let finalRootNode = transformedRootNode;
+            for (const nodeTransformer of scope._nodeFinalTransformers)
+            {
+                finalRootNode = yield nodeTransformer.transform(finalRootNode, scope);
+            }
+
             // Render transformed nodes
-            const result = yield scope.renderNode(transformedRootNode, parameters);
+            const result = yield scope.renderNode(finalRootNode, parameters);
             return result;
         });
         return promise;
