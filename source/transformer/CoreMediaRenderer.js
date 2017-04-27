@@ -272,7 +272,7 @@ class CoreMediaRenderer extends BaseRenderer
             const value = this.renderExpression(filter.value, parameters);
             const defaultValue = filter.parameters.children.length ? this.renderExpression(filter.parameters.children[0].value, parameters) : '\'\'';
             result+= '${ ';
-            result+=  value + ' is empty ? ' + defaultValue + ' : ' + value;
+            result+=  'empty ' + value + ' ? ' + defaultValue + ' : ' + value;
             result+= ' }';
         }
         // Just straight output
@@ -837,7 +837,7 @@ class CoreMediaRenderer extends BaseRenderer
             const propertyName = this.renderExpression(filter.parameters.children[0].value, parameters);
             const propertyValue = this.renderExpression(filter.parameters.children[1].value, parameters);
             // Check if map exists
-            result+= '<c:if test="${ ' + variableName + ' is empty }">';
+            result+= '<c:if test="${ empty ' + variableName + ' }">';
             result+= '<jsp:useBean id="' + variableName + '" class="java.util.TreeMap"/>';
             result+= '</c:if>';
             // Update property
@@ -890,7 +890,7 @@ class CoreMediaRenderer extends BaseRenderer
             const separator = '-';
 
             // Check if id exists
-            result+= '<c:if test="${ entojUniqueIdFilter is empty }">';
+            result+= '<c:if test="${ empty entojUniqueIdFilter }">';
             result+= '<c:set var="entojUniqueIdFilter" value="0" scope="page" />';
             result+= '</c:if>';
             // Increment id
