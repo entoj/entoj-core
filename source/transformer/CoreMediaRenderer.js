@@ -8,6 +8,7 @@ const BaseRenderer = require('./BaseRenderer.js').BaseRenderer;
 const GlobalRepository = require('../model/GlobalRepository.js').GlobalRepository;
 const GlobalConfiguration = require('../model/configuration/GlobalConfiguration.js').GlobalConfiguration;
 const PathesConfiguration = require('../model/configuration/PathesConfiguration.js').PathesConfiguration;
+const BaseNode = require('./node/BaseNode.js').BaseNode;
 const assertParameter = require('../utils/assert.js').assertParameter;
 const uppercaseFirst = require('../utils/string.js').uppercaseFirst;
 const isPlainObject = require('../utils/objects.js').isPlainObject;
@@ -604,7 +605,7 @@ class CoreMediaRenderer extends BaseRenderer
                 else
                 {
                     let value = htmlspecialchars(data[key] || '');
-                    if (typeof data[key] == 'object')
+                    if (typeof data[key] == 'object' && data[key] instanceof BaseNode)
                     {
                         value = this.renderNode(data[key], parameters);
                     }
