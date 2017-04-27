@@ -843,7 +843,7 @@ class CoreMediaRenderer extends BaseRenderer
             result+= '</c:if>';
             // Update property
             result+= '<c:set ';
-            result+= 'target="' + variableName + '" ';
+            result+= 'target="${ ' + variableName + ' }" ';
             result+= 'property="${ ' + propertyName + ' }" ';
             result+= 'value="${ ' + propertyValue + ' }" ';
             result+= '/>';
