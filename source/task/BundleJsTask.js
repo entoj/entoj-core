@@ -206,7 +206,8 @@ class BundleJsTask extends BaseTask
                 'jspm_packages/*': 'entoj/jspm_packages/*',
                 'base/*': 'sites/base/*',
                 'github:*': 'entoj/jspm_packages/github/*',
-                'npm:*': 'entoj/jspm_packages/npm/*'
+                'npm:*': 'entoj/jspm_packages/npm/*',
+                'bower:*': 'entoj/jspm_packages/bower/*'
             };
             const sites = yield scope._sitesRepository.getItems();
             for (const site of sites)
@@ -233,7 +234,7 @@ class BundleJsTask extends BaseTask
                         if (loadedFiles.indexOf(load.name) === -1)
                         {
                             const stats = fs.statSync(sourceFilename);
-                            const size = stats["size"] / 1024;
+                            const size = stats['size'] / 1024;
                             scope._cliLogger.end(work, false, 'Added ' + filename + ' <' + size.toFixed(1) + 'kb>');
                             loadedFiles.push(load.name);
                         }
