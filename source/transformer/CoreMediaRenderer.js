@@ -262,7 +262,7 @@ class CoreMediaRenderer extends BaseRenderer
             const staticPrefix = parameters.staticPrefix || 'static';
             const filter = node.children[0];
             const value = this.renderExpression(filter.value, parameters);
-            result+= '${ pageContext.request.contextPath }/' + staticPrefix + '/tkde/assets/base/${ ' + value + ' }';
+            result+= '${ tk:staticResourceUriPrefix(pageContext) }/' + staticPrefix + '/tkde/assets/base/${ ' + value + ' }';
         }
         // Check default filter
         else if (node.children.length &&
@@ -962,7 +962,7 @@ class CoreMediaRenderer extends BaseRenderer
             const filter = node.value.children[0];
             const variable = this.getVariable(node.variable, parameters);
             const name = this.renderExpression(filter.value, parameters);
-            result+= '<c:set var="' + variable + '" value="${ pageContext.request.contextPath }/' + staticPrefix + '/tkde/assets/base/icons/${ ' + name + ' }.svg#icon" />';
+            result+= '<c:set var="' + variable + '" value="${ tk:staticResourceUriPrefix(pageContext) }/' + staticPrefix + '/tkde/assets/base/icons/${ ' + name + ' }.svg#icon" />';
         }
         else if (node.type === 'SetNode' &&
             node.value &&
