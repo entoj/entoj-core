@@ -249,6 +249,10 @@ class CoreMediaRenderer extends BaseRenderer
             {
                 result+= '<cm:metadata value="${ self.content }" />';
             }
+            else if (key.indexOf('.') > -1)
+            {
+                result+= '<cm:metadata value="' + key + '" />';
+            }
             else
             {
                 result+= '<cm:metadata value="properties.' + key + '" />';
