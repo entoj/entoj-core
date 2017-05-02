@@ -229,7 +229,7 @@ class CoreMediaRenderer extends BaseRenderer
             result+= '${ tk:hyphenate(' + this.renderExpression(filter.value, parameters) + ') }';
 
         }
-        // Check escape filter
+        // Check htmlencode filter
         else if (node.children.length &&
             node.children[0].type === 'FilterNode' &&
             node.children[0].name === 'htmlencode')
@@ -905,6 +905,19 @@ class CoreMediaRenderer extends BaseRenderer
             result+= 'var="' + variableName + '" ';
             result+= 'value="${ ' + filterValue + ' }' + separator + '${ entojUniqueIdFilter }" ';
             result+= '></c:set>';
+        }
+        // Check htmlencode filter
+        else if (node.type === 'SetNode' &&
+            node.value &&
+            node.value.type === 'ExpressionNode' &&
+            node.value.children.length &&
+            node.value.children[0].type === 'FilterNode' &&
+            node.value.children[0].name === 'htmlencode')
+        {
+            const filter = node.value.children[0];
+            result+= '<c:set var="' + this.getVariable(node.variable, parameters) + '">';
+            result+= '<c:out value="${ ' + this.renderExpression(filter.value, parameters) + ' }" />';
+            result+= '</c:set>';
         }
         // handle complex variables
         else if (node.type === 'SetNode' &&
