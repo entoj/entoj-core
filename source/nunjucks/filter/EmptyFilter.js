@@ -39,6 +39,10 @@ class EmptyFilter extends BaseFilter
     {
         return function(value)
         {
+            if (value === false)
+            {
+                return false;
+            }
             return isEmpty(value);
         }
     }

@@ -39,6 +39,10 @@ class NotEmptyFilter extends BaseFilter
     {
         return function(value)
         {
+            if (value === false)
+            {
+                return true;
+            }
             return !isEmpty(value);
         }
     }
