@@ -527,12 +527,15 @@ class CoreMediaRenderer extends BaseRenderer
                     type = parameters.macros[node.name].type;
                 }
                 result+= '<!-- <%--@elvariable id="self" type="' + type + '"--%> -->' + EOL;
-                result+= '<!-- <%--@elvariable id="model" type="' + type + '"--%> -->' + EOL;
+                //result+= '<!-- <%--@elvariable id="model" type="' + type + '"--%> -->' + EOL;
 
                 // Render default value
-                result+= '<c:if test="${ empty ' + parameter.name + ' }">' + EOL;
-                result+= '  <c:set var="model" value="${ self }" />' + EOL;
-                result+= '</c:if>' + EOL;
+                if (parameter.name !== 'model')
+                {
+                    result+= '<c:if test="${ empty ' + parameter.name + ' }">' + EOL;
+                    result+= '  <c:set var="model" value="${ self }" />' + EOL;
+                    result+= '</c:if>' + EOL;
+                }
             }
         }
 
@@ -775,7 +778,7 @@ class CoreMediaRenderer extends BaseRenderer
                 args.push(this.renderExpression(param.value, parameters));
             }
             result+= '<c:set var="' + this.getVariable(node.variable, parameters) + '" ';
-            result+= 'value="${ bp:cssClassAppendNavigationActive(\'\', ' + args.join(', ') + ', ' + this.getVariable(filter.value, parameters) + ', model.navigationPathList) }" />';
+            result+= 'value="${ bp:cssClassAppendNavigationActive(\'\', ' + args.join(', ') + ', ' + this.getVariable(filter.value, parameters) + ', self.navigationPathList) }" />';
         }
         // handle moduleClasses
         else if (node.type === 'SetNode' &&
@@ -1189,11 +1192,17 @@ class CoreMediaRenderer extends BaseRenderer
         // Render parameters
         if (modelParameter && modelParameter.value)
         {
-            result+= '<cm:param name="' + modelParameter.name + '" value="${ ' + this.renderExpression(modelParameter.value, parameters) + ' }"/>';
+            if (modelParameter.name != 'model')
+            {
+                result+= '<cm:param name="' + modelParameter.name + '" value="${ ' + this.renderExpression(modelParameter.value, parameters) + ' }"/>';
+            }
         }
         for (const parameterName in macroParameters)
         {
-            result+= '<cm:param name="' + parameterName + '" value="' + macroParameters[parameterName] + '"/>';
+            if (parameterName != 'model')
+            {
+                result+= '<cm:param name="' + parameterName + '" value="' + macroParameters[parameterName] + '"/>';
+            }
         }
 
         // Close include

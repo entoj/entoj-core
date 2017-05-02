@@ -66,10 +66,13 @@ class JspInlineMacroCallTransformer extends NodeTransformer
                 // Add parameters as set's
                 for (const parameter of macroNode.parameters.children)
                 {
-                    const variableNode = new VariableNode([parameter.name + suffix]);
-                    const callParameter = node.parameters.getParameter(parameter.name);
-                    const setNode = new SetNode(variableNode, callParameter ? callParameter.value : parameter.value);
-                    rootNode.children.push(setNode);
+                    if (parameter.name != 'model')
+                    {
+                        const variableNode = new VariableNode([parameter.name + suffix]);
+                        const callParameter = node.parameters.getParameter(parameter.name);
+                        const setNode = new SetNode(variableNode, callParameter ? callParameter.value : parameter.value);
+                        rootNode.children.push(setNode);
+                    }
                 }
 
                 // Make variables unique
