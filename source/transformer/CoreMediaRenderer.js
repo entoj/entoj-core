@@ -232,7 +232,7 @@ class CoreMediaRenderer extends BaseRenderer
         // Check escape filter
         else if (node.children.length &&
             node.children[0].type === 'FilterNode' &&
-            node.children[0].name === 'escape')
+            node.children[0].name === 'htmlencode')
         {
             const filter = node.children[0];
             result+= '<c:out value="' + this.renderExpression(filter.value, parameters) + '"/>';
@@ -251,7 +251,7 @@ class CoreMediaRenderer extends BaseRenderer
             }
             else if (key.indexOf('.') > -1)
             {
-                result+= '<cm:metadata value="' + key + '" />';
+                result+= '<cm:metadata value="${ ' + key + ' }" />';
             }
             else
             {
