@@ -48,7 +48,8 @@ class DecorateTask extends BaseTask
         {
             decorateVariables: params.decorateVariables || {},
             decoratePrepend: params.decoratePrepend || this._prependTemplate,
-            decorateAppend: params.decorateAppend || this._appendTemplate
+            decorateAppend: params.decorateAppend || this._appendTemplate,
+            decorateEnabled: (typeof params.decorateEnabled !== 'undefined') ? params.decorateEnabled === true : true
         };
         return result;
     }
@@ -76,13 +77,20 @@ class DecorateTask extends BaseTask
                 return;
             }
 
-            const work = this._cliLogger.work('Adding banner to file <' + file.path + '>');
-            const prepend = templateString(params.decoratePrepend, params.decorateVariables);
-            const append = templateString(params.decorateAppend, params.decorateVariables);
-            const contents = new Buffer(prepend + file.contents.toString() + append);
-            const resultFile = new VinylFile({ path: file.path, contents: contents });
-            resultStream.push(resultFile);
-            this._cliLogger.end(work);
+            if (params.decorateEnabled)
+            {
+                const work = this._cliLogger.work('Adding banner to file <' + file.path + '>');
+                const prepend = templateString(params.decoratePrepend, params.decorateVariables);
+                const append = templateString(params.decorateAppend, params.decorateVariables);
+                const contents = new Buffer(prepend + file.contents.toString() + append);
+                const resultFile = new VinylFile({ path: file.path, contents: contents });
+                resultStream.push(resultFile);
+                this._cliLogger.end(work);
+            }
+            else
+            {
+                resultStream.push(file);
+            }
             callback();
         };
 
