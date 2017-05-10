@@ -760,6 +760,18 @@ class CoreMediaRenderer extends BaseRenderer
             }
             result+= ' />';
         }
+        // handle length
+        else if (node.type === 'SetNode' &&
+            node.value &&
+            node.value.type === 'ExpressionNode' &&
+            node.value.children.length &&
+            node.value.children[0].type === 'FilterNode' &&
+            node.value.children[0].name === 'length')
+        {
+            const filter = node.value.children[0];
+            result+= '<c:set var="' + this.getVariable(node.variable, parameters) + '" ';
+            result+= 'value="${ ' + this.getVariable(filter.value, parameters) + '.size() }" />';
+        }
         // handle navigationClass
         else if (node.type === 'SetNode' &&
             node.value &&
