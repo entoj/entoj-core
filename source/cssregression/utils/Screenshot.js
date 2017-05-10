@@ -30,7 +30,12 @@ class Screenshot extends Base
     {
         const promise = co(function *()
         {
-            const nightmare = new Nightmare();
+            const nightmare = new Nightmare({
+                switches:
+                {
+                    'ignore-certificate-errors': true
+                }
+            });
             yield nightmare.goto(url);
             yield nightmare.wait('body');
             yield nightmare.viewport(width, 1024);
