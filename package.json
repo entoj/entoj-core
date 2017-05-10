@@ -79,7 +79,10 @@
     "thunkify": "*",
     "transliteration": "*",
     "vinyl": "*",
-    "xregexp": "*"
+    "xregexp": "*",
+    "blink-diff": "*",
+    "nightmare": "*",
+    "pngjs-image": "*"
   },
   "devDependencies": {
     "babel-core": "*",
@@ -103,7 +106,6 @@
     "memory-streams": "*",
     "mocha": "*",
     "sinon": "*",
-    "supertest": "*",
-    "nightmare": "*"
+    "supertest": "*"
   }
 }
