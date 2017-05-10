@@ -28,7 +28,6 @@ class Screenshot extends Base
      */
     create(url, width)
     {
-        const scope = this;
         const promise = co(function *()
         {
             const nightmare = new Nightmare();

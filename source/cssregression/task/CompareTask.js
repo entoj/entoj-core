@@ -99,22 +99,22 @@ class CompareTask extends BaseTask
         return new Promise(function(resolve, reject)
         {
             const diff = new BlinkDiff(
-            {
-                imageAPath: referenceFile,
-                imageBPath: testFile,
-                imageOutputPath: diffFile,
-                delta: 50,
-                outputMaskRed: 0,
-                outputMaskBlue: 255,
-                hideShift: true,
-                composition: false
-            });
+                {
+                    imageAPath: referenceFile,
+                    imageBPath: testFile,
+                    imageOutputPath: diffFile,
+                    delta: 50,
+                    outputMaskRed: 0,
+                    outputMaskBlue: 255,
+                    hideShift: true,
+                    composition: false
+                });
 
             diff.run(function (error, result)
             {
                 if (error)
                 {
-                  reject(error);
+                    reject(error);
                 }
                 else
                 {
@@ -153,12 +153,12 @@ class CompareTask extends BaseTask
             const widths = [320, 768, 1024, 1280];
             const filepath = pathes.concat(scope._pathesConfiguration.sites,
                 templateString(parameters.filepathTemplate,
-                {
-                    entity: entity,
-                    entityId: entity.id,
-                    site: entity.id.site,
-                    entityCategory: entity.id.category
-                }));
+                    {
+                        entity: entity,
+                        entityId: entity.id,
+                        site: entity.id.site,
+                        entityCategory: entity.id.category
+                    }));
 
             // Compare viewports
             for (const width of widths)

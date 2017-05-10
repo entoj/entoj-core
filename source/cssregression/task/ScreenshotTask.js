@@ -8,7 +8,6 @@ const BaseTask = require('../../task/BaseTask.js').BaseTask;
 const GlobalRepository = require('../../model/GlobalRepository.js').GlobalRepository;
 const PathesConfiguration = require('../../model/configuration/PathesConfiguration.js').PathesConfiguration;
 const SitesRepository = require('../../model/site/SitesRepository.js').SitesRepository;
-const Site = require('../../model/site/Site.js').Site;
 const CliLogger = require('../../cli/CliLogger.js').CliLogger;
 const Screenshot = require('../utils/Screenshot.js').Screenshot;
 const assertParameter = require('../../utils/assert.js').assertParameter;
@@ -17,7 +16,6 @@ const urls = require('../../utils/urls.js');
 const through2 = require('through2');
 const VinylFile = require('vinyl');
 const co = require('co');
-const sass = require('node-sass');
 const templateString = require('es6-template-strings');
 const path = require('path');
 

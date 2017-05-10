@@ -8,7 +8,6 @@ const BaseCommand = require('../../command/BaseCommand.js').BaseCommand;
 const CliLogger = require('../../cli/CliLogger.js').CliLogger;
 const Context = require('../../application/Context.js').Context;
 const PathesConfiguration = require('../../model/configuration/PathesConfiguration').PathesConfiguration;
-const GlobalConfiguration = require('../../model/configuration/GlobalConfiguration.js').GlobalConfiguration;
 const ScreenshotTask = require('../task/ScreenshotTask.js').ScreenshotTask;
 const CompareTask = require('../task/CompareTask.js').CompareTask;
 const BuildConfiguration = require('../../model/configuration/BuildConfiguration.js').BuildConfiguration;
@@ -129,11 +128,9 @@ class TestCommand extends BaseCommand
                 compareDiffSuffix: 'diff'
             };
             const buildConfiguration = scope.context.di.create(BuildConfiguration);
-            /*
             yield scope.context.di.create(ScreenshotTask, mapping)
                 .pipe(scope.context.di.create(WriteFilesTask, mapping))
                 .run(buildConfiguration, options);
-            */
             yield scope.context.di.create(CompareTask, mapping)
                 .run(buildConfiguration, options);
         });
