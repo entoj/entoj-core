@@ -79,10 +79,7 @@
     "thunkify": "*",
     "transliteration": "*",
     "vinyl": "*",
-    "xregexp": "*",
-    "blink-diff": "*",
-    "nightmare": "*",
-    "pngjs-image": "*"
+    "xregexp": "*"
   },
   "devDependencies": {
     "babel-core": "*",
