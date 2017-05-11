@@ -91,7 +91,7 @@ class CoreMediaCommand extends BaseCommand
                 query: parameters && parameters._[0] || '*',
                 writePath: path,
                 flatten: scope._options.flatten || true,
-                environment: buildConfiguration.environment
+                environment: buildConfiguration.get('options.useEnvironment', buildConfiguration.environment)
             };
 
             // Prepare logger
