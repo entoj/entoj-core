@@ -37,8 +37,8 @@ class TranspileJsTask extends BaseTask
         // Render stream
         const options =
         {
-            presets: ['es2015'],
-            plugins: ['transform-runtime'],
+            presets: [require('babel-preset-es2015')],
+            //plugins: ['transform-runtime'],
             babelrc: false
         };
         const resultStream = new Stream.Transform({ objectMode: true });
