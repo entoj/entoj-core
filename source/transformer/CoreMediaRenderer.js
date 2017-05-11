@@ -931,6 +931,19 @@ class CoreMediaRenderer extends BaseRenderer
             result+= '<c:out value="${ ' + this.renderExpression(filter.value, parameters) + ' }" />';
             result+= '</c:set>';
         }
+        // Check assetUrl filter
+        else if (node.type === 'SetNode' &&
+            node.value &&
+            node.value.type === 'ExpressionNode' &&
+            node.value.children.length &&
+            node.value.children[0].type === 'FilterNode' &&
+            node.value.children[0].name === 'assetUrl')
+        {
+            const staticPrefix = parameters.staticPrefix || 'static';
+            const filter = node.value.children[0];
+            const value = this.renderExpression(filter.value, parameters);
+            result+= '<c:set var="' + this.getVariable(node.variable, parameters) + '" value="${ tk:staticResourceUriPrefix(pageContext) }/' + staticPrefix + '/tkde/assets/base/${ ' + value + ' }" />';
+        }
         // handle complex variables
         else if (node.type === 'SetNode' &&
             node.value &&
