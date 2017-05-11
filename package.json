@@ -86,7 +86,7 @@
     "xregexp": "*"
   },
   "devDependencies": {
-    "chai": "*",
+    "chai": "^3.5.0",
     "chai-as-promised": "*",
     "chai-string": "*",
     "chai-subset": "*",
