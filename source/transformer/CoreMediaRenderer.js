@@ -1167,6 +1167,7 @@ class CoreMediaRenderer extends BaseRenderer
         // Determine self
         if (modelParameter &&
             modelParameter.value &&
+            value !== 'null' &&
             parameters.useSelf.macros.indexOf(view) < 0 &&
             !parameters.useSelf.values.some((regex) => value.match(regex) ))
         {
