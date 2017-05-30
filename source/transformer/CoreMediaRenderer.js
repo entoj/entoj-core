@@ -201,7 +201,15 @@ class CoreMediaRenderer extends BaseRenderer
             let view = 'tkArticle';
             if (filter.parameters.children.length)
             {
-                view = filter.parameters.children[0].value.children[0].value;
+                const param = filter.parameters.children[0].value.children[0];
+                if (param.is('VariableNode'))
+                {
+                    view = '${ ' + param.fields.join('.') + ' }';
+                }
+                else
+                {
+                    view = param.value;
+                }
             }
             result+= '<cm:include';
             result+= ' self="${ ' + this.renderExpression(filter.value, parameters) + ' }"';
