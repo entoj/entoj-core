@@ -220,7 +220,7 @@ class BundleJsTask extends BaseTask
             const bundlerConfig =
             {
                 runtime: false,
-                minify: false,
+                minify: buildConfiguration.get('js.minimize', false),
                 sourceMaps: false,
                 lowResSourceMaps: false,
                 fetch: function (load, fetch)
@@ -336,4 +336,3 @@ class BundleJsTask extends BaseTask
  * @ignore
  */
 module.exports.BundleJsTask = BundleJsTask;
-
