@@ -1155,7 +1155,7 @@ class CoreMediaRenderer extends BaseRenderer
         let view = (node.name.endsWith('_dispatcher')) ? node.name.substr(0, node.name.length - 11).replace('_', '-') : node.name;
         if (parameters &&
             parameters.views &&
-            parameters.views[node.name])
+            typeof parameters.views[node.name] === 'string')
         {
             view = parameters.views[node.name];
         }
@@ -1164,7 +1164,7 @@ class CoreMediaRenderer extends BaseRenderer
         if (parameters &&
             parameters.settings &&
             parameters.settings.views &&
-            parameters.settings.views[node.name])
+            typeof parameters.settings.views[node.name] === 'string')
         {
             view = parameters.settings.views[node.name];
         }
@@ -1186,8 +1186,11 @@ class CoreMediaRenderer extends BaseRenderer
             result+= 'self="${ self }" ';
         }
 
-        // Determine view
-        result+= 'view="' + view + '"';
+        // Add view
+        if (view)
+        {
+            result+= 'view="' + view + '"';
+        }
 
         // End
         result+= '>';
