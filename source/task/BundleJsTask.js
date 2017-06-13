@@ -159,7 +159,7 @@ class BundleJsTask extends BaseTask
                     if (group === scope._defaultGroup)
                     {
                         bundle.prepend.push(pathes.concat(scope._pathesConfiguration.entoj, 'jspm_packages', 'system-polyfills.js'));
-                        bundle.prepend.push(pathes.concat(scope._pathesConfiguration.entoj, 'jspm_packages', 'system.src.js'));
+                        bundle.prepend.push(pathes.concat(scope._pathesConfiguration.entoj, 'jspm_packages', 'system.js'));
                         bundle.prepend.push(pathes.concat(scope._pathesConfiguration.entoj, 'jspm.js'));
                     }
 
