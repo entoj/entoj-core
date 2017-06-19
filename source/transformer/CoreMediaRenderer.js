@@ -602,7 +602,7 @@ class CoreMediaRenderer extends BaseRenderer
     renderComplexVariable(name, data, parameters)
     {
         let result = '';
-        result+= '<jsp:useBean id="' + name + '" class="java.util.TreeMap" />';
+        result+= '<jsp:useBean id="' + name + '" class="java.util.LinkedHashMap" />';
         const render = (name, data) =>
         {
             let result = '';
@@ -610,7 +610,7 @@ class CoreMediaRenderer extends BaseRenderer
             {
                 if (isPlainObject(data[key]))
                 {
-                    result+= '<jsp:useBean id="' + name + '_' + key + '" class="java.util.TreeMap" />';
+                    result+= '<jsp:useBean id="' + name + '_' + key + '" class="java.util.LinkedHashMap" />';
                     result+= render(name + '_' + key, data[key]);
                     result+= '<c:set target="${ ' + name + ' }" property="' + key + '" value="${ ' + name + '_' + key + ' }" />';
                 }
@@ -731,7 +731,7 @@ class CoreMediaRenderer extends BaseRenderer
             const filter = node.value.children[0];
             const mediaQueries = this._globalConfiguration.get('mediaQueries');
             const mediaQueriesVariable = 'globalMediaQueries';
-            result+= '<jsp:useBean id="' + mediaQueriesVariable + '" class="java.util.TreeMap" />';
+            result+= '<jsp:useBean id="' + mediaQueriesVariable + '" class="java.util.LinkedHashMap" />';
             for (const mediaQueryName in mediaQueries)
             {
                 result+= '<c:set target="${ ' + mediaQueriesVariable + ' }" property="' + mediaQueryName + '" value="' + mediaQueries[mediaQueryName] + '" />';
@@ -863,7 +863,7 @@ class CoreMediaRenderer extends BaseRenderer
             const propertyValue = this.renderExpression(filter.parameters.children[1].value, parameters);
             // Check if map exists
             result+= '<c:if test="${ empty ' + variableName + ' }">';
-            result+= '<jsp:useBean id="' + variableName + '" class="java.util.TreeMap"/>';
+            result+= '<jsp:useBean id="' + variableName + '" class="java.util.LinkedHashMap"/>';
             result+= '</c:if>';
             // Update property
             result+= '<c:set ';
