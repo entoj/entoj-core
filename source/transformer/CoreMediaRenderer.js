@@ -70,7 +70,7 @@ class CoreMediaRenderer extends BaseRenderer
     {
         const result = parameters || {};
         result.useSelf = result.useSelf || {};
-        result.useSelf.macros = result.useSelf.macros || [];
+        result.useSelf.macros = result.useSelf.macros || {};
         result.useSelf.values = result.useSelf.values || [];
         result.replaceSet = result.replaceSet || {};
         result.replaceVariable = result.replaceVariable || {};
@@ -1176,10 +1176,13 @@ class CoreMediaRenderer extends BaseRenderer
         if (modelParameter &&
             modelParameter.value &&
             value !== 'null' &&
-            parameters.useSelf.macros.indexOf(view) < 0 &&
             !parameters.useSelf.values.some((regex) => value.match(regex) ))
         {
             result+= 'self="${ ' + value + ' }" ';
+        }
+        else if (typeof parameters.useSelf.macros[node.name] !== 'undefined')
+        {
+            result+= 'self="${ ' + parameters.useSelf.macros[node.name] + ' }" ';
         }
         else
         {
