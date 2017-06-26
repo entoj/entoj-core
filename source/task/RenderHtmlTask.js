@@ -154,6 +154,7 @@ class RenderHtmlTask extends BaseTask
                     break;
 
                 case 'page':
+                case 'include':
                     const include = yield scope._urlsConfiguration.matchEntityFile(entityPath + '.j2');
                     if (include && include.file)
                     {
@@ -216,9 +217,11 @@ class RenderHtmlTask extends BaseTask
             for (const entity of entities)
             {
                 // Render each configured release
-                const settings = entity.properties.getByPath('release.html', []);
+                //const settings = entity.properties.getByPath('release.html', []);
+                const settings = entity.properties.getByPath('release.html', entity.properties.getByPath('build.html', []));
                 for (const setting of settings)
                 {
+                    console.log(entity.pathString, setting);
                     // Render entity
                     const file = yield scope.renderEntity(entity, setting, buildConfiguration, parameters);
                     result.push(file);
