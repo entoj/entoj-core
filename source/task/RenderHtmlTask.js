@@ -221,7 +221,6 @@ class RenderHtmlTask extends BaseTask
                 const settings = entity.properties.getByPath('release.html', entity.properties.getByPath('build.html', []));
                 for (const setting of settings)
                 {
-                    console.log(entity.pathString, setting);
                     // Render entity
                     const file = yield scope.renderEntity(entity, setting, buildConfiguration, parameters);
                     result.push(file);
