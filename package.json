@@ -19,7 +19,7 @@
     "babel-runtime": "*",
     "basic-auth-connect": "*",
     "body-parser": "*",
-    "chalk": "*",
+    "chalk": "^1.1.3",
     "chokidar": "*",
     "co": "*",
     "co-fs-extra": "*",
