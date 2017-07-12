@@ -5,6 +5,8 @@
  * @ignore
  */
 const NodeTransformer = require('../NodeTransformer.js').NodeTransformer;
+const BaseNode = require('../node/BaseNode.js').BaseNode;
+const isPlainObject = require('../../utils/objects.js').isPlainObject;
 
 
 /**
@@ -34,6 +36,22 @@ class JspDecorateVariablesTransformer extends NodeTransformer
             {
                 // Add pre/suffix
                 node.fields[0] = (options.prefix || '') + node.fields[0] + (options.suffix || '');
+            }
+        }
+        if (node.type == 'ComplexVariableNode' && isPlainObject(node.value) && options)
+        {
+            for (const key in node.value)
+            {
+                const keyValue = node.value[key];
+                if (keyValue instanceof BaseNode && keyValue.type == 'VariableNode')
+                {
+                    // See if variable is allowed
+                    if (!options.filter || (options.filter && options.filter(keyValue.fields[0])))
+                    {
+                        // Add pre/suffix
+                        keyValue.fields[0] = (options.prefix || '') + keyValue.fields[0] + (options.suffix || '');
+                    }
+                }
             }
         }
         return node;

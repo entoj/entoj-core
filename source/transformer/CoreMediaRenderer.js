@@ -554,7 +554,7 @@ class CoreMediaRenderer extends BaseRenderer
                 if (parameter.name !== 'model' && typeof parameter.defaultValue !== 'undefined')
                 {
                     const parameterValue = parameter.defaultValue;
-                    if (parameterValue !== 'false' && parameterValue !== false)
+                    if (parameterValue !== 'false' && parameterValue !== false && parameterValue != 'undefined')
                     {
                         macroParameters[parameter.name] = '${ ' + parameterValue + ' }';
                     }
@@ -857,6 +857,7 @@ class CoreMediaRenderer extends BaseRenderer
             node.value.children[0].type === 'FilterNode' &&
             node.value.children[0].name === 'setProperty')
         {
+            console.log('WTF!----------');
             const filter = node.value.children[0];
             const variableName = this.getVariable(node.variable, parameters);
             const propertyName = this.renderExpression(filter.parameters.children[0].value, parameters);
@@ -871,6 +872,7 @@ class CoreMediaRenderer extends BaseRenderer
             result+= 'property="${ ' + propertyName + ' }" ';
             result+= 'value="${ ' + propertyValue + ' }" ';
             result+= '/>';
+            console.log('WTF!----------');
         }
         // handle customAttributes
         else if (node.type === 'SetNode' &&
@@ -1208,7 +1210,7 @@ class CoreMediaRenderer extends BaseRenderer
                 if (parameter.name !== 'model')
                 {
                     let parameterValue = parameter.defaultValue;
-                    if (parameterValue === 'false')
+                    if (parameterValue === 'false' || parameterValue === 'undefined' || typeof parameterValue === 'undefined')
                     {
                         parameterValue = 'null';
                     }
