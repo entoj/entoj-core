@@ -663,8 +663,23 @@ class CoreMediaRenderer extends BaseRenderer
             result+= ' var="' + this.getVariable(node.variable, parameters) + '"';
             result+= '>';
 
+            let view = 'tkArticle';
+            const filter = node.value.children[0];
+            if (filter.parameters.children.length)
+            {
+                const param = filter.parameters.children[0].value.children[0];
+                if (param.is('VariableNode'))
+                {
+                    view = '${ ' + param.fields.join('.') + ' }';
+                }
+                else
+                {
+                    view = param.value;
+                }
+            }
+
             result+= '<cm:include';
-            result+= ' self="${ ' + this.renderExpression(node.value.children[0].value, parameters) + ' }"';
+            result+= ' self="${ ' + this.renderExpression(filter.value, parameters) + ' }" view="' + view + '"';
             result+= ' />';
 
             result+= '</c:set>';
@@ -857,7 +872,6 @@ class CoreMediaRenderer extends BaseRenderer
             node.value.children[0].type === 'FilterNode' &&
             node.value.children[0].name === 'setProperty')
         {
-            console.log('WTF!----------');
             const filter = node.value.children[0];
             const variableName = this.getVariable(node.variable, parameters);
             const propertyName = this.renderExpression(filter.parameters.children[0].value, parameters);
@@ -872,7 +886,6 @@ class CoreMediaRenderer extends BaseRenderer
             result+= 'property="${ ' + propertyName + ' }" ';
             result+= 'value="${ ' + propertyValue + ' }" ';
             result+= '/>';
-            console.log('WTF!----------');
         }
         // handle customAttributes
         else if (node.type === 'SetNode' &&
