@@ -967,6 +967,17 @@ class CoreMediaRenderer extends BaseRenderer
             const value = this.renderExpression(filter.value, parameters);
             result+= '<c:set var="' + this.getVariable(node.variable, parameters) + '" value="${ tk:staticResourceUriPrefix(pageContext) }/' + staticPrefix + '/tkde/assets/base/${ ' + value + ' }" />';
         }
+        // Check hyphenate filter
+        else if (node.type === 'SetNode' &&
+            node.value &&
+            node.value.type === 'ExpressionNode' &&
+            node.value.children.length &&
+            node.value.children[0].type === 'FilterNode' &&
+            node.value.children[0].name === 'hyphenate')
+        {
+            const filter = node.value.children[0];
+            result+= '<c:set var="' + this.getVariable(node.variable, parameters) + '" value="${ tk:hyphenate(' + this.renderExpression(filter.value, parameters) + ') }" />';
+        }
         // handle complex variables
         else if (node.type === 'SetNode' &&
             node.value &&
