@@ -72,7 +72,6 @@
     "postcss-discard-comments": "*",
     "postcss-urlrewrite": "*",
     "prettydiff": "*",
-    "resemblejs": "*",
     "routes": "*",
     "sass-lint": "*",
     "signals": "*",
