@@ -508,6 +508,18 @@ class CoreMediaRenderer extends BaseRenderer
                 result+= ': (' + this.renderExpression(node.elseChildren, parameters) + ')';
                 break;
 
+            case 'FunctionCallNode':
+                result+= this.getVariable(node.variable, parameters);
+                result+= '.' + node.name + '(';
+                const params = [];
+                for (const parameter of node.parameters)
+                {
+                    params.push(this.renderExpression(parameter));
+                }
+                result+= params.join(', ');
+                result+= ')';
+                break;
+
             default:
                 this.logger.error('renderExpression: Not Implemented', type, node);
         }
@@ -646,10 +658,23 @@ class CoreMediaRenderer extends BaseRenderer
             node.value.children[0].type === 'FilterNode' &&
             node.value.children[0].name === 'link')
         {
+
             result+= '<cm:link';
             result+= ' var="' + this.getVariable(node.variable, parameters) + '"';
             result+= ' target="${ ' + this.renderExpression(node.value.children[0].value, parameters) + ' }"';
-            result+= ' />';
+            result+= '>';
+            const filter = node.value.children[0];
+            if (filter.parameters.children.length)
+            {
+                const param = filter.parameters.children[0].value.children[0];
+                if (param.is('VariableNode'))
+                {
+                    result+= '<c:forEach items="${ ' + param.fields.join('.') + ' }" var="queryParameter">';
+                    result+= '<cm:param name="${ queryParameter.key }" value="${ queryParameter.value }" />';
+                    result+= '</c:forEach>';
+                }
+            }
+            result+= '</cm:link>';
         }
         // handle markup fields
         else if (node.type === 'SetNode' &&
