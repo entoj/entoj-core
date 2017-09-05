@@ -29,6 +29,8 @@ const YieldNode = require('./node/YieldNode.js').YieldNode;
 const ComplexVariableNode = require('./node/ComplexVariableNode.js').ComplexVariableNode;
 const ArrayNode = require('./node/ArrayNode.js').ArrayNode;
 const BlockNode = require('./node/BlockNode.js').BlockNode;
+const FunctionCallNode = require('./node/FunctionCallNode.js').FunctionCallNode;
+
 
 
 /**
@@ -142,6 +144,10 @@ class Parser extends BaseParser
                     {
                         result.children.push(new ParameterNode(node.key.value, this.parseExpression(node.value, 'parameter')));
                     }
+                    break;
+
+                case 'LookupVal':
+                    result.children.push(new ParameterNode(this.parseExpression(node)));
                     break;
 
                 case 'Symbol':
@@ -377,6 +383,18 @@ class Parser extends BaseParser
                     result.push(new IfNode(this.parseCondition(node.cond),
                         [new ExpressionNode(parse(node.body))],
                         [new ExpressionNode(parse(node.else_))]));
+                    break;
+
+                case 'FunCall':
+                    const params = [];
+                    for (const arg of node.args.children)
+                    {
+                        params.push(this.parseNode(arg));
+                    }
+                    result.push(new FunctionCallNode(
+                        this.parseVariable(node.name.target),
+                        node.name.val.value,
+                        params));
                     break;
 
                 /* istanbul ignore next */
