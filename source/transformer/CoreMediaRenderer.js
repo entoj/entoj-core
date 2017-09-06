@@ -956,10 +956,10 @@ class CoreMediaRenderer extends BaseRenderer
 
             // Check if id exists
             result+= '<c:if test="${ empty entojUniqueIdFilter }">';
-            result+= '<c:set var="entojUniqueIdFilter" value="0" scope="page" />';
+            result+= '<c:set var="entojUniqueIdFilter" value="0" scope="request" />';
             result+= '</c:if>';
             // Increment id
-            result+= '<c:set var="entojUniqueIdFilter" value="${ entojUniqueIdFilter +  1 }" scope="page" />';
+            result+= '<c:set var="entojUniqueIdFilter" value="${ entojUniqueIdFilter +  1 }" scope="request" />';
             // Create id
             result+= '<c:set ';
             result+= 'var="' + variableName + '" ';
