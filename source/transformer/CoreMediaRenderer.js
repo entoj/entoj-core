@@ -673,6 +673,24 @@ class CoreMediaRenderer extends BaseRenderer
                     result+= '<cm:param name="${ queryParameter.key }" value="${ queryParameter.value }" />';
                     result+= '</c:forEach>';
                 }
+                if (param.is('ComplexVariableNode'))
+                {
+                    for (const key in param.value)
+                    {
+                        const value = param.value[key];
+                        result+= '<cm:param name="' + key + '" ';
+                        result+= 'value="';
+                        if (value instanceof BaseNode)
+                        {
+                            result+= this.renderNode(value);
+                        }
+                        else
+                        {
+                            result+= value;
+                        }
+                        result+= '" />';
+                    }
+                }
             }
             result+= '</cm:link>';
         }
