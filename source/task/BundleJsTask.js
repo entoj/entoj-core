@@ -201,14 +201,13 @@ class BundleJsTask extends BaseTask
             require('vm').runInNewContext(builderConfigSource, context);
 
             // Prepare config
-            builderConfig.paths =
+            for (const key in builderConfig.paths)
             {
-                'jspm_packages/*': 'entoj/jspm_packages/*',
-                'base/*': 'sites/base/*',
-                'github:*': 'entoj/jspm_packages/github/*',
-                'npm:*': 'entoj/jspm_packages/npm/*',
-                'bower:*': 'entoj/jspm_packages/bower/*'
-            };
+                if (builderConfig.paths[key].startsWith('jspm_packages'))
+                {
+                    builderConfig.paths[key] = 'entoj/' + builderConfig.paths[key];
+                }
+            }
             const sites = yield scope._sitesRepository.getItems();
             for (const site of sites)
             {
